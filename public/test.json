@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    {
+      "id": "64685c90-c8d2-4fae-9d66-a0624ae183e6",
+      "bgColor": "#80ff80",
+      "width": 200,
+      "height": 100,
+      "position": {
+        "x": 500,
+        "y": 300
+      },
+      "nodetype": "SUBGRAPH",
+      "data": [
+        {
+          "subgraph": {
+            "nodes": [
+              {
+                "id": "dcef8e1a-011c-4326-9156-f1b0e046e968",
+                "width": 200,
+                "height": 100,
+                "position": {
+                  "x": 500,
+                  "y": 300
+                },
+                "nodetype": "DEFAULT",
+                "data": [
+                  {
+                    "subgraph": {
+                      "nodes": [],
+                      "edges": []
+                    }
+                  }
+                ]
+              }
+            ],
+            "edges": []
+          }
+        }
+      ]
+    }
+  ],
+  "edges": []
+}
