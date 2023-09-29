@@ -486,6 +486,7 @@ export const setGraphInitialDistribution = (graph) => {
     }  
 }
 
+
 /**
  * Get conditional distribution array
  * @param {any} distribution
