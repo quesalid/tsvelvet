@@ -225,11 +225,17 @@
 	const addNode = async (e:any|undefined,node=null,edges=[])=>{
 		let nodeProps
 		let ancs
-		console.log("NODE PROPS VALS",nodePropsVals)
-		let nodeParam = nodePropsVals 
-		
-		if(node)
+		console.log("NODE PROPS VALS",nodePropsVals, node)
+		let nodeParam = JSON.parse(JSON.stringify(nodePropsVals))
+
+		// CHECK IF NODE LABEL IS UNIQUE
+		const found = defaultNodes.find((item:any)=> item.label == nodeParam.label)
+		if(found)
+            nodeParam.label = nodeParam.label + '1'
+
+		if(node){
 			nodeParam = node
+		}
 		
 		nodeParam.id = null
 		nodeProps = utilAddNode(e,nodeParam,svwidth,svheight)
@@ -511,6 +517,7 @@
 		const nodes = graph.nodes
 		edges = graph.edges
 		console.log("DELETE NODE CLICKED",edges)
+		setGraphInitialDistribution(graph)
 		await redrawGraph(element,nodes,edges)
 		
 	}

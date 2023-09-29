@@ -492,8 +492,13 @@ export const setGraphInitialDistribution = (graph) => {
  * @param {any} distribution
  * @returns conditional distribution array
  */
-export const getDistributionArray = (distribution) => {
+/*
+export const getDistributionArray = (node,index) => {
+    let distribution = node.data[index].distribution
+    let variable = node.label
+    let states = node.data[index].status
     let header = []
+    let subheader = []
     const distArray = []
     for (let i = 0; i < distribution.length; i++) { 
         const row = []
@@ -501,6 +506,7 @@ export const getDistributionArray = (distribution) => {
             if (i == 0) {
                
                 header.push(distribution[i].cond[j].variable)
+                subheader.push(distribution[i].cond[j].variable)
             }
             row.push(distribution[i].cond[j].states.name)
         }
@@ -508,9 +514,84 @@ export const getDistributionArray = (distribution) => {
         distArray.push(row)
     }
     header.push("DISTRIBUTION")
-    let retDistarray = [header]
-    retDistarray = retDistarray.concat(distArray)
+    subheader.push("DISTRIBUTION")
+    subheader = []
+    let retHaeder = [header,subheader]
+    //retDistarray = retDistarray.concat(distArray)
+    let retDistarray = { header: retHaeder, distarray: distArray }
+    console.log("getDistributionArray1", getDistributionArray1(node, index))
+    //const darray = getDistributionArray1(node, index)
     return retDistarray
+}*/
+
+/**
+ * Return distribution array in format for table
+ * @param {any} node node
+ * @param {any} index bayes data index
+ * @returns fromatted distribution array
+ */
+export const getDistributionArray1 = (node, index) => {
+    let retArray = { header: [], distarray: [] }
+    let distribution = node.data[index].distribution
+    let variable = node.label
+    let states = node.data[index].status
+    let header = []
+    let distArray = []
+    // GET HEADER
+    header = getRetArrayHeader(distribution, states, variable)
+    // GET DISTRIBUTION
+    distArray = getRetArrayDist(distribution, states, variable)
+
+    retArray.distarray = distArray
+    retArray.header=header
+    return retArray
+   
+}
+
+const getRetArrayHeader = (distribution, states, variable) => {
+    const header = []
+    for (let i = distribution.length - 1; i >= 0; i--) {
+        const cond = distribution[i].cond
+        for (let j = 0; j < cond.length; j++) {
+            let item = cond[j].variable
+            const index = header.findIndex((itm) => itm == item)
+            if (index == -1 && item != variable)
+                header.push(item)
+        }
+    }
+    for (let i = distribution.length - 1; i >= 0; i--) {
+        const cond = distribution[i].cond
+        for (let j = 0; j < cond.length; j++) {
+            let item = cond[j].variable
+            if (item == variable) {
+                item = item + '=' + cond[j].states.name
+            }
+            const index = header.findIndex((itm) => itm == item)
+            if (index == -1)
+                header.push(item)
+        }
+    }
+    return(header)
+}
+
+const getRetArrayDist = (distribution, states, variable) => {
+    const dist = []
+    const probs = []
+    for (let i = distribution.length - 1; i >= 0; i--) {
+        const row = []
+        const cond = distribution[i].cond
+        for (let j = cond.length - 1; j >= 0; j--) {
+            if(cond[j].variable != variable)
+                row.push(cond[j].states.name)
+        }
+        probs.push(distribution[i].prob)
+        if (i % states.length == 0) {
+            const carray = row.concat(probs)
+            dist.push(carray)
+            probs.length = 0
+        }
+    }
+    return dist
 }
 
 const allPossibleCases = (statusArray) => {
