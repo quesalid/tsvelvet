@@ -5,6 +5,7 @@ import DiscreteValue from "./DiscreteValue.svelte";
 import {getStatusDistribution} from './GraphUtils.js'
 
 export let node: any
+export let graph: any = {nodes:[],edges:[]}
 export let deleteNodeClicked = (ev:any)=>{console.log("DELETENODE CLICKED")}
 export let dataNodeClicked = (ev:any)=>{console.log("DATANODE CLICKED")}
 export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
@@ -18,7 +19,7 @@ onMount(()=>{
 	const states = node.data[index].status
 	for(let i=0;i<states.length;i++){
 		const status = states[i]
-		const valueEvent = new CustomEvent("changevalue", { detail: {value:getStatusDistribution(node,status.name)} });
+		const valueEvent = new CustomEvent("changevalue", { detail: {value:getStatusDistribution(graph,node,status.name)} });
 		const element = document.getElementById('NW-'+node.id+'-'+status.name)
 		if(element){
 			element.dispatchEvent(valueEvent)

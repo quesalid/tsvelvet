@@ -431,7 +431,7 @@ export const createLoadObserver = (handler) => {
 }
 
 /**
- * Load data structure for different node types
+ * Load initial data structure for different node types
  * @param {any} type node type
  * @returns data structure
  */
@@ -466,7 +466,7 @@ export const getInitialDistribution = (node, graph) => {
         const statusArray = buildStatusArray(node,parents)
         const cases = allPossibleCases(statusArray)
         for (let i = 0; i < cases.length; i++) {
-            const dist = { cond: cases[i], prob: 1/cases.length }
+            const dist = { cond: cases[i], prob: 1/states.length}
             if (statusArray.length == 1)
                 dist['cond'] = [cases[i]]
             distribution.push(dist)
@@ -475,16 +475,79 @@ export const getInitialDistribution = (node, graph) => {
     return distribution
 }
 
-export const setGraphInitialDistribution = (graph) => {
+
+
+const getDistChange = (dist,olddist,d,od) => {
+   
+    for (let i = 0; i < olddist.cond.length; i++) {
+        const index = dist.cond.findIndex((item) => item.variable == olddist.cond[i].variable)
+        if (index == -1)
+            return ("NODEREMOVED")
+    }
+    for (let i = 0; i < dist.cond.length; i++) {
+        const index = olddist.cond.findIndex((item) => item.variable == dist.cond[i].variable)
+        if (index == -1)
+            return ("NODEADDED")
+    }
+    if (od.length > d.length)
+        return ("STATUSREMOVED")
+
+    if (od.length < d.length)
+        return ("STATUSADDED")
+
+    return("NOCHANGE")
+
+}
+
+/**
+ * Set Graph distribution on graph change
+ * @param {any} graph graph
+ * @param {any} equiprob if true set equiprobability for all nodes
+ */
+export const setGraphInitialDistribution = (graph, equiprob=false) => {
     for (let i = 0; i < graph.nodes.length; i++) {
-        const node = graph.nodes[i]      
-        //if (node.nodetype == 'BAYES') {
-        const dist = getInitialDistribution(node, graph)
+        const node = graph.nodes[i] 
+        const index = node.data.findIndex((item) => item.distribution)
+        if (index > -1) {
+            //if (node.nodetype == 'BAYES') {
+            const dist = getInitialDistribution(node, graph)
             // HERE CHECK IF DISTRIBUTION IS ALREADY SET
-            node.data[0].distribution = dist
-        //}
+            //console.log("SET DISTRIBUTION OLD", node.data[index].distribution)
+            //console.log("SET DISTRIBUTION NEW", dist)
+            for (let j = 0; j < dist.length; j++) {
+                const ds = dist[j]
+                for (let k = 0; k < node.data[index].distribution.length; k++) {
+                    const ods = node.data[index].distribution[k]
+                    switch (getDistChange(ds, ods, dist, node.data[index].distribution)){
+                        case "NODEADDED":
+                            // If node added set eqprob to distribution
+                            //console.log("NODE ADDED")
+                            node.data[index].distribution = dist
+                            break
+                        case "NODEREMOVED":
+                            // If node removed set eqprob to distribution
+                            //console.log("NODE REMOVED")
+                            node.data[index].distribution = dist
+                            break
+                        case "STATUSADDED":
+                            //console.log("STATUS ADDED")
+                            node.data[index].distribution = dist
+                            break
+                        case "STATUSREMOVED":
+                            //console.log("STATUS REMOVED")
+                            node.data[index].distribution = dist
+                            break
+                        default:
+                            //console.log("NO CHANGE")
+                            break
+                    }
+                }
+            }
+            //console.log("SETTED DISTRIBUTION", node.data[index].distribution)
+        }
     }  
 }
+
 
 
 /**
@@ -645,7 +708,15 @@ const buildStatusArray = (node, parents) => {
     return statusArray
 }
 
-export const getStatusDistribution = (node, status) => {
+/**
+ * Gets marginal distribution for "status" state of node random variable
+ * @param {any} node node random variable
+ * @param {any} status status of random variable
+ * @returns
+ */
+export const getStatusDistribution = (graph,node, status) => {
+    // UPDATE DISTRIBUTION
+    setGraphInitialDistribution(graph)
     let distval = 0.0
     const index = node.data.findIndex((item) => item.distribution)
     if (index > -1) {
@@ -654,6 +725,7 @@ export const getStatusDistribution = (node, status) => {
             for (let j = 0; j < prob[i].cond.length; j++) {
                 if (prob[i].cond[j].variable == node.label && prob[i].cond[j].states.name == status) {
                     distval += prob[i].prob
+                    //console.log("PROB", node.label, status, distval)
                     break
                 }
             }
@@ -661,4 +733,84 @@ export const getStatusDistribution = (node, status) => {
     }
     return (distval)
 }
+
+export let getDefaultProperties = (typeOptions, options) => {
+    let svwidth = 1000
+    let svheight = 600
+    let datacomp = 'ISA'
+    if (options.svwidth)
+        svwidth = options.svwidth
+    if (options.svheight)
+        svheight = options.svheight
+    if (options.datacomp)
+        datacomp = options.datacomp
+    let borderColor
+    let bgColor
+    let label = "VAR"
+    let width = 230;
+    let height = 120;
+    let inputs = 1
+    let outputs = 1
+    let locked
+    let center
+    let rotation
+    let zIndex
+    let TD
+    let LR
+    let useDefaults
+    let uid
+    let position = { x: svwidth / 2, y: svheight / 2 }
+    let nodetype = typeOptions[0].value
+    
+
+    const nodePropsVals = {
+        bgColor: bgColor,
+        borderColor: borderColor,
+        label: label,
+        width: width,
+        height: height,
+        locked: locked,
+        center: center,
+        inputs: inputs,
+        outputs: outputs,
+        rotation: rotation,
+        zIndex: zIndex,
+        TD: TD,
+        LR: LR,
+        useDefaults: useDefaults,
+        id: uid,
+        position: position,
+        nodetype: nodetype,
+        data: loadData(datacomp),
+        graphtype:datacomp
+    };
+    return nodePropsVals
+}
+
+export let getDefaultPropertiesNames = () => {
+    let nodePropNames = [
+        'bgColor',
+        'borderColor',
+        'label',
+        'width',
+        'height',
+        'locked',
+        'center',
+        'inputs',
+        'outputs',
+        'rotation',
+        'zIndex',
+        'TD',
+        'LR',
+        'useDefaults',
+        'id',
+        'position',
+        'nodetype',
+        'data',
+        'graphtype'
+    ]
+
+    return(nodePropNames)
+}
+
 

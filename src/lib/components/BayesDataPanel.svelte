@@ -36,8 +36,6 @@ const closeMenu = (ev:any)=>{
 	setGraphInitialDistribution(graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
-
-
 }
 
 
@@ -46,11 +44,9 @@ let defVar = (ev:any|undefined)=>{
 	if(index >-1){
 		const status = {name:'',description:''}
 		node.data[index].status.push(status)
+		if(status.name.length >0)
+			setGraphInitialDistribution(graph)
 	}
-	// RE-INITIALIZE DISTRIBUTION
-	setGraphInitialDistribution(graph)
-	//const arr = getDistributionArray(node.data[index].distribution)
-	//console.log("DISTRIBUTION",arr)
 	node = node
 
 	// ADJUST GRAPH NODE

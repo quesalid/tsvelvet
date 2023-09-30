@@ -1,7 +1,8 @@
 <script lang="ts">
 
 import { onMount} from "svelte";
-import {dragElement} from '../components/GraphUtils'
+import {dragElement,
+		getDefaultProperties} from '../components/GraphUtils'
 
 export let id = 'defaultContextMenu'
 export let add = (ev:any|undefined)=>console.log("ADD NODE")
@@ -29,6 +30,8 @@ export let typeOptions = [
 	{value:"CONTROLLER",options:{level:'level6'}},
 	{value:"SUBGRAPH",options:{level:'level0'}},
 ]
+
+export let options = {}
 
 onMount(async () => {  
     const dragable = document.getElementById(id);
@@ -77,6 +80,11 @@ const changeVal = (ev:any)=>{
 		//modify(ev)
 }
 
+const clearLoc = (event:any)=>{
+	// RESET PROPERTY ARRAY VAL
+	propArrayVal = getDefaultProperties(typeOptions, options)
+	clear(event)
+}
 
 </script>
 
@@ -94,7 +102,7 @@ const changeVal = (ev:any)=>{
 		<input type="button" value="LOAD" on:click={load} />
 		<input type="button" value="SAVE" on:click={save} />
 		<input type="button" value="DEL" on:click={del} />
-		<input type="button" value="CLEAR" on:click={clear} />
+		<input type="button" value="CLEAR" on:click={clearLoc} />
 	</div>
 	<div class="context-menu-body">
 		<div class="list-item">
@@ -121,7 +129,7 @@ const changeVal = (ev:any)=>{
 			<label for="nodetype">TYPE: </label>
 			<select name="nodetype" id="nodetype" value={propArrayVal.nodetype} on:change={changeVal}>
 			{#each typeOptions as Option,index}
-				{#if propArrayVal.nodetype == Option}
+				{#if index == 0}
 					<option value={Option.value} selected>{Option.value}</option>
 				{:else}
 					<option value={Option.value}>{Option.value}</option>

@@ -1,8 +1,11 @@
 <script lang="ts">
 	// https://timdeschryver.dev/blog/how-to-test-svelte-components#jest-setup
+	import { onMount, getContext,getAllContexts} from "svelte";
 	import { Node, Svelvet, Anchor, Resizer,ThemeToggle } from 'svelvet';
+
 	import ContextMenu from './ContextMenu.svelte'
 	import InnerNode from './InnerNode.svelte'
+	import CustomEdge from './CustomEdge.svelte';
 
 	// FOR NOW SUBGRAPH SUPPORT DISABLED DUE TO SVELVET LIB LACK OF SUPPORT
 	//import SubgraphNode from './SubgraphNode.svelte'
@@ -16,12 +19,9 @@
 		uploadFile,
 		downloadJSON, 
 		createLoadObserver, 
-		loadData } from './GraphUtils.js'
-	import { onMount, getContext,getAllContexts} from "svelte";
-    import App from '../../App.svelte';
-    import CustomEdge from './CustomEdge.svelte';
-	
-	
+		loadData,
+		getDefaultProperties,
+		getDefaultPropertiesNames} from './GraphUtils.js'
 
 	
 	// BINDINGS
@@ -29,14 +29,15 @@
 	export let anchors: any[] = [];
 	export let edges: any[] = []
 	export let editnode:any = {}
-	export let typeOptions = [
-		{value:"DEFAULT",options:{level:'level0'}},
-	]
+	export let typeOptions = [{value:"DEFAULT",options:{level:'level0'}}]
 	export let sgnode:any = {}
 	export let innernode = InnerNode
 	export let graph = {nodes:[],edges:[]}
-
     export let options: any = {};
+	export const sleep = function (ms:any) {
+						return new Promise(resolve => setTimeout(resolve, ms));
+						}
+
 	// OPTIONS
 	let contextmenu = 'myContext'
 	let currentnode = ''
@@ -45,20 +46,11 @@
 	let svheight = 600
 	let oldanchors = []
 	
-
 	
-	export const sleep = function (ms:any) {
-						return new Promise(resolve => setTimeout(resolve, ms));
-						}
-	
-
 	// LOCAL VARS
 	let inListener = false
 	let outListener = false	
 	let zoom = 1
-	
-	
-		
 	
 	onMount(async () => {  
 		defaultNodes = []
@@ -151,70 +143,9 @@
 			contextMenu.style.visibility = "visible";
 	}
 
-	// NODE CREATION
-	// types for node creation
-	let bgColor: any | undefined;
-	let borderColor: any | undefined;
-	let label: string | undefined;
-	let width: number = 230;
-	let height: number = 120;
-	let inputs: number | undefined = 1
-	let outputs: number | undefined = 1
-	let locked: boolean | undefined;
-	let center: boolean | undefined;
-	let rotation: number | undefined;
-	let zIndex: number | undefined;
-	let TD: boolean | undefined;
-	let LR: boolean | undefined;
-	let useDefaults: boolean | undefined;
-	let uid: string | undefined;
-	let position:any = {x:svwidth/2,y:svheight/2}
-	let nodetype: string = 'DEFAULT'
-	let data: any = [];
 	
-
-	let nodePropNames: any[] = [
-			'bgColor',
-			'borderColor',
-			'label',
-			'width',
-			'height',
-			'locked',
-			'center',
-			'inputs',
-			'outputs',
-			'rotation',
-			'zIndex',
-			'TD',
-			'LR',
-			'useDefaults',
-			'id',
-			'position',
-			'nodetype',
-			'data'
-		];
-		
-
-		let nodePropsVals: any= {
-			bgColor:bgColor,
-			borderColor:borderColor,
-			label:label,
-			width:width,
-			height:height,
-			locked:locked,
-			center:center,
-			inputs:inputs,
-			outputs:outputs,
-			rotation:rotation,
-			zIndex:zIndex,
-			TD:TD,
-			LR:LR,
-			useDefaults:useDefaults,
-			id:uid,
-			position:position,
-			nodetype:nodetype,
-			data:loadData(datacomp)
-		};
+	let nodePropNames = getDefaultPropertiesNames()
+	let nodePropsVals = getDefaultProperties(typeOptions,options)
 
 	/**
 	 * Add new node to graph
@@ -225,7 +156,6 @@
 	const addNode = async (e:any|undefined,node=null,edges=[])=>{
 		let nodeProps
 		let ancs
-		console.log("NODE PROPS VALS",nodePropsVals, node)
 		let nodeParam = JSON.parse(JSON.stringify(nodePropsVals))
 
 		// CHECK IF NODE LABEL IS UNIQUE
@@ -240,7 +170,6 @@
 		nodeParam.id = null
 		nodeProps = utilAddNode(e,nodeParam,svwidth,svheight)
 		ancs = utilAddAnchor(nodeProps,edges)
-		console.log("NODE",nodeProps)
 
 		if(node){
 			const idx = defaultNodes.findIndex((item:any)=>item.id == node)
@@ -355,8 +284,9 @@
 			ancs = utilAddAnchor(node,edges)
 			anchors.push(ancs)
 			defaultNodes = [...defaultNodes, { ...nodeProps }]
-			await sleep(50)
+			await sleep(30)
 		}
+		defaultNodes = defaultNodes
 		if(nodes.length > 0)
 			currentnode = nodes[0]
 		oldanchors = anchors
@@ -420,10 +350,11 @@
 	const clearGraph = (e:any|undefined)=>{
 		anchors = []
 		defaultNodes = []
+		currentnode = ''
 	}
 
 	/**
-	 * Destr0y edge on button click
+	 * Destroy edge on button click
 	 * @param ev button click event
 	 */
 	const destroyEdge = (ev:any)=>{
@@ -508,7 +439,6 @@
 		// THEN REDRAW  graph
 		const nodeid = ev.target.getAttribute("data-node").substring(2)
 		const element = document.getElementById("file-db-input")
-		console.log("DELETE NODE CLICKED",graph.edges)
 
 		graph.nodes = graph.nodes.filter((item:any)=> item.id != nodeid)
 		graph.edges = graph.edges.filter((item:any)=> (item.source !=('N-'+nodeid)) && (item.destination != ('N-'+nodeid)))
@@ -516,7 +446,6 @@
 
 		const nodes = graph.nodes
 		edges = graph.edges
-		console.log("DELETE NODE CLICKED",edges)
 		setGraphInitialDistribution(graph)
 		await redrawGraph(element,nodes,edges)
 		
@@ -632,14 +561,14 @@
 				{/each}
 					<!-- HERE SHOULD ADD SUBGRAPH SPECIFIC NODE TYPE -->
 					<Resizer width height rotation/>
-					<svelte:component this={innernode} bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} distNodeClicked={distNodeClicked}/>
+					<svelte:component this={innernode} graph={graph} bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} distNodeClicked={distNodeClicked}/>
 					
 			</Node>
 		{/each}
 		<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
 	</Svelvet>
 	
-	<ContextMenu bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions}/>
+	<ContextMenu bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
 	
 	<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
 	<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>

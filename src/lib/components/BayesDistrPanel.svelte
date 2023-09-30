@@ -61,7 +61,7 @@ const isNumber = (value:any)=>{
 <div class="data-menu" id="{'dragable'+id}">
 	<header id="{'dragzone'+id}">
 		<div class="data-menu-header" style="--background-color:{node.bgColor}">
-			<span style="margin-right:5px;">DISTRIBUTION MENU</span>
+			<span style="margin-right:5px;">DISTRIBUTION  {node.label}</span>
 			<input type="button" value="CLOSE" on:click={closeMenu} />
 		</div>
 		<table style="width:100%">
