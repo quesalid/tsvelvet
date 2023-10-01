@@ -14,8 +14,11 @@
 	})
 
 	const evHandler = (ev:any)=>{
-		
+
 		value = ev.detail.value
+		if(ev.detail.status)
+			status.name =  ev.detail.status
+		status = status
 	}
 
 	const getPercent = (value:any)=>{

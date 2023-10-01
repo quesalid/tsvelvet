@@ -69,6 +69,8 @@
 		if(options.svheight)
 			svheight = options.svheight
 		nodePropsVals.data = loadData(datacomp)
+
+		
 		
 	})
 
@@ -181,7 +183,7 @@
 		currentnode = nodeProps['id']
 		graph = updateGraph()
 		await redrawGraph(e,graph.nodes,graph.edges)
-		addZoomListener()
+		//addZoomListener()
 
 	}
 
@@ -201,7 +203,6 @@
 		}
 		graph = updateGraph()
 		await redrawGraph(e,graph.nodes,graph.edges)
-		addZoomListener()
 		
 	}
 
@@ -210,6 +211,7 @@
 	 * @param e export graph event
 	 */
 	const exportGraph = async (e:any|undefined)=>{
+		setZoomValue(1.0)
 		const exp = updateGraph()
 		//console.log("GRAPH",exp)
 		/*if(exp.nodes && exp.nodes.length > 0){
@@ -292,6 +294,7 @@
 		oldanchors = anchors
 		//console.log("OLD ANCHORS",oldanchors)
 		addAnchorListener()
+		addZoomListener()
 	}
 
 	/**
@@ -331,7 +334,6 @@
 	 * @param e hidden input event
 	 */
 	const downloadFile = async (e:any|undefined)=>{
-		addZoomListener()
 		setZoomValue(1.0)
 		let file = e.target.files[0]
 		const result = await downloadJSON(file)

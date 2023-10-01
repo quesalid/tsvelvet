@@ -504,7 +504,7 @@ const getDistChange = (dist,olddist,d,od) => {
  * @param {any} graph graph
  * @param {any} equiprob if true set equiprobability for all nodes
  */
-export const setGraphInitialDistribution = (graph, equiprob=false) => {
+export const setGraphInitialDistribution = (graph, equiprob = false) => {
     for (let i = 0; i < graph.nodes.length; i++) {
         const node = graph.nodes[i] 
         const index = node.data.findIndex((item) => item.distribution)
@@ -514,36 +514,40 @@ export const setGraphInitialDistribution = (graph, equiprob=false) => {
             // HERE CHECK IF DISTRIBUTION IS ALREADY SET
             //console.log("SET DISTRIBUTION OLD", node.data[index].distribution)
             //console.log("SET DISTRIBUTION NEW", dist)
-            for (let j = 0; j < dist.length; j++) {
-                const ds = dist[j]
-                for (let k = 0; k < node.data[index].distribution.length; k++) {
-                    const ods = node.data[index].distribution[k]
-                    switch (getDistChange(ds, ods, dist, node.data[index].distribution)){
-                        case "NODEADDED":
-                            // If node added set eqprob to distribution
-                            //console.log("NODE ADDED")
-                            node.data[index].distribution = dist
-                            break
-                        case "NODEREMOVED":
-                            // If node removed set eqprob to distribution
-                            //console.log("NODE REMOVED")
-                            node.data[index].distribution = dist
-                            break
-                        case "STATUSADDED":
-                            //console.log("STATUS ADDED")
-                            node.data[index].distribution = dist
-                            break
-                        case "STATUSREMOVED":
-                            //console.log("STATUS REMOVED")
-                            node.data[index].distribution = dist
-                            break
-                        default:
-                            //console.log("NO CHANGE")
-                            break
+            if (node.data[index].distribution.length == 0)
+                node.data[index].distribution = dist
+            else {
+                for (let j = 0; j < dist.length; j++) {
+                    const ds = dist[j]
+                    for (let k = 0; k < node.data[index].distribution.length; k++) {
+                        const ods = node.data[index].distribution[k]
+                        switch (getDistChange(ds, ods, dist, node.data[index].distribution)) {
+                            case "NODEADDED":
+                                // If node added set eqprob to distribution
+                                //console.log("NODE ADDED")
+                                node.data[index].distribution = dist
+                                break
+                            case "NODEREMOVED":
+                                // If node removed set eqprob to distribution
+                                //console.log("NODE REMOVED")
+                                node.data[index].distribution = dist
+                                break
+                            case "STATUSADDED":
+                                //console.log("STATUS ADDED")
+                                node.data[index].distribution = dist
+                                break
+                            case "STATUSREMOVED":
+                                //console.log("STATUS REMOVED")
+                                node.data[index].distribution = dist
+                                break
+                            default:
+                                //console.log("NO CHANGE")
+                                break
+                        }
                     }
                 }
+                //console.log("SETTED DISTRIBUTION", node.data[index].distribution)
             }
-            //console.log("SETTED DISTRIBUTION", node.data[index].distribution)
         }
     }  
 }
@@ -724,11 +728,13 @@ export const getStatusDistribution = (graph,node, status) => {
         for (let i = 0; i < prob.length; i++) {
             for (let j = 0; j < prob[i].cond.length; j++) {
                 if (prob[i].cond[j].variable == node.label && prob[i].cond[j].states.name == status) {
+                //if ( prob[i].cond[j].states.name == status) {
                     distval += prob[i].prob
                     //console.log("PROB", node.label, status, distval)
                     break
                 }
             }
+           // distval /= prob[i].cond.length
         }
     }
     return (distval)

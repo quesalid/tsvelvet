@@ -3,7 +3,9 @@
 
 import { onMount} from "svelte";
 
-import {dragElement, setGraphInitialDistribution} from '../components/GraphUtils'
+import {dragElement, 
+		setGraphInitialDistribution,
+		getStatusDistribution} from '../components/GraphUtils'
 
 
 export let id: string|any = 'defaultDataMenuContainer'
@@ -25,7 +27,6 @@ let index = 0
 
 
 onMount(async () => {  
-     
 	const dragable = document.getElementById("dragable"+id);
     const dragzone = document.getElementById("dragzone"+id);
 	
@@ -36,6 +37,7 @@ const closeMenu = (ev:any)=>{
 	setGraphInitialDistribution(graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
+	 updateDiscreteValues()
 }
 
 
@@ -49,17 +51,20 @@ let defVar = (ev:any|undefined)=>{
 	}
 	node = node
 
-	// ADJUST GRAPH NODE
+	// UPDATE DiscreteValue COMPONENTS
+	updateDiscreteValues()
 }
 
 let delVar = (ev:any|undefined)=>{
 	const id = ev.target.name
 	const idx = id.split('-')[1]
 	node.data[index].status.splice(idx,1)
+	index = node.data.findIndex((item:any)=>item.status)
 	// RE-INITIALIZE DISTRIBUTION
 	setGraphInitialDistribution(graph)
-	index = node.data.findIndex((item:any)=>item.status)
 	node = node
+	// UPDATE DiscreteValue COMPONENTS
+	updateDiscreteValues()
 }
 
 let modVar = (ev:any|undefined)=>{
@@ -67,6 +72,20 @@ let modVar = (ev:any|undefined)=>{
 	index = node.data.findIndex((item:any)=>item.status)
 	const idx = ev.target.name.split('-')[1]
 	//setGraphInitialDistribution(graph)
+	updateDiscreteValues()
+}
+
+let updateDiscreteValues = ()=>{
+	// UPDATE DiscreteValue COMPONENTS
+	const states = node.data[index].status
+	for(let i=0;i<states.length;i++){
+		const status = states[i]
+		const valueEvent = new CustomEvent("changevalue", { detail: {status:status.name,value:getStatusDistribution(graph,node,status.name)} });
+		const element = document.getElementById('NW-'+node.id+'-'+status.name)
+		if(element){
+			element.dispatchEvent(valueEvent)
+		}
+	}
 }
 
 

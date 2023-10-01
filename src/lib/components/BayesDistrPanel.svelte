@@ -29,12 +29,12 @@ onMount(async () => {
 		index = node.data.findIndex((item:any)=>item.distribution)
 
 	dragElement(dragable, dragzone);
+	
  })
 
-const closeMenu = (ev:any)=>{
+const closeMenu = async(ev:any)=>{
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
-
 }
 
 
