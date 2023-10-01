@@ -619,7 +619,8 @@ const getRetArrayHeader = (distribution, states, variable) => {
     const header = []
     for (let i = distribution.length - 1; i >= 0; i--) {
         const cond = distribution[i].cond
-        for (let j = 0; j < cond.length; j++) {
+        //for (let j = 0; j < cond.length; j++) {
+        for (let j = cond.length-1; j >=0; j--) {
             let item = cond[j].variable
             const index = header.findIndex((itm) => itm == item)
             if (index == -1 && item != variable)
@@ -697,6 +698,7 @@ const buildStatusArray = (node, parents) => {
         statusArray.push(starray)
     }
     for (let i = 0; i < parents.length; i++) {
+    //for (let i = parents.length-1; i >=0; i--) {
         const parent = parents[i]
         const index = parent.data.findIndex((item) => item.status)
         if (index > -1) {
