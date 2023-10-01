@@ -756,7 +756,7 @@ export let getDefaultProperties = (typeOptions, options) => {
     let bgColor
     let label = "VAR"
     let width = 230;
-    let height = 120;
+    let height = 90;
     let inputs = 1
     let outputs = 1
     let locked

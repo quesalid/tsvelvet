@@ -86,18 +86,9 @@ let updateDiscreteValues = ()=>{
 			element.dispatchEvent(valueEvent)
 		}
 	}
-	updateNodeHeight()
 }
 
-let updateNodeHeight = ()=>{
-	// Find node wrapper class in document
-	const htmlwrappers = document.getElementsByClassName("bayes-node-wrapper-p")
-	const divs = Array.from(htmlwrappers)
-	for(let i=0;i<divs.length;i++){
-		const div = divs[i]
-		div.style.height = 'fit-content'
-	}
-}
+
 
 
 

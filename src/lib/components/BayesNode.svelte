@@ -57,7 +57,7 @@ onMount(()=>{
 .bayes-node-wrapper-p{
   box-sizing: border-box;
   width:100%;
-  height:100%;
+  height:fit-content;
   border-radius: 8px;
   position: absolute;
   top:0;
