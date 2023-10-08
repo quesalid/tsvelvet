@@ -29,7 +29,10 @@
 			return("0%")
 	}
 
-	
+	const statusChecked = (ev:any)=>{
+		const element = ev.target
+		console.log("CHECKED",element.id, status, node)
+	}
 </script>
 
 <div class="bayes-node-dicrete-value" id="{'NW-'+node.id+'-'+status.name}">
@@ -37,7 +40,7 @@
 	<label for="meter-{status.name}">{status.name}</label>
 	<meter id="meter-{status.name}" value="{value}">{getPercent(value)}</meter>
 	<label class="spaced-label" for="meter-{status.name}">{getPercent(value)}</label>
-	<input type="checkbox" id="check-{status.name}" name="check-{status.name}" value="60%">
+	<input type="checkbox" id="check-{status.name}" on:change="{statusChecked}" name="check-{status.name}" value="60%">
 </div>
 
 <style>

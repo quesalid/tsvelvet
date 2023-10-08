@@ -1,3 +1,4 @@
+// https://github.com/bayesjs/bayesjs#readme
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -553,51 +554,13 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
 }
 
 
-
-/**
- * Get conditional distribution array
- * @param {any} distribution
- * @returns conditional distribution array
- */
-/*
-export const getDistributionArray = (node,index) => {
-    let distribution = node.data[index].distribution
-    let variable = node.label
-    let states = node.data[index].status
-    let header = []
-    let subheader = []
-    const distArray = []
-    for (let i = 0; i < distribution.length; i++) { 
-        const row = []
-        for (let j = 0; j < distribution[0].cond.length; j++) {
-            if (i == 0) {
-               
-                header.push(distribution[i].cond[j].variable)
-                subheader.push(distribution[i].cond[j].variable)
-            }
-            row.push(distribution[i].cond[j].states.name)
-        }
-        row.push(distribution[i].prob)
-        distArray.push(row)
-    }
-    header.push("DISTRIBUTION")
-    subheader.push("DISTRIBUTION")
-    subheader = []
-    let retHaeder = [header,subheader]
-    //retDistarray = retDistarray.concat(distArray)
-    let retDistarray = { header: retHaeder, distarray: distArray }
-    console.log("getDistributionArray1", getDistributionArray1(node, index))
-    //const darray = getDistributionArray1(node, index)
-    return retDistarray
-}*/
-
 /**
  * Return distribution array in format for table
  * @param {any} node node
  * @param {any} index bayes data index
  * @returns fromatted distribution array
  */
-export const getDistributionArray1 = (node, index) => {
+export const getArrayFromDistribution = (node, index) => {
     let retArray = { header: [], distarray: [] }
     let distribution = node.data[index].distribution
     let variable = node.label
@@ -610,10 +573,16 @@ export const getDistributionArray1 = (node, index) => {
     distArray = getRetArrayDist(distribution, states, variable)
 
     retArray.distarray = distArray
-    retArray.header=header
+    retArray.header = header
+    //console.log("DISTARRAY", retArray)
     return retArray
    
 }
+
+export const getDistributionArray2 = (node, index) => {
+
+}
+
 
 const getRetArrayHeader = (distribution, states, variable) => {
     const header = []
@@ -655,7 +624,8 @@ const getRetArrayDist = (distribution, states, variable) => {
         probs.push(distribution[i].prob)
         if (i % states.length == 0) {
             const carray = row.concat(probs)
-            dist.push(carray)
+            //dist.push(carray)
+            dist.push({ array:carray,idx:i})
             probs.length = 0
         }
     }
@@ -720,26 +690,107 @@ const buildStatusArray = (node, parents) => {
  * @param {any} status status of random variable
  * @returns
  */
-export const getStatusDistribution = (graph,node, status) => {
+export const getStatusDistribution = (graph, node, status) => {
     // UPDATE DISTRIBUTION
     setGraphInitialDistribution(graph)
+    console.log("BAYES JS STRUCTURE",getBayesjsStructure(graph))
+    // GET BAYESJS STRUCTURE
     let distval = 0.0
     const index = node.data.findIndex((item) => item.distribution)
     if (index > -1) {
         const prob = node.data[index].distribution
+        //console.log("NODE DISTRIBUTION",node.label, prob)
+        let prl = 0
         for (let i = 0; i < prob.length; i++) {
+            //prl = prob[i].cond.length
             for (let j = 0; j < prob[i].cond.length; j++) {
-                if (prob[i].cond[j].variable == node.label && prob[i].cond[j].states.name == status) {
-                //if ( prob[i].cond[j].states.name == status) {
-                    distval += prob[i].prob
-                    //console.log("PROB", node.label, status, distval)
-                    break
+                if (prob[i].cond[j].variable == node.label) {
+                    if (prob[i].cond[j].states.name == status) {
+                        distval += prob[i].prob
+                        prl++
+                        break
+                    }
                 }
             }
-           // distval /= prob[i].cond.length
+            //distval /= prob[i].cond.length
         }
+        distval /= prl
     }
     return (distval)
+}
+
+export const getBayesjsStructure = (graph) => {
+    const network = {}
+    /**
+     {
+        id: 'Node ID',
+        states: ['State1', 'State2', ...,'StateN'],
+        parents: ['Parent1','Parent2','ParentN'],
+        cpt: {
+        when: { 'Parent1': 'StatusP1', 'Parent2': 'StatusP2' },
+        then: { State1: 0.5, State2: 0.5,...,StateN:0.0 },
+      }
+    }
+    */
+    const nodes = graph.nodes
+    for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        const index = node.data.findIndex((item) => item.status)
+        const bjsnode = {}
+        bjsnode.id = node.label
+        bjsnode.states =[]
+        for (let i = 0; i < node.data[index].status.length; i++)
+            bjsnode.states.push(node.data[index].status[i].name)
+        bjsnode.parents = []
+        bjsnode.cpt = []
+        // Get parent from dist
+        const dist = node.data[index].distribution
+        for (let j = 0; j < dist.length; j++) {
+            const cond = dist[i].cond
+            for (let k = 0; k < cond.length; k++) {
+                const found = bjsnode.parents.find((item)=> item == cond[k].variable)
+                if (k > 0 && !found)
+                    bjsnode.parents.push(cond[k].variable)
+                    
+            }
+
+        }
+        bjsnode.cpt = getCPT(dist, node.data[index].status.length)
+        network[bjsnode.id] = bjsnode
+    }
+    return(network)
+}
+
+const getCPT = (dist,slength) => {
+    let cpt
+    if (dist.length == slength) {
+        cpt = {}
+        for (let i = 0; i < dist.length; i++) {
+            cpt[dist[i].cond[0].states.name] = dist[i].prob
+        }
+    } else {
+        cpt = []
+        let whenobj = {}
+        let thenobj = {}
+        for (let i = 0; i < dist.length; i++) {
+            const cond = dist[i].cond
+            const states = cond[0].states
+            const k = i % slength
+            for (let j = 1; j < cond.length; j++) {
+                whenobj[cond[j].variable] = cond[j].states.name
+                thenobj[states.name] = dist[i].prob
+                if (k == (slength - 1) && j == (cond.length-1)) {
+                    const storethen = JSON.parse(JSON.stringify(thenobj))
+                    const storewhen = JSON.parse(JSON.stringify(whenobj))
+                    //console.log("STORE K THEN WHEN", dist.length,slength,k,i, storewhen,storethen)
+                    cpt.push({ when: whenobj, then: storethen })
+                    thenobj = {}
+                    whenobj = {}
+                }
+            }
+        }
+    }
+    return cpt
 }
 
 export let getDefaultProperties = (typeOptions, options) => {

@@ -3,7 +3,7 @@
 
 import { onMount} from "svelte";
 
-import {dragElement} from '../components/GraphUtils'
+import {dragElement} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDataMenuContainer'
@@ -15,6 +15,8 @@ export let filterKey = []
 
 
 export let panel = []
+export let graph = {nodes:[],edges:[]}
+
 
 
 let newkey = ''

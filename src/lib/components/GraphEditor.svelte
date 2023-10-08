@@ -50,6 +50,7 @@
 	// LOCAL VARS
 	let inListener = false
 	let outListener = false	
+	let resListener = false
 	let zoom = 1
 	
 	onMount(async () => {  
@@ -68,6 +69,7 @@
 			svwidth = options.svwidth
 		if(options.svheight)
 			svheight = options.svheight
+		console.log("DATACOMP *********",datacomp)
 		nodePropsVals.data = loadData(datacomp)
 
 		
@@ -81,6 +83,7 @@
    const addZoomListener = async ()=>{
 		const zoomins = document.getElementsByClassName("zoom-in")
 		const zoomouts = document.getElementsByClassName("zoom-out")
+		const resets = document.getElementsByClassName("reset")
 		const dropzone = document.getElementById("drop_zone")
 		if(zoomins.length >0 && !inListener){
 			zoomins.item(0).addEventListener("mousedown", function() {
@@ -102,6 +105,14 @@
 				})
 			}
 		}
+		if(resets.length >0 && !resListener){
+			resets.item(0).addEventListener("mousedown", resetListener)
+		    resListener = true
+		}
+	}
+
+	const resetListener = async(ev:any)=>{
+		console.log("RESET LISTENER")
 	}
 
 	/**
@@ -551,7 +562,7 @@
 	id="drop_zone"
 	on:contextmenu={onContextMenu}
 	class="editor-container"
-	style="--width:{svwidth+'px'};--height:{svheight+'px'};">
+	style="--width:{svwidth+'px'};--height:{svheight+'px'};position:relative;">
 
 	<Svelvet  bind:zoom={zoom} minimap controls id="GRAPH-CANVAS">
 		{#each defaultNodes as node,index}

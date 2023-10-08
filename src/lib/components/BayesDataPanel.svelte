@@ -5,7 +5,7 @@ import { onMount} from "svelte";
 
 import {dragElement, 
 		setGraphInitialDistribution,
-		getStatusDistribution} from '../components/GraphUtils'
+		getStatusDistribution} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDataMenuContainer'
@@ -87,10 +87,6 @@ let updateDiscreteValues = ()=>{
 		}
 	}
 }
-
-
-
-
 
 
 </script>

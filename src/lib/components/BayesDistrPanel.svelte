@@ -3,7 +3,7 @@
 
 import { onMount} from "svelte";
 
-import {dragElement, getDistributionArray1} from '../components/GraphUtils'
+import {dragElement, getArrayFromDistribution} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -49,6 +49,39 @@ let defDist = (ev:any|undefined)=>{
 		}
 	}
 	node = node*/
+	index = node.data.findIndex((item:any)=>item.distribution)
+	const arrayDist = getArrayFromDistribution(node,index)
+	const dataset = ev.target.dataset
+	const row = dataset.row
+	const col = dataset.col
+	const status = arrayDist.distarray[row].array[0]
+	const variables = arrayDist.header.filter((item:any)=>!item.includes('='))
+	const pLength = variables.length
+	variables.push(node.label)
+	const states = []
+	for(let i=0; i<pLength;i++){
+		states[i]=arrayDist.distarray[row].array[i]
+	}
+	states[pLength]=arrayDist.header[col].split('=')[1]
+	//console.log("DEF DIST",arrayDist,node.data[index].distribution)
+	//console.log("DEF DIST",node.label,status,dataset.row,dataset.col,ev.target.value,variables.reverse(),states.reverse())
+	// Update data didtribution
+	for(let i=0; i<node.data[index].distribution.length;i++){
+		const dist = node.data[index].distribution[i]
+		let match = true
+		for(let j=0;j<dist.cond.length;j++){
+			const cond = dist.cond[j]
+			const index = variables.findIndex((item:any)=> item == cond.variable)
+			//console.log("INDEX",index,cond.states.name,variables)
+			if(index > -1){
+				if(cond.states.name != states[index])
+					match = false
+			}
+		}
+		if(match)
+			dist.prob = Number(ev.target.value)
+	}
+	node = node
 
 }
 
@@ -68,17 +101,17 @@ const isNumber = (value:any)=>{
 			{#if node.data }
 				{#if node.data[index].distribution}
 						<tr>
-							{#each getDistributionArray1(node,index).header as col}
+							{#each getArrayFromDistribution(node,index).header as col,idx1}
 								<th align='left'>{col}</th>
 							 {/each}
 						</tr>
-					  {#each getDistributionArray1(node,index).distarray as row}
+					  {#each getArrayFromDistribution(node,index).distarray as row, index}
 						  <tr>
-							{#each row as col,index}
+							{#each row.array as col,i}
 								{#if !isNumber(col)}
 									<td>{col}</td>
 								{:else}
-									<td><input size="6" type="text" name={'NW-'+node.id+'-'+row[0]} value={col} on:change={defDist} /></td>
+									<td><input size="6" type="text" name={'NW-'+node.id+'_'+i} data-col={i} data-row={index} value={col} on:change={defDist} /></td>
 								{/if}
 							{/each}
 						  </tr>

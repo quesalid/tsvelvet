@@ -2,11 +2,11 @@
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
 import { Node, Svelvet, Anchor, Resizer,ThemeToggle } from 'svelvet';
 import { onMount} from "svelte";
-import ContextMenu from '../components/ContextMenu.svelte'
-import { utilAddNode, utilAddAnchor} from '../components/GraphUtils.js'
-import InnerNode from '../components/InnerNode.svelte'
-import DataMenu from '../components/DataMenu.svelte'
-import CustomEdge from '../components/CustomEdge.svelte'
+import ContextMenu from './ContextMenu.svelte'
+import { utilAddNode, utilAddAnchor} from './GraphUtils.js'
+import InnerNode from './InnerNode.svelte'
+import DataMenu from './DataMenu.svelte'
+import CustomEdge from './CustomEdge.svelte'
 
 export let id: string|any = 'defaultSubgraphMenuContainer'
 export let node: any = {data:[{subgraph:{nodes:[],edges:[]}}]}

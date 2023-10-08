@@ -2,7 +2,7 @@
 
 import { onMount} from "svelte";
 import {dragElement,
-		getDefaultProperties} from '../components/GraphUtils'
+		getDefaultProperties} from './GraphUtils'
 
 export let id = 'defaultContextMenu'
 export let add = (ev:any|undefined)=>console.log("ADD NODE")

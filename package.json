@@ -25,6 +25,7 @@
     "vite": "^4.3.2"
   },
   "dependencies": {
+    "bayesjs": "^0.6.5",
     "path": "^0.12.7",
     "svelvet": "^8.1.0",
     "url": "^0.11.1",

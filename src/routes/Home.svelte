@@ -43,6 +43,7 @@
 		{type:'text',name:'description',option:'LINE'},
 		{type:'text',name:'name',option:'MACHINE'},
 		{type:'text',name:'description',option:'MACHINE'},
+		{type:'text',name:'supplier',option:'MACHINE'},
 	]
 
 	// LIST OF DATA FIELDS NOT EDITABLE
@@ -86,7 +87,7 @@
 </script>
 
 	<GraphEditor bind:graph={graph} typeOptions={typeOptions}  bind:editnode={editnode} innernode={innernode} options={options}>
-		<!--IsaDataPanel id="defaultDataMenuContainer" bind:node={editnode} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
+		<!--IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
 		<BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 

@@ -3,7 +3,7 @@
 
 import { onMount} from "svelte";
 
-import {dragElement} from '../components/GraphUtils'
+import {dragElement} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDataMenuContainer'
