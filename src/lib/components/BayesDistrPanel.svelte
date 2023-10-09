@@ -3,7 +3,7 @@
 
 import { onMount} from "svelte";
 
-import {dragElement, getArrayFromDistribution, getStatusDistribution} from './GraphUtils'
+import {dragElement, getArrayFromDistribution, getStatusDistribution,updateAllDValues} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -34,30 +34,7 @@ onMount(async () => {
 
 const closeMenu = async(ev:any)=>{
 	// UPDATE ALL DiscreteValue COMPONENTS
-	const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
-	for(let i=0;i<dvComponents.length;i++){
-		const element = dvComponents[i]
-		const idstr = element.id
-		const idarr = idstr.split('-')
-		let id = ''
-		for(let j=1;j<idarr.length-1;j++){
-			if(j==1)
-				id+= idarr[j]
-			else
-				id+= '-'+idarr[j]
-		}
-		const status = idarr[idarr.length-1]
-		const found = graph.nodes.find((item:any)=>item.id == id)
-		let variable = ''
-		if(found)
-			variable = found.label
-		const item = {id:id,status:status,variable:variable}
-		const value = getStatusDistribution(graph,found,item.status)
-		const valueEvent = new CustomEvent("changevalue", { detail: {value:!isNaN(value)?value:0.0} });
-		if(element){
-			element.dispatchEvent(valueEvent)
-		}
-	}
+	updateAllDValues(document,graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
 }

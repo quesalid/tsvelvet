@@ -1,10 +1,13 @@
 <script lang="ts">
 	
 	import {onMount} from "svelte"
+	import {updateAllDValues} from './GraphUtils'
 
 	export let status: any
 	export let value : any
 	export let node: any
+	export let graph: any = {nodes:[],edges:[]}
+
 	
 	onMount(()=>{
 		const element = document.getElementById('NW-'+node.id+'-'+status.name)
@@ -33,7 +36,15 @@
 
 	const statusChecked = (ev:any)=>{
 		const element = ev.target
-		console.log("CHECKED",element.id, status, node)
+		const name = node.label
+		// GET GIVEN STATUS
+		const given = {}
+		if(ev.target.checked)
+			given[name] = status.name
+		console.log("CHECKED", status.name, node.label,given)
+		//const given[status.name] = 
+		// UPDATE ALL DiscreteValue COMPONENTS
+		updateAllDValues(document,graph,given)
 	}
 </script>
 

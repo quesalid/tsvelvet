@@ -688,12 +688,12 @@ const buildStatusArray = (node, parents) => {
  * @param {any} status status of random variable
  * @returns
  */
-export const getStatusDistribution = (graph, node, status) => {
+export const getStatusDistribution = (graph, node, status, given = {}) => {
     // UPDATE DISTRIBUTION
     setGraphInitialDistribution(graph)
     const bjgraph = getBayesjsStructure(graph)
     //console.log("NODE STATUS RESULTS BJGRAPH",bjgraph)
-    const results = inferAll(bjgraph, { force: true })
+    const results = inferAll(bjgraph,given, { force: true })
     //console.log("NODE STATUS RESULTS", node.label,status,results[node.label][status])
     const distval = results[node.label][status]
     return (distval)
@@ -852,4 +852,30 @@ export let getDefaultPropertiesNames = () => {
     return(nodePropNames)
 }
 
+export const updateAllDValues = (document, graph, given = {}) => {
+    const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
+    for (let i = 0; i < dvComponents.length; i++) {
+        const element = dvComponents[i]
+        const idstr = element.id
+        const idarr = idstr.split('-')
+        let id = ''
+        for (let j = 1; j < idarr.length - 1; j++) {
+            if (j == 1)
+                id += idarr[j]
+            else
+                id += '-' + idarr[j]
+        }
+        const status = idarr[idarr.length - 1]
+        const found = graph.nodes.find((item) => item.id == id)
+        let variable = ''
+        if (found)
+            variable = found.label
+        const item = { id: id, status: status, variable: variable }
+        const value = getStatusDistribution(graph, found, item.status,given)
+        const valueEvent = new CustomEvent("changevalue", { detail: { value: !isNaN(value) ? value : 0.0 } });
+        if (element) {
+            element.dispatchEvent(valueEvent)
+        }
+    }
+}
 

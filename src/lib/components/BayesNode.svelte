@@ -45,7 +45,7 @@ onMount(()=>{
 			{#if node.data && index != -1}
 				<div class="dscrete-container">
 				{#each node.data[index].status as Status, i}
-					<DiscreteValue bind:node={node} bind:status={Status} bind:value={value[i]}/>
+					<DiscreteValue graph={graph} bind:node={node} bind:status={Status} bind:value={value[i]}/>
 				{/each}	
 				</div>
 			{/if}
