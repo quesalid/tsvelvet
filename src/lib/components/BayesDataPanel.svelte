@@ -46,20 +46,27 @@ const closeMenu = (ev:any)=>{
 
 
 let defVar = (ev:any|undefined)=>{
+	// ADD NEW STATUS TO NODE
 	index = node.data.findIndex((item:any)=>item.status)
 	if(index >-1){
-		const status = {name:'',description:''}
+		// generate unique inital name for status
+		let name = 'STATUS'
+		let i = 0
+		while(node.data[index].status.findIndex((item:any)=>item.name==name+i)>-1){
+			i++
+		}
+		name = name+i
+		const status = {name:name,description:''}
 		node.data[index].status.push(status)
 		if(status.name.length >0)
 			setGraphInitialDistribution(graph)
 	}
 	node = node
 
-	// UPDATE DiscreteValue COMPONENTS
-	updateDiscreteValues()
 }
 
 let delVar = (ev:any|undefined)=>{
+	// DELETE STATUS FROM NODE
 	const id = ev.target.name
 	const idx = id.split('-')[1]
 	node.data[index].status.splice(idx,1)
@@ -67,16 +74,12 @@ let delVar = (ev:any|undefined)=>{
 	// RE-INITIALIZE DISTRIBUTION
 	setGraphInitialDistribution(graph)
 	node = node
-	// UPDATE DiscreteValue COMPONENTS
-	updateDiscreteValues()
 }
 
 let modVar = (ev:any|undefined)=>{
-	// RE-INITIALIZE DISTRIBUTION
+	// MODIFY STATUS NAME
 	index = node.data.findIndex((item:any)=>item.status)
 	const idx = ev.target.name.split('-')[1]
-	//setGraphInitialDistribution(graph)
-	updateDiscreteValues()
 }
 
 let updateDiscreteValues = async ()=>{

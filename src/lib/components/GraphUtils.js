@@ -480,7 +480,8 @@ export const getInitialDistribution = (node, graph) => {
 
 
 const getDistChange = (dist,olddist,d,od) => {
-   
+
+    console.log("GET DIST CHANGE", dist, olddist, d, od)
     for (let i = 0; i < olddist.cond.length; i++) {
         const index = dist.cond.findIndex((item) => item.variable == olddist.cond[i].variable)
         if (index == -1)
@@ -526,24 +527,24 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                         switch (getDistChange(ds, ods, dist, node.data[index].distribution)) {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
-                                //console.log("NODE ADDED")
+                                console.log("NODE ADDED")
                                 node.data[index].distribution = dist
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
-                                //console.log("NODE REMOVED")
+                                console.log("NODE REMOVED")
                                 node.data[index].distribution = dist
                                 break
                             case "STATUSADDED":
-                                //console.log("STATUS ADDED")
+                                console.log("STATUS ADDED")
                                 node.data[index].distribution = dist
                                 break
                             case "STATUSREMOVED":
-                                //console.log("STATUS REMOVED")
+                                console.log("STATUS REMOVED")
                                 node.data[index].distribution = dist
                                 break
                             default:
-                                //console.log("NO CHANGE")
+                                console.log("NO CHANGE")
                                 break
                         }
                     }

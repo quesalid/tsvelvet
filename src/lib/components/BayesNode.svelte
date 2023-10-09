@@ -13,23 +13,18 @@ export let dataNodeClicked = (ev:any)=>{console.log("DATANODE CLICKED")}
 export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
 
 let index = 0
-let value = [0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8]
 
 
 
 onMount(()=>{
-	const states = node.data[index].status
-	value = Array(states.length)
-	for(let i=0;i<states.length;i++){
-		value[i] = getStatusDistribution(graph,node,states[i].name)
-		const status = states[i]
-		const valueEvent = new CustomEvent("changevalue", { detail: {value:getStatusDistribution(graph,node,status.name)} });
-		const element = document.getElementById('NW-'+node.id+'-'+status.name)
-		if(element){
-			element.dispatchEvent(valueEvent)
-		}
-	}
+	
 })
+
+const getVal = (i:any)=>{
+	const states = node.data[index].status
+	const value =  getStatusDistribution(graph,node,states[i].name)
+	return value
+}
 
 </script>
 
@@ -45,7 +40,7 @@ onMount(()=>{
 			{#if node.data && index != -1}
 				<div class="dscrete-container">
 				{#each node.data[index].status as Status, i}
-					<DiscreteValue graph={graph} bind:node={node} bind:status={Status} bind:value={value[i]}/>
+					<DiscreteValue graph={graph} bind:node={node} bind:status={Status} value={getVal(i)}/>
 				{/each}	
 				</div>
 			{/if}
