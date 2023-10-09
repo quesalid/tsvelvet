@@ -3,7 +3,7 @@
 
 import { onMount} from "svelte";
 
-import {dragElement, getArrayFromDistribution} from './GraphUtils'
+import {dragElement, getArrayFromDistribution, getStatusDistribution} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -33,22 +33,37 @@ onMount(async () => {
  })
 
 const closeMenu = async(ev:any)=>{
+	// UPDATE ALL DiscreteValue COMPONENTS
+	const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
+	for(let i=0;i<dvComponents.length;i++){
+		const element = dvComponents[i]
+		const idstr = element.id
+		const idarr = idstr.split('-')
+		let id = ''
+		for(let j=1;j<idarr.length-1;j++){
+			if(j==1)
+				id+= idarr[j]
+			else
+				id+= '-'+idarr[j]
+		}
+		const status = idarr[idarr.length-1]
+		const found = graph.nodes.find((item:any)=>item.id == id)
+		let variable = ''
+		if(found)
+			variable = found.label
+		const item = {id:id,status:status,variable:variable}
+		const value = getStatusDistribution(graph,found,item.status)
+		const valueEvent = new CustomEvent("changevalue", { detail: {value:!isNaN(value)?value:0.0} });
+		if(element){
+			element.dispatchEvent(valueEvent)
+		}
+	}
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
 }
 
 
 let defDist = (ev:any|undefined)=>{
-	/*index = node.data.findIndex((item:any)=>item.distribution)
-	const idx = ev.target.name.split('-')[1]
-	if(index >-1 && !isNaN(idx) && node.data[index].status[idx]){
-		const element = document.getElementById('NW-'+node.id+'-'+node.data[index].status[idx].name)
-		const valueEvent = new CustomEvent("changevalue", { detail: {value:!isNaN(ev.target.value)?ev.target.value:0.0} });
-		if(element){
-			element.dispatchEvent(valueEvent)
-		}
-	}
-	node = node*/
 	index = node.data.findIndex((item:any)=>item.distribution)
 	const arrayDist = getArrayFromDistribution(node,index)
 	const dataset = ev.target.dataset
@@ -63,8 +78,6 @@ let defDist = (ev:any|undefined)=>{
 		states[i]=arrayDist.distarray[row].array[i]
 	}
 	states[pLength]=arrayDist.header[col].split('=')[1]
-	//console.log("DEF DIST",arrayDist,node.data[index].distribution)
-	//console.log("DEF DIST",node.label,status,dataset.row,dataset.col,ev.target.value,variables.reverse(),states.reverse())
 	// Update data didtribution
 	for(let i=0; i<node.data[index].distribution.length;i++){
 		const dist = node.data[index].distribution[i]

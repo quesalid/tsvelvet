@@ -25,6 +25,10 @@ let newtype='text'
 let newvalue= ''
 let index = 0
 
+const sleep = function (ms:any) {
+						return new Promise(resolve => setTimeout(resolve, ms));
+						}
+
 
 onMount(async () => {  
 	const dragable = document.getElementById("dragable"+id);
@@ -75,7 +79,7 @@ let modVar = (ev:any|undefined)=>{
 	updateDiscreteValues()
 }
 
-let updateDiscreteValues = ()=>{
+let updateDiscreteValues = async ()=>{
 	// UPDATE DiscreteValue COMPONENTS
 	const states = node.data[index].status
 	for(let i=0;i<states.length;i++){
@@ -85,6 +89,7 @@ let updateDiscreteValues = ()=>{
 		if(element){
 			element.dispatchEvent(valueEvent)
 		}
+		await sleep(100)
 	}
 }
 

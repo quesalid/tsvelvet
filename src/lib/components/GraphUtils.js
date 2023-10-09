@@ -1,5 +1,6 @@
 // https://github.com/bayesjs/bayesjs#readme
 import { v4 as uuidv4 } from 'uuid';
+import { inferAll } from 'bayesjs';
 
 
 /**
@@ -579,9 +580,6 @@ export const getArrayFromDistribution = (node, index) => {
    
 }
 
-export const getDistributionArray2 = (node, index) => {
-
-}
 
 
 const getRetArrayHeader = (distribution, states, variable) => {
@@ -693,29 +691,11 @@ const buildStatusArray = (node, parents) => {
 export const getStatusDistribution = (graph, node, status) => {
     // UPDATE DISTRIBUTION
     setGraphInitialDistribution(graph)
-    console.log("BAYES JS STRUCTURE",getBayesjsStructure(graph))
-    // GET BAYESJS STRUCTURE
-    let distval = 0.0
-    const index = node.data.findIndex((item) => item.distribution)
-    if (index > -1) {
-        const prob = node.data[index].distribution
-        //console.log("NODE DISTRIBUTION",node.label, prob)
-        let prl = 0
-        for (let i = 0; i < prob.length; i++) {
-            //prl = prob[i].cond.length
-            for (let j = 0; j < prob[i].cond.length; j++) {
-                if (prob[i].cond[j].variable == node.label) {
-                    if (prob[i].cond[j].states.name == status) {
-                        distval += prob[i].prob
-                        prl++
-                        break
-                    }
-                }
-            }
-            //distval /= prob[i].cond.length
-        }
-        distval /= prl
-    }
+    const bjgraph = getBayesjsStructure(graph)
+    //console.log("NODE STATUS RESULTS BJGRAPH",bjgraph)
+    const results = inferAll(bjgraph, { force: true })
+    //console.log("NODE STATUS RESULTS", node.label,status,results[node.label][status])
+    const distval = results[node.label][status]
     return (distval)
 }
 

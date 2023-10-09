@@ -1,6 +1,8 @@
 <script lang="ts">
     
 import {onMount} from "svelte"
+    import App from "../../App.svelte";
+    import BayesDataPanel from "./BayesDataPanel.svelte";
 import DiscreteValue from "./DiscreteValue.svelte";
 import {getStatusDistribution} from './GraphUtils.js'
 
@@ -11,13 +13,15 @@ export let dataNodeClicked = (ev:any)=>{console.log("DATANODE CLICKED")}
 export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
 
 let index = 0
-let value = 0.8
+let value = [0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8]
 
 
 
 onMount(()=>{
 	const states = node.data[index].status
+	value = Array(states.length)
 	for(let i=0;i<states.length;i++){
+		value[i] = getStatusDistribution(graph,node,states[i].name)
 		const status = states[i]
 		const valueEvent = new CustomEvent("changevalue", { detail: {value:getStatusDistribution(graph,node,status.name)} });
 		const element = document.getElementById('NW-'+node.id+'-'+status.name)
@@ -40,8 +44,8 @@ onMount(()=>{
 			<div>{node.nodetype}</div>
 			{#if node.data && index != -1}
 				<div class="dscrete-container">
-				{#each node.data[index].status as Status, index}
-					<DiscreteValue bind:node={node} bind:status={Status} bind:value={value}/>
+				{#each node.data[index].status as Status, i}
+					<DiscreteValue bind:node={node} bind:status={Status} bind:value={value[i]}/>
 				{/each}	
 				</div>
 			{/if}
