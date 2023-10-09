@@ -879,3 +879,26 @@ export const updateAllDValues = (document, graph, given = {}) => {
     }
 }
 
+export const getAllCheckedStatus = (document) => {
+    let given = {}
+    const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
+    for (let i = 0; i < dvComponents.length; i++) {
+        const element = dvComponents[i]
+        const idstr = element.id
+        const idarr = idstr.split('-')
+        let id = ''
+        for (let j = 1; j < idarr.length - 1; j++) {
+            if (j == 1)
+                id += idarr[j]
+            else
+                id += '-' + idarr[j]
+        }
+        const status = idarr[idarr.length - 1]
+        let variable = element.dataset.node
+        const found = Array.from(element.children).find((item)=>item.tagName == 'INPUT')
+        if (found && found.checked)
+            given[variable] = status
+    }
+    return given
+}
+

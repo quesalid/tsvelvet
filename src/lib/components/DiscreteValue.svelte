@@ -1,7 +1,7 @@
 <script lang="ts">
 	
 	import {onMount} from "svelte"
-	import {updateAllDValues} from './GraphUtils'
+	import {updateAllDValues,getAllCheckedStatus} from './GraphUtils'
 
 	export let status: any
 	export let value : any
@@ -38,17 +38,17 @@
 		const element = ev.target
 		const name = node.label
 		// GET GIVEN STATUS
-		const given = {}
-		if(ev.target.checked)
+		const given = getAllCheckedStatus(document)
+		if(ev.target.checked){
+			// ADD ALL CHECKED STATUS
 			given[name] = status.name
-		console.log("CHECKED", status.name, node.label,given)
-		//const given[status.name] = 
+		}
 		// UPDATE ALL DiscreteValue COMPONENTS
 		updateAllDValues(document,graph,given)
 	}
 </script>
 
-<div class="bayes-node-dicrete-value" id="{'NW-'+node.id+'-'+status.name}">
+<div class="bayes-node-dicrete-value" id="{'NW-'+node.id+'-'+status.name}" data-node={node.label}>
    
 	<label for="meter-{status.name}">{status.name}</label>
 	<meter id="meter-{status.name}" value="{value}">{getPercent(value)}</meter>
