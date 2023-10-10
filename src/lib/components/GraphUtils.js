@@ -112,13 +112,13 @@ export const utilAddAnchor = (node,edges=[],anchorPre='') => {
 			propsArray['connections'] = connections
 		}*/
         propsArray['id'] = 'INPUT' + anchorPre + '-' + i + '-' + node.id
-        const sources = edges.filter((item) => item.destination == ('N-' + node.id))
-        if (sources) {
-            for (let i = 0; i < sources.length; i++) {
-                const src = sources[i]
+        const destinations = edges.filter((item) => item.destination == ('N-' + node.id))
+        if (destinations) {
+            for (let i = 0; i < destinations.length; i++) {
+                const dest = destinations[i]
                 const connection = []
-                connection.push(src.source.substring(2))
-                connection.push(src.sourceanchor.substring(2))
+                connection.push(dest.source.substring(2))
+                connection.push(dest.sourceanchor.substring(2))
                 connections.push(connection)
             }
             propsArray['connections'] = connections
@@ -470,7 +470,6 @@ export const getInitialDistribution = (node, graph) => {
         const states = node.data[index].status
         const statusArray = buildStatusArray(node,parents)
         const cases = allPossibleCases(statusArray)
-        console.log("CASES", cases)
         for (let i = 0; i < cases.length; i++) {
             const dist = { cond: cases[i], prob: 1/states.length}
             if (statusArray.length == 1)
@@ -531,23 +530,23 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
                                 node.data[index].distribution = dist
-                                console.log("NODE ADDED", node.data[index].distribution)
+                                //console.log("NODE ADDED", node.data[index].distribution)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
-                                console.log("NODE REMOVED")
+                                //console.log("NODE REMOVED")
                                 node.data[index].distribution = dist
                                 break
                             case "STATUSADDED":
-                                console.log("STATUS ADDED")
+                                //console.log("STATUS ADDED")
                                 node.data[index].distribution = dist
                                 break
                             case "STATUSREMOVED":
-                                console.log("STATUS REMOVED")
+                                //console.log("STATUS REMOVED")
                                 node.data[index].distribution = dist
                                 break
                             default:
-                                console.log("NO CHANGE")
+                                //console.log("NO CHANGE")
                                 break
                         }
                     }
@@ -904,5 +903,23 @@ export const getAllCheckedStatus = (document) => {
             given[variable] = status
     }
     return given
+}
+
+export const adjustNodeHeight = (graph) => {
+    for (let i = 0; i < graph.nodes.length; i++) {
+        const node = graph.nodes[i]
+        const nwuid = 'NW-' + node.id
+        const wrapper = document.getElementById(nwuid)
+        if (wrapper) {
+            const height = wrapper.getBoundingClientRect().height
+            console.log("ADJUST", node.label, height)
+            // GET SVG NODE
+            const svgnode = document.getElementById('N-' + node.id)
+            if (svgnode) {
+                svgnode.style.height = height + 'px'
+                console.log("ADJUST SVG NODE", svgnode)
+            }
+        }
+    }
 }
 

@@ -5,7 +5,8 @@ import { onMount} from "svelte";
 
 import {dragElement, 
 		setGraphInitialDistribution,
-		getStatusDistribution} from './GraphUtils'
+		getStatusDistribution,
+		adjustNodeHeight} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDataMenuContainer'
@@ -93,8 +94,9 @@ let updateDiscreteValues = async ()=>{
 		if(element){
 			element.dispatchEvent(valueEvent)
 		}
-		await sleep(100)
+		await sleep(50)
 	}
+	adjustNodeHeight(graph)
 }
 
 

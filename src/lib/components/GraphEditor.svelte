@@ -21,7 +21,8 @@
 		createLoadObserver, 
 		loadData,
 		getDefaultProperties,
-		getDefaultPropertiesNames} from './GraphUtils.js'
+		getDefaultPropertiesNames,
+	    adjustNodeHeight} from './GraphUtils.js'
 
 	
 	// BINDINGS
@@ -69,7 +70,6 @@
 			svwidth = options.svwidth
 		if(options.svheight)
 			svheight = options.svheight
-		console.log("DATACOMP *********",datacomp)
 		nodePropsVals.data = loadData(datacomp)
 
 		
@@ -194,6 +194,7 @@
 		currentnode = nodeProps['id']
 		graph = updateGraph()
 		await redrawGraph(e,graph.nodes,graph.edges)
+		adjustNodeHeight(graph)
 		//addZoomListener()
 
 	}
@@ -214,6 +215,7 @@
 		}
 		graph = updateGraph()
 		await redrawGraph(e,graph.nodes,graph.edges)
+		adjustNodeHeight(graph)
 		
 	}
 
@@ -308,6 +310,7 @@
 		addZoomListener()
 	}
 
+
 	/**
 	 * Add listener to all anchors
 	 * @param tag tag to filter anchors
@@ -354,6 +357,7 @@
 		edges = graph.edges
 		setGraphInitialDistribution(graph)
 		await redrawGraph(e,nodes,edges)
+		adjustNodeHeight(graph)
 	}
 
 	/**
@@ -375,33 +379,35 @@
 		let id = ''
 		while(element && element.nodeName != 'svg')
 			element = element.parentNode
-		console.log("SVG",element)
 		// GET INPUT/OUPUT ANCHORS
-		/*
+		
 		const children = element.children
 		for(let i=0;i<children.length;i++){
 			const child = children[i]
 			if(child.nodeName == 'path' && child.id){
 				id = child.id
-				const splitted = child.id.split('+')
+				/*const splitted = child.id.split('+')
 				const input = splitted[0].split('/')[0]
 				const destination = splitted[0].split('/')[1]
 				const output = splitted[1].split('/')[0]
 				const source = splitted[1].split('/')[1]
 				console.log("PATH",input,destination, output,source)
-				console.log("EDGES",edges,child.id)
+				console.log("EDGES",edges,child.id)*/
 			}
-		}*/
+		}
 		if(element){
 			   element.remove()
+			   edges = edges.filter((item:any)=> item.id != id)
+			   console.log("SVG",element,edges)
 		}
 		// UPDATE GRAPH EDGES
-		edges = edges.filter((item:any)=> item.id != id)
+		//edges = edges.filter((item:any)=> item.id != id)
 		graph.edges = edges
 		// REDRAW GRAPH
 		element = document.getElementById("file-db-input")
 		setGraphInitialDistribution(graph)
 		redrawGraph(element,graph.nodes,edges)
+		adjustNodeHeight(graph)
 	}
 
 	
@@ -462,6 +468,7 @@
 		edges = graph.edges
 		setGraphInitialDistribution(graph)
 		await redrawGraph(element,nodes,edges)
+		adjustNodeHeight(graph)
 		
 	}
 

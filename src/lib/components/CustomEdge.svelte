@@ -23,15 +23,15 @@
 					refY="5"
 					markerWidth="6"
 					markerHeight="6"
-					orient="auto"
+					orient="auto-start-reverse"
 				>
+					<!--path d="M 0 0 L 10 5 L 0 10 z" fill="#f00"/-->
 					<path d="M 0 0 L 10 5 L 0 10 z" fill="#f00"/>
 				</marker>
 			</defs>
 			<path
 				d={path}
-				marker-start={isBidirectional ? 'url(#arrow)' : ''}
-				marker-end="url(#arrow)"
+				marker-start="url(#arrow)"
 			/>
 			<button  on:click={destroyEdge} slot="label">
 				{label}
