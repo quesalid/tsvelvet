@@ -377,6 +377,7 @@
 			element = element.parentNode
 		console.log("SVG",element)
 		// GET INPUT/OUPUT ANCHORS
+		/*
 		const children = element.children
 		for(let i=0;i<children.length;i++){
 			const child = children[i]
@@ -390,7 +391,7 @@
 				console.log("PATH",input,destination, output,source)
 				console.log("EDGES",edges,child.id)
 			}
-		}
+		}*/
 		if(element){
 			   element.remove()
 		}
@@ -521,6 +522,7 @@
 		// Query the dom to get all edges
 		let edgeArray:any
 		const edgewrappers = document.getElementsByClassName("edges-wrapper")
+		console.log("EDGEWRAPPERS",edgewrappers)
 		edgeArray = Array.from(edgewrappers)
 		for(let i=0;i<edgeArray.length;i++){
 			let pathArray:any
@@ -531,7 +533,7 @@
 			pathArray = Array.from(paths)
 			for(let j=0;j<pathArray.length;j++){
 				// Split source destination
-				if(pathArray[j].id){
+				if(pathArray[j].id && pathArray[j].id.includes('+')){
 					const splitted = pathArray[j].id.split('+')
 					const destsplit = splitted[0].split('/')
 					const sourcesplit = splitted[1].split('/')

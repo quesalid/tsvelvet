@@ -1,4 +1,7 @@
+// BAYES NETWORKS
 // https://github.com/bayesjs/bayesjs#readme
+// NEURAL NETWORKS
+// https://github.com/martinjm97/ENNUI
 import { v4 as uuidv4 } from 'uuid';
 import { inferAll } from 'bayesjs';
 
@@ -467,6 +470,7 @@ export const getInitialDistribution = (node, graph) => {
         const states = node.data[index].status
         const statusArray = buildStatusArray(node,parents)
         const cases = allPossibleCases(statusArray)
+        console.log("CASES", cases)
         for (let i = 0; i < cases.length; i++) {
             const dist = { cond: cases[i], prob: 1/states.length}
             if (statusArray.length == 1)
@@ -481,7 +485,6 @@ export const getInitialDistribution = (node, graph) => {
 
 const getDistChange = (dist,olddist,d,od) => {
 
-    console.log("GET DIST CHANGE", dist, olddist, d, od)
     for (let i = 0; i < olddist.cond.length; i++) {
         const index = dist.cond.findIndex((item) => item.variable == olddist.cond[i].variable)
         if (index == -1)
@@ -527,8 +530,8 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                         switch (getDistChange(ds, ods, dist, node.data[index].distribution)) {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
-                                console.log("NODE ADDED")
                                 node.data[index].distribution = dist
+                                console.log("NODE ADDED", node.data[index].distribution)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
@@ -727,7 +730,7 @@ export const getBayesjsStructure = (graph) => {
         // Get parent from dist
         const dist = node.data[index].distribution
         for (let j = 0; j < dist.length; j++) {
-            const cond = dist[i].cond
+            const cond = dist[j].cond
             for (let k = 0; k < cond.length; k++) {
                 const found = bjsnode.parents.find((item)=> item == cond[k].variable)
                 if (k > 0 && !found)

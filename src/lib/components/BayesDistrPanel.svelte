@@ -43,6 +43,7 @@ const closeMenu = async(ev:any)=>{
 let defDist = (ev:any|undefined)=>{
 	index = node.data.findIndex((item:any)=>item.distribution)
 	const arrayDist = getArrayFromDistribution(node,index)
+	console.log("ARRAY DIST",arrayDist)
 	const dataset = ev.target.dataset
 	const row = dataset.row
 	const col = dataset.col

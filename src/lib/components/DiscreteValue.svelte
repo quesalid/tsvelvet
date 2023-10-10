@@ -50,7 +50,9 @@
 
 <div class="bayes-node-dicrete-value" id="{'NW-'+node.id+'-'+status.name}" data-node={node.label}>
    
-	<label for="meter-{status.name}">{status.name}</label>
+	<label class="tooltip" for="meter-{status.name}">{status.name}
+		<span class="tooltiptext">{status.description}</span>
+	</label>
 	<meter id="meter-{status.name}" value="{value}">{getPercent(value)}</meter>
 	<label class="spaced-label" for="meter-{status.name}">{getPercent(value)}</label>
 	<input type="checkbox" id="check-{status.name}" on:change="{statusChecked}" name="check-{status.name}" value="60%">
@@ -69,5 +71,43 @@
 label {
 	font-family:Verdana, Geneva, Tahoma, sans-serif;
 	font-size: smaller;
+}
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

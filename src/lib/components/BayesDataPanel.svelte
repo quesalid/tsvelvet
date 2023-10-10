@@ -41,6 +41,7 @@ const closeMenu = (ev:any)=>{
 	setGraphInitialDistribution(graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
+	 setGraphInitialDistribution(graph)
 	 updateDiscreteValues()
 }
 
