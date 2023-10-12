@@ -88,6 +88,10 @@ const isNumber = (value:any)=>{
 			<span style="margin-right:5px;">DISTRIBUTION  {node.label}</span>
 			<input type="button" value="CLOSE" on:click={closeMenu} />
 		</div>
+		<div class="dist-menu-toolbar">
+			<input type="button" value="EXP" on:click={exp} />
+			<input type="button" value="IMP" on:click={imp} />
+		</div>
 		<table style="width:100%">
 			{#if node.data }
 				{#if node.data[index].distribution}

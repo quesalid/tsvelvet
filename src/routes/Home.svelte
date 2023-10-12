@@ -59,8 +59,9 @@
 
 	const exportData = async ()=>{
 		let expdata = []
-		let namecomp = ''
+		let namecomp = editnode.label
 		const array = editnode.data
+		console.log(editnode.data)
 		for(let i=0;i< array.length;i++){
 			const param = array[i]
 			if(!param.subgraph)

@@ -698,7 +698,9 @@ export const getStatusDistribution = (graph, node, status, given = {}) => {
     //console.log("NODE STATUS RESULTS BJGRAPH",bjgraph)
     const results = inferAll(bjgraph,given, { force: true })
     //console.log("NODE STATUS RESULTS", node.label,status,results[node.label][status])
-    const distval = results[node.label][status]
+    let distval = 0.0
+    if(results[node.label])
+        distval = results[node.label][status]
     return (distval)
 }
 
@@ -922,4 +924,3 @@ export const adjustNodeHeight = (graph) => {
         }
     }
 }
-

@@ -53,6 +53,8 @@
 	let outListener = false	
 	let resListener = false
 	let zoom = 1
+	let x = 0
+	let y = 0
 	
 	onMount(async () => {  
 		defaultNodes = []
@@ -72,9 +74,21 @@
 			svheight = options.svheight
 		nodePropsVals.data = loadData(datacomp)
 
-		
+		await addMouseListener()
 		
 	})
+
+	const addMouseListener = async ()=>{
+		const dropzone = document.getElementById("drop_zone")
+		console.log("ADD MOUSE LISTENER",dropzone)
+		if(dropzone){
+			dropzone.addEventListener("mousemove",  function(e:any) {
+				//console.log("MOUSE LISTENER",e)
+				x = e.clientX
+				y = e.clientY
+			})
+		}
+	}
 
 	
    /**
@@ -112,7 +126,7 @@
 	}
 
 	const resetListener = async(ev:any)=>{
-		console.log("RESET LISTENER")
+		//setZoomValue(1.0)
 	}
 
 	/**
@@ -123,6 +137,11 @@
 		const zoomins = document.getElementsByClassName("zoom-in")
 		const zoomouts = document.getElementsByClassName("zoom-out")
 		const direction = (wanted - zoom > 0)? 'in' : 'out'
+		// LIMIT WANTED ZOOM VALUES
+		if(wanted > 2.0)
+			wanted = 2.0
+		if(wanted < 0.2)
+			wanted = 0.2
 		let clicknum = Math.round(Math.abs((wanted - zoom)/0.1))
 		switch(direction){
 			case 'in':
@@ -590,7 +609,7 @@
 		<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
 	</Svelvet>
 	
-	<ContextMenu bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
+	<ContextMenu bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
 	
 	<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
 	<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>

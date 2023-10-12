@@ -45,6 +45,10 @@ const getVal = (i:any)=>{
 				</div>
 			{/if}
 		</div>
+		<div class="node-body-p">
+			<input id="label" size="5" class="input-footer" value="x:{node.position.x}" type="text" min="0" />
+			<input id="label" size="5" class="input-footer" value="y:{node.position.y}" type="text" min="0" />
+		</div>
 	</div>
 
 <style>

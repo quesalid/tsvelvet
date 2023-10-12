@@ -17,8 +17,14 @@ export let clear = (ev:any|undefined)=>console.log("CLEAR GRAPH")
 export let propArrayVal: any ={}
 export let title = 'GRAPH MENU'
 export let zoom  
+export let x = 1
+export let y = 1
+
 
 const formattedZoom = (zoom)=>{return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(zoom)}
+const getX = ()=>{return x}
+const getY = ()=>{return y}
+
 
 export let typeOptions = [
 	{value:"DEFAULT",options:{level:'level0'}},
@@ -91,7 +97,7 @@ const clearLoc = (event:any)=>{
 <div class="context-menu" id="{id}">
 	<header id="{id+'dragzoneContext'}">
     <div class="context-menu-header">
-		<span>{title} [zoom:{formattedZoom(zoom)}]</span>
+		<span>{title}</span>
 		<input type="button" value="CLOSE" on:click={closeMenu} />
 	</div>
 	 <div class="context-menu-toolbar">
@@ -135,6 +141,11 @@ const clearLoc = (event:any)=>{
 					<option value={Option.value}>{Option.value}</option>
 				{/if}
 			{/each}
+		</div>
+		<div class="context-menu-footer">
+			<input id="label" size="8" class="input-footer" value="zoom:{formattedZoom(zoom)}" type="text" min="0" />
+			<input id="label" size="5" class="input-footer" value="x:{x}" type="text" min="0" />
+			<input id="label" size="5" class="input-footer" value="y:{y}" type="text" min="0" />
 		</div>
 	</div>
 	</header>
@@ -208,6 +219,23 @@ const clearLoc = (event:any)=>{
 	.list-item{
 		width:300px;
 		margin: 10px 3px 10px 3px;
+	}
+	.context-menu-footer{
+		display:flex;
+		justify-content: left;
+		margin-top: 2px;
+		margin-bottom: 2px;
+		margin-left: 2px;
+	}
+
+	.input-footer{
+	-webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+     border-radius: 20px;
+     border: 1px solid #2d9fd9;
+     background-color: #777777;
+	 color: #FFFFFF;
+     padding-left: 10px;
 	}
 
 
