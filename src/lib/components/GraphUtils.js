@@ -444,7 +444,8 @@ export const loadData = (type) => {
     let data = []
     switch (type) {
         case 'BAYES':
-            const bayes = { status: [], distribution:[] }
+            const bayes = {
+                status: [], distribution: [], type: STATETYPE.NONE, params: {} }
             data.push(bayes)
             break
         default:
@@ -914,13 +915,18 @@ export const adjustNodeHeight = (graph) => {
         const wrapper = document.getElementById(nwuid)
         if (wrapper) {
             const height = wrapper.getBoundingClientRect().height
-            console.log("ADJUST", node.label, height)
             // GET SVG NODE
             const svgnode = document.getElementById('N-' + node.id)
             if (svgnode) {
                 svgnode.style.height = height + 'px'
-                console.log("ADJUST SVG NODE", svgnode)
             }
         }
     }
+}
+
+export const STATETYPE = {
+    BOOL: 'BOOL',
+    INT: 'INT',
+    INTERVAL: 'INTERVAL',
+    NONE: 'NONE'
 }

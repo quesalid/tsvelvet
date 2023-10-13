@@ -4,6 +4,7 @@ import {onMount} from "svelte"
     import App from "../../App.svelte";
     import BayesDataPanel from "./BayesDataPanel.svelte";
 import DiscreteValue from "./DiscreteValue.svelte";
+import ContValue from "./ContValue.svelte";
 import {getStatusDistribution} from './GraphUtils.js'
 
 export let node: any
@@ -36,7 +37,12 @@ const getVal = (i:any)=>{
 		</div>
 		<div class="node-body-p">
 			<div class="bayes-node-label">{node.label}</div>
-			<div>{node.nodetype}</div>
+			<div style="display:flex;justify-content:last baseline;align-items: center;">
+				{node.nodetype}
+				{#if node.nodetype == "CONTINUOUS"}
+					<ContValue graph={graph} bind:node={node}/>
+				{/if}
+			</div>
 			{#if node.data && index != -1}
 				<div class="dscrete-container">
 				{#each node.data[index].status as Status, i}
@@ -45,10 +51,10 @@ const getVal = (i:any)=>{
 				</div>
 			{/if}
 		</div>
-		<div class="node-body-p">
+		<!--div class="node-body-p">
 			<input id="label" size="5" class="input-footer" value="x:{node.position.x}" type="text" min="0" />
 			<input id="label" size="5" class="input-footer" value="y:{node.position.y}" type="text" min="0" />
-		</div>
+		</!--div-->
 	</div>
 
 <style>

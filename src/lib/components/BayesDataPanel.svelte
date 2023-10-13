@@ -6,7 +6,8 @@ import { onMount} from "svelte";
 import {dragElement, 
 		setGraphInitialDistribution,
 		getStatusDistribution,
-		adjustNodeHeight} from './GraphUtils'
+		adjustNodeHeight,
+		STATETYPE} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDataMenuContainer'
@@ -25,6 +26,9 @@ let newkey = ''
 let newtype='text'
 let newvalue= ''
 let index = 0
+let keys = []
+let mean = 0
+let variance = 1
 
 const sleep = function (ms:any) {
 						return new Promise(resolve => setTimeout(resolve, ms));
@@ -34,7 +38,8 @@ const sleep = function (ms:any) {
 onMount(async () => {  
 	const dragable = document.getElementById("dragable"+id);
     const dragzone = document.getElementById("dragzone"+id);
-	
+	keys = Object.keys(STATETYPE)
+	console.log(keys)
 	dragElement(dragable, dragzone);
  })
 
@@ -44,6 +49,7 @@ const closeMenu = (ev:any)=>{
 	 dataMenu.style.visibility = "hidden";
 	 setGraphInitialDistribution(graph)
 	 updateDiscreteValues()
+	 console.log("NODE",node.data[index].type,STATETYPE[node.data[index].type])
 }
 
 
@@ -58,7 +64,7 @@ let defVar = (ev:any|undefined)=>{
 			i++
 		}
 		name = name+i
-		const status = {name:name,description:''}
+		const status = {name:name,description:'',value:null}
 		node.data[index].status.push(status)
 		if(status.name.length >0)
 			setGraphInitialDistribution(graph)
@@ -99,32 +105,85 @@ let updateDiscreteValues = async ()=>{
 	adjustNodeHeight(graph)
 }
 
+const changeVal = (ev:any) => {
+	node.data[index].type = ev.target.value
+}
+
+const changeContPar = (ev:any) => {
+	if(ev.target.name == 'mean-input')
+		mean = ev.target.value
+	else
+		variance = ev.target.value
+	// UPDATE NODE DATA
+	if(!isNaN(Number(mean)) && !isNaN(Number(variance)) && node.nodetype == 'CONTINUOUS'){
+		if(!node.data[index].params)
+			node.data[index].params = {}
+		node.data[index].params['mean'] = Number(mean)
+		node.data[index].params['variance'] = Number(variance)
+	}
+	// UPDATE DiscreteValue COMPONENTS
+	const element = document.getElementById('NWC-'+node.id+'-'+node.label)
+	if(element){
+		const valueEvent = new CustomEvent("changevalue", { detail: {mean:mean,variance:variance} });
+		element.dispatchEvent(valueEvent)
+	}
+}
 
 </script>
 
 <div class="data-menu" id="{'dragable'+id}">
 	<header id="{'dragzone'+id}">
 		<div class="data-menu-header" style="--background-color:{node.bgColor}">
-			<span>STATE MENU</span>
+			<span>STATE MENU - {node.nodetype} VARIABLE</span>
 			<input type="button" value="CLOSE" on:click={closeMenu} />
 		</div>
 		 <div class="data-menu-toolbar">
 			<input type="button" value="+" on:click={defVar} />
 			<input type="button" value="EXP" on:click={exp} />
 			<input type="button" value="IMP" on:click={imp} />
+			<div>
+			{#if node.data && index != -1 && node.data[index].type}
+				<label class="tooltip" for="nodetype">TYPE: 
+					<span class="tooltiptext">State value type</span>
+				</label>
+				<select name="nodetype" id="nodetype" on:change={changeVal}>
+					{#each keys as key,i}
+						{#if node.data[index].type == STATETYPE[key]}
+							<option value={STATETYPE[key]} selected>{STATETYPE[key]}</option>
+						{:else}
+							<option value={STATETYPE[key]}>{STATETYPE[key]}</option>
+						{/if}
+					{/each}
+				</select>
+				{#if node.nodetype == 'CONTINUOUS'}
+					<label class="tooltip"  for="name">MEAN: 
+						<span class="tooltiptext">Gaussian distribution mean vakue</span>
+					</label>
+					<input size="8" class="statustext" name="mean-input"  type="text" value="{mean}" on:change={changeContPar}/>
+					<label class="tooltip"  for="name">VARIANCE: 
+							<span class="tooltiptext">Gaussian distribution variance value</span>
+					</label>
+					<input size="8" class="statustext"  name="variance-input" type="text" value="{variance}" on:change={changeContPar}/>
+				{/if}
+
+			{/if}
+			</div>
 		</div>
 		<div class="data-menu-body">
 			<!--div class='list-item-add' id="list-item-add-id">
 				
 			</!--div-->
 			{#if node.data && index != -1}
-				{#each node.data[index].status as Status, index}
+				{#each node.data[index].status as Status, i}
 					<div class='list-item'>
 						<label for="name">STATUS: </label>
-						<input class="statustext" name="name-{index}" type="text" bind:value={Status.name} on:click={modVar}/>
+						<input size="12" class="statustext" name="name-{i}" type="text" bind:value={Status.name} on:click={modVar}/>
+						{#if node.data[index].type !='NONE'}
+							<input  type="button" name="IDX-{index}" value=".."/>
+						{/if}
 						<label for="description">DESCRIPTION: </label>
-						<input class="statustext" name="description-{index}" type="text" bind:value={Status.description} />
-						<input  type="button" name="IDX-{index}" value="X" on:click={delVar}  />
+						<input class="statustext" name="description-{i}" type="text" bind:value={Status.description} />
+						<input  type="button" name="IDX-{i}" value="X" on:click={delVar}  />
 					</div>
 				{/each}	
 			{/if}
@@ -178,8 +237,8 @@ let updateDiscreteValues = async ()=>{
 	.data-menu-toolbar{
 		display:flex;
 		justify-content: left;
-		margin-top: 2px;
-		margin-bottom: 2px;
+		margin-top: 4px;
+		margin-bottom: 12px;
 		margin-left: 2px;
 	}
 
@@ -221,5 +280,44 @@ let updateDiscreteValues = async ()=>{
 		height: 14px; 
 		font-size:12px;
 	}
+
+	.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
 	
 </style>
