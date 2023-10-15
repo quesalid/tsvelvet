@@ -11,6 +11,9 @@ export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
 
 	<div class="node-wrapper-p" id="{'NW-'+node.id}" >
 		<div class="node-menu-p" style="--background-color:{node.bgColor};">
+			<div style="text-align: center ;">
+				<input id="label" size="5" class="node-datacomp" value="{node.graphtype}" type="text" min="0" style="text-align: left;"/>
+			</div>
 			<input type="button" value="DATA" data-node="{'N-'+node.id}" on:click={dataNodeClicked}/>
 			<input type="button" value="DELETE" data-node="{'N-'+node.id}" on:click={deleteNodeClicked}/>
 		</div>
@@ -22,10 +25,7 @@ export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
 
 <style>
 
-/*.node-wrapper{
-	display:block;
-	top: 0;
-}*/
+
 .node-wrapper-p{
   box-sizing: border-box;
   width:100%;
@@ -63,6 +63,15 @@ export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
 	margin-left: 5px;
 }
 
-
+.node-datacomp{
+		-webkit-border-radius: 30px;
+		-moz-border-radius: 30px;
+		 border-radius: 30px;
+		 border: 1px solid #2d9fd9;
+		 background-color: #FFFFFF;
+		 color: #777777;
+		 padding-left: 10px;
+		 text-align: center;
+	}
 
 </style>

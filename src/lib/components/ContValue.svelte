@@ -40,14 +40,6 @@ const evHandler = async(ev:any)=>{
         showStd()
 	}
 
-/*const getPercent = (value:any)=>{
-		
-		if(value!=undefined)
-			return(Number(value).toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2}))
-		else
-			return("0%")
-	}*/
-
 	
 var Gaussian = function(mean, std) {
   this.mean = mean;

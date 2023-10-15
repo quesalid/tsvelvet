@@ -104,20 +104,6 @@ export const utilAddAnchor = (node,edges=[],anchorPre='') => {
 		propsArray['input'] = true
 		propsArray['dynamic'] = true
 		propsArray['bgColor'] = 'blue'
-		/*propsArray['id'] = 'INPUT'+anchorPre+'-'+i+'-'+node.id
-		// ADD CONNECTIONS TO INPUT ANCHORS
-		// 1. Find destination
-		const destinations = edges.filter((item) => item.destination == ('N-'+node.id))
-		if (destinations) {
-			for (let i = 0; i < destinations.length; i++) {
-				const dest = destinations[i]
-				const connection = []
-				connection.push(dest.source.substring(2))
-				connection.push(dest.sourceanchor.substring(2))
-				connections.push(connection)
-			}
-			propsArray['connections'] = connections
-		}*/
         propsArray['id'] = 'INPUT' + anchorPre + '-' + i + '-' + node.id
         const destinations = edges.filter((item) => item.destination == ('N-' + node.id))
         if (destinations) {
@@ -139,7 +125,6 @@ export const utilAddAnchor = (node,edges=[],anchorPre='') => {
 		propsArray['dynamic'] = true
 		propsArray['bgColor'] = '#ff8c00'
         propsArray['id'] = 'OUTPUT-' + i + '-' + node.id
-        //propsArray['id'] = 'INPUT-' + i + '-' + node.id
 		ancs.push(propsArray)
 	}
 	return ancs
@@ -232,6 +217,7 @@ const filterProps = [
     'useDefaults',
     'position',
     'nodetype',
+    'graphtype',
 ];
 
 const addData = (key, filter) => {
@@ -297,7 +283,7 @@ const getDataObject = (origin) => {
             default:
                 if (!data['params'])
                     data['params'] = {}
-                if (origin.data[i].key)
+                if (origin.data[i].key && origin.data[i].key != 'name')
                     data['params'][origin.data[i].key] = origin.data[i].value
                 break
         }
@@ -547,8 +533,6 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
             //if (node.nodetype == 'BAYES') {
             const dist = getInitialDistribution(node, graph)
             // HERE CHECK IF DISTRIBUTION IS ALREADY SET
-            //console.log("SET DISTRIBUTION OLD", node.data[index].distribution)
-            //console.log("SET DISTRIBUTION NEW", dist)
             if (node.data[index].distribution.length == 0)
                 node.data[index].distribution = dist
             else {
@@ -560,19 +544,15 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
                                 node.data[index].distribution = dist
-                                //console.log("NODE ADDED", node.data[index].distribution)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
-                                //console.log("NODE REMOVED")
                                 node.data[index].distribution = dist
                                 break
                             case "STATUSADDED":
-                                //console.log("STATUS ADDED")
                                 node.data[index].distribution = dist
                                 break
                             case "STATUSREMOVED":
-                                //console.log("STATUS REMOVED")
                                 node.data[index].distribution = dist
                                 break
                             default:
@@ -581,7 +561,6 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                         }
                     }
                 }
-                //console.log("SETTED DISTRIBUTION", node.data[index].distribution)
             }
         }
     }  
@@ -608,7 +587,6 @@ export const getArrayFromDistribution = (node, index) => {
 
     retArray.distarray = distArray
     retArray.header = header
-    //console.log("DISTARRAY", retArray)
     return retArray
    
 }
@@ -619,7 +597,6 @@ const getRetArrayHeader = (distribution, states, variable) => {
     const header = []
     for (let i = distribution.length - 1; i >= 0; i--) {
         const cond = distribution[i].cond
-        //for (let j = 0; j < cond.length; j++) {
         for (let j = cond.length-1; j >=0; j--) {
             let item = cond[j].variable
             const index = header.findIndex((itm) => itm == item)
@@ -655,7 +632,6 @@ const getRetArrayDist = (distribution, states, variable) => {
         probs.push(distribution[i].prob)
         if (i % states.length == 0) {
             const carray = row.concat(probs)
-            //dist.push(carray)
             dist.push({ array:carray,idx:i})
             probs.length = 0
         }
@@ -699,7 +675,6 @@ const buildStatusArray = (node, parents) => {
         statusArray.push(starray)
     }
     for (let i = 0; i < parents.length; i++) {
-    //for (let i = parents.length-1; i >=0; i--) {
         const parent = parents[i]
         const index = parent.data.findIndex((item) => item.status)
         if (index > -1) {
@@ -725,9 +700,7 @@ export const getStatusDistribution = (graph, node, status, given = {}) => {
     // UPDATE DISTRIBUTION
     setGraphInitialDistribution(graph)
     const bjgraph = getBayesjsStructure(graph)
-    //console.log("NODE STATUS RESULTS BJGRAPH",bjgraph)
     const results = inferAll(bjgraph,given, { force: true })
-    //console.log("NODE STATUS RESULTS", node.label,status,results[node.label][status])
     let distval = 0.0
     if(results[node.label])
         distval = results[node.label][status]
@@ -797,7 +770,6 @@ const getCPT = (dist,slength) => {
                 if (k == (slength - 1) && j == (cond.length-1)) {
                     const storethen = JSON.parse(JSON.stringify(thenobj))
                     const storewhen = JSON.parse(JSON.stringify(whenobj))
-                    //console.log("STORE K THEN WHEN", dist.length,slength,k,i, storewhen,storethen)
                     cpt.push({ when: whenobj, then: storethen })
                     thenobj = {}
                     whenobj = {}

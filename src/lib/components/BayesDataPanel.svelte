@@ -170,16 +170,6 @@ const changeContPar = (ev:any) => {
 			</!--div-->
 			{#if node.data && index != -1}
 				{#each node.data[index].status as Status, i}
-					<!--div class='list-item'>
-						<label for="name">STATUS: </label>
-						<input size="12" class="statustext" name="name-{i}" type="text" bind:value={Status.name} on:click={modVar}/>
-						{#if node.data[index].type !='NONE'}
-							<input  type="button" name="IDX-{index}" value=".."/>
-						{/if}
-						<label for="description">DESCRIPTION: </label>
-						<input class="statustext" name="description-{i}" type="text" bind:value={Status.description} />
-						<input  type="button" name="IDX-{i}" value="X" on:click={delVar}  />
-					</!--div-->
 					<BayesDataPanelDiscrete node={node} i={i} Status={Status} index={index} delVar={delVar}/>
 				{/each}	
 			{/if}
@@ -254,19 +244,6 @@ const changeContPar = (ev:any) => {
 		/*height: 250px;*/
 		width: 100%;
 	}
-	/*.list-item{
-		display:flex;
-		justify-content: space-between;
-		align-items:center ;
-		margin: 2px 5px 2px 5px;
-		width:550px;
-
-	}
-	.list-item-add{
-		width:550px;
-		height: 15px;
-		margin: 10px 3px 10px 3px;
-	}*/
 
 	label{
 		font-size: x-small;

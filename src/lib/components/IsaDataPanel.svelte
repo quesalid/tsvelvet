@@ -93,7 +93,6 @@ const validateKey = (key:string)=>{
 
 let filterData = (key:any)=>{
 	return !filterKey.includes(key)
-	//return true
 }
 
 </script>

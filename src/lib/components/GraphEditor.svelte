@@ -4,7 +4,7 @@
 	import { Node, Svelvet, Anchor, Resizer,ThemeToggle } from 'svelvet';
 
 	import ContextMenu from './ContextMenu.svelte'
-	import InnerNode from './InnerNode.svelte'
+	import IsaNode from './IsaNode.svelte'
 	import CustomEdge from './CustomEdge.svelte';
 
 	// FOR NOW SUBGRAPH SUPPORT DISABLED DUE TO SVELVET LIB LACK OF SUPPORT
@@ -32,7 +32,7 @@
 	export let editnode:any = {}
 	export let typeOptions = [{value:"DEFAULT",options:{level:'level0'}}]
 	export let sgnode:any = {}
-	export let innernode = InnerNode
+	export let innernode = IsaNode
 	export let graph = {nodes:[],edges:[]}
     export let options: any = {};
 	export const sleep = function (ms:any) {
@@ -82,7 +82,6 @@
 		const dropzone = document.getElementById("drop_zone")
 		if(dropzone){
 			dropzone.addEventListener("mousemove",  function(e:any) {
-				//console.log("MOUSE LISTENER",e)
 				x = e.clientX
 				y = e.clientY
 			})
@@ -223,7 +222,6 @@
 		graph = updateGraph()
 		await redrawGraph(e,graph.nodes,graph.edges)
 		adjustNodeHeight(graph)
-		//addZoomListener()
 
 	}
 
@@ -339,8 +337,6 @@
 	 * @param edges graph edges
 	 */
 	const redrawGraph = async (e:any,nodes:any,edges:any)=>{
-		// 1. GET ALL GRAPH ANCHORS
-		//const oldanchors = document.getElementsByClassName("svelvet-anchor")
 		
 		anchors = []
 		defaultNodes = []
@@ -374,9 +370,7 @@
 		let arcwrapper = document.getElementsByClassName("anchor-wrapper")
 		let arcArray = Array.from(arcwrapper)
 		arcArray = arcArray.filter((item:any)=> item.id.includes(tag))
-		//console.log("ARC WRAPPER",arcArray)
 		for(let i=0;i<arcArray.length;i++){
-			//console.log("INPUT ARC ",arcArray[i])
 			const elem = document.getElementById(arcArray[i].id)
 			if(elem){
 				elem.removeEventListener("mouseUp", anchorMouseUp)
@@ -447,22 +441,13 @@
 			const child = children[i]
 			if(child.nodeName == 'path' && child.id){
 				id = child.id
-				/*const splitted = child.id.split('+')
-				const input = splitted[0].split('/')[0]
-				const destination = splitted[0].split('/')[1]
-				const output = splitted[1].split('/')[0]
-				const source = splitted[1].split('/')[1]
-				console.log("PATH",input,destination, output,source)
-				console.log("EDGES",edges,child.id)*/
 			}
 		}
 		if(element){
 			   element.remove()
 			   edges = edges.filter((item:any)=> item.id != id)
-			   console.log("SVG",element,edges)
 		}
 		// UPDATE GRAPH EDGES
-		//edges = edges.filter((item:any)=> item.id != id)
 		graph.edges = edges
 		// REDRAW GRAPH
 		element = document.getElementById("file-db-input")
@@ -595,7 +580,6 @@
 			let pathArray:any
 			var dummyEl = document.createElement( 'html' )
 			dummyEl.innerHTML = edgeArray[i].innerHTML
-			//let paths = dummyEl.getElementsByClassName("edge")
 			let paths = dummyEl.getElementsByTagName("path")
 			pathArray = Array.from(paths)
 			for(let j=0;j<pathArray.length;j++){

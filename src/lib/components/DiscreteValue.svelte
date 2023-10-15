@@ -23,7 +23,6 @@
 			status.name =  ev.detail.status
 		status = status
 		const element = 'NW-'+node.id+'-'+status.name
-		//console.log("EVHANDLER",element,ev.detail.value, status, node.label)
 	}
 
 	const getPercent = (value:any)=>{

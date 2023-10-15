@@ -15,9 +15,6 @@ export let graph = {nodes:[],edges:[]}
 
 
 
-//export let panel = []
-
-
 let newkey = ''
 let index = 0
 
@@ -63,7 +60,6 @@ let defDist = (ev:any|undefined)=>{
 		for(let j=0;j<dist.cond.length;j++){
 			const cond = dist.cond[j]
 			const index = variables.findIndex((item:any)=> item == cond.variable)
-			//console.log("INDEX",index,cond.states.name,variables)
 			if(index > -1){
 				if(cond.states.name != states[index])
 					match = false
@@ -125,9 +121,6 @@ const isNumber = (value:any)=>{
 		top: 20px;
 		left: 20px;
 		min-width:250px;
-		/*overflow-y: auto;
-		overflow-x: auto;
-		overflow: hidden;*/
 		border-radius: 6px;
 		box-shadow: var(--minimap-shadow, var(--default-minimap-shadow));
 		border: solid 1px;

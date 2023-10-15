@@ -1,8 +1,6 @@
 <script lang="ts">
     
 import {onMount} from "svelte"
-    import App from "../../App.svelte";
-    import BayesDataPanel from "./BayesDataPanel.svelte";
 import DiscreteValue from "./DiscreteValue.svelte";
 import ContValue from "./ContValue.svelte";
 import {getStatusDistribution} from './GraphUtils.js'
@@ -31,6 +29,9 @@ const getVal = (i:any)=>{
 
 	<div class="bayes-node-wrapper-p" id="{'NW-'+node.id}" >
 		<div class="node-menu-p" style="--background-color:{node.bgColor};">
+			<div style="text-align: center ;">
+				<input id="label" size="5" class="node-datacomp" value="{node.graphtype}" type="text" min="0" style="text-align: left;"/>
+			</div>
 			<input type="button" value="VAR" data-node="{'N-'+node.id}" on:click={dataNodeClicked}/>
 			<input type="button" value="DIST" data-node="{'N-'+node.id}" on:click={distNodeClicked}/>
 			<input type="button" value="DELETE" data-node="{'N-'+node.id}" on:click={deleteNodeClicked}/>
@@ -59,10 +60,7 @@ const getVal = (i:any)=>{
 
 <style>
 
-/*.node-wrapper{
-	display:block;
-	top: 0;
-}*/
+
 .bayes-node-wrapper-p{
   box-sizing: border-box;
   width:100%;
@@ -106,7 +104,14 @@ const getVal = (i:any)=>{
 .dscrete-container{
 	display: block; 
 }
-
-
-
+.node-datacomp{
+		-webkit-border-radius: 30px;
+		-moz-border-radius: 30px;
+		 border-radius: 30px;
+		 border: 1px solid #2d9fd9;
+		 background-color: #FFFFFF;
+		 color: #777777;
+		 padding-left: 10px;
+		 text-align: center;
+	}
 </style>

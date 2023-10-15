@@ -7,7 +7,7 @@ import {
     getGraphFromTree,
     getTreeFromGraph
     } from './lib/components/GraphUtils.js'
-import InnerNode from './lib/components/InnerNode.svelte'
+import IsaNode from './lib/components/IsaNode.svelte'
 import BayesNode from './lib/components/BayesNode.svelte'
 
 export {
@@ -18,6 +18,6 @@ export {
     uploadFile,
     getGraphFromTree,
     getTreeFromGraph,
-    InnerNode,
+    IsaNode,
     BayesNode
 }

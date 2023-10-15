@@ -87,34 +87,6 @@ const changeVal = (ev:any)=>{
 					break
 			}
 		}
-		/*
-		if(ev.target.id == 'nodetype'){
-			let level = typeOptions.find((item:any)=>item.value == ev.target.value)
-			const dt = {type:'text', key:'level', value:level.options.level}
-			const dt1 = {type:'text', key:'nodetype', value:ev.target.value}
-			const index = propArrayVal['data'].findIndex((item:any)=>item.key == 'level')
-			const index1 = propArrayVal['data'].findIndex((item:any)=>item.key == 'nodetype')
-			if(index > -1)
-				propArrayVal['data'][index] = dt
-			else
-				propArrayVal['data'].push(dt)
-			if(index1 > -1)
-				propArrayVal['data'][index1] = dt1
-			else
-				propArrayVal['data'].push(dt1)
-		}
-		// PUSH AUTOMATIC NODE NAME
-		if(ev.target.id == 'label'){
-			const dt2 =  {type:'text', key:'name', value:ev.target.value}
-			const index2 = propArrayVal['data'].findIndex((item:any)=>item.key == 'name')
-			if(index2 > -1)
-				propArrayVal['data'][index2] = dt2
-			else
-				propArrayVal['data'].push(dt2)
-
-		}*/
-		
-		//modify(ev)
 }
 
 const clearLoc = (event:any)=>{
@@ -146,10 +118,6 @@ const clearLoc = (event:any)=>{
 			<label for="bgColor">Background: </label>
 			<input id="bgColor" class="colorWheel" value="{propArrayVal.bgColor}" type="color" on:change={changeVal} />
 		</div>
-		<!--div class="list-item">
-			<label for="borderColor">BorderColor: </label>
-			<input id="borderColor" class="colorWheel" value="{propArrayVal.borderColor}" type="color" on:change={changeVal} />
-		</!--div-->
 		<div class="list-item">
 			<label for="inputs">Input: </label>
 			<input id="inputs" size="15" class="inputField" value="{propArrayVal.inputs}" type="number" min="0" on:change={changeVal} />
@@ -260,15 +228,13 @@ const clearLoc = (event:any)=>{
 	}
 
 	.input-footer{
-	-webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-     border-radius: 20px;
-     border: 1px solid #2d9fd9;
-     background-color: #777777;
-	 color: #FFFFFF;
-     padding-left: 10px;
+		-webkit-border-radius: 20px;
+		-moz-border-radius: 20px;
+		 border-radius: 20px;
+		 border: 1px solid #2d9fd9;
+		 background-color: #777777;
+		 color: #FFFFFF;
+		 padding-left: 10px;
 	}
-
-
 	
 </style>

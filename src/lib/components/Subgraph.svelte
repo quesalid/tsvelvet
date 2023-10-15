@@ -4,7 +4,7 @@ import { Node, Svelvet, Anchor, Resizer,ThemeToggle } from 'svelvet';
 import { onMount} from "svelte";
 import ContextMenu from './ContextMenu.svelte'
 import { utilAddNode, utilAddAnchor} from './GraphUtils.js'
-import InnerNode from './InnerNode.svelte'
+import IsaNode from './IsaNode.svelte'
 import DataMenu from './DataMenu.svelte'
 import CustomEdge from './CustomEdge.svelte'
 
@@ -289,7 +289,7 @@ const addNode = (e:any|undefined,addnode=null,edges=[])=>{
 									</Anchor>
 							{/each}
 						
-								<InnerNode bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} />
+								<IsaNode bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} />
 						
 						</Node>
 					
