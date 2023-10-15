@@ -1,7 +1,14 @@
 // BAYES NETWORKS
 // https://github.com/bayesjs/bayesjs#readme
+// MIXTURE DISTRIBUTIONS
+// https://www.cs.toronto.edu/~rgrosse/csc321/mixture_models.pdfS
+// a. define gaussian mean and variance for each latent variable
+// b. define mixture distribution for observed variable (weigheted sum of gaussians)
+// c. define interval for mixture distribution
+// d. compute probability for each interval
 // NEURAL NETWORKS
 // https://github.com/martinjm97/ENNUI
+// http://www.cs.toronto.edu/~rgrosse/csc321/calendar.html
 import { v4 as uuidv4 } from 'uuid';
 import { inferAll } from 'bayesjs';
 
@@ -803,7 +810,7 @@ export let getDefaultProperties = (typeOptions, options) => {
     let TD
     let LR
     let useDefaults
-    let uid
+    let uid = ''
     let position = { x: svwidth / 2, y: svheight / 2 }
     let nodetype = typeOptions[0].value
     

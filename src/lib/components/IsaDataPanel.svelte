@@ -29,6 +29,7 @@ onMount(async () => {
 	const dragable = document.getElementById("dragable"+id);
     const dragzone = document.getElementById("dragzone"+id);
 
+	newkey = 'name'
 	dragElement(dragable, dragzone);
  })
 
@@ -43,8 +44,7 @@ const changeVal = (ev:any)=>{
 		newvalue = target.value
 }
 
-const changeKey = (ev:any)=>{
-	    
+const changeKey = (ev:any)=>{ 
 		const target = ev.target
 		newkey = target.value
 		const item = panel.find((item:any)=> item.name == newkey)
@@ -62,13 +62,14 @@ const changeValData = (ev:any)=>{
 }
 
 const addToNode =  (ev:any)=>{
+	    
 	    if(validateKey(newkey.trim())){
 			const newitem = {type:newtype, key:newkey, value:newvalue}
 			node.data.push(newitem)
 			node = node
 		}
 		newkey = ''
-		newtype='text'
+		//newtype='text'
 		newvalue = ''
 }
 
@@ -91,7 +92,8 @@ const validateKey = (key:string)=>{
 }
 
 let filterData = (key:any)=>{
-	return filterKey.includes(key)
+	return !filterKey.includes(key)
+	//return true
 }
 
 </script>
@@ -114,7 +116,7 @@ let filterData = (key:any)=>{
 						<option value={Option.name}>{Option.name}</option>
 					{/each}
 				</select>
-				<input type="{newtype}" value={newvalue} placeholder="Insert value..." on:change={changeVal}/>
+				<!--input type="{newtype}" value={newvalue} placeholder="Insert value..." on:change={changeVal}/-->
 				<input type="button" value="ADD" on:click={addToNode}/>
 			</div>
 			{#if node.data}

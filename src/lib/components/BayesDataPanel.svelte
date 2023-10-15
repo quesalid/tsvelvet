@@ -3,6 +3,8 @@
 
 import { onMount} from "svelte";
 
+import BayesDataPanelDiscrete from "./BayesDataPanelDiscrete.svelte";
+
 import {dragElement, 
 		setGraphInitialDistribution,
 		getStatusDistribution,
@@ -39,7 +41,6 @@ onMount(async () => {
 	const dragable = document.getElementById("dragable"+id);
     const dragzone = document.getElementById("dragzone"+id);
 	keys = Object.keys(STATETYPE)
-	console.log(keys)
 	dragElement(dragable, dragzone);
  })
 
@@ -49,7 +50,6 @@ const closeMenu = (ev:any)=>{
 	 dataMenu.style.visibility = "hidden";
 	 setGraphInitialDistribution(graph)
 	 updateDiscreteValues()
-	 console.log("NODE",node.data[index].type,STATETYPE[node.data[index].type])
 }
 
 
@@ -84,11 +84,6 @@ let delVar = (ev:any|undefined)=>{
 	node = node
 }
 
-let modVar = (ev:any|undefined)=>{
-	// MODIFY STATUS NAME
-	index = node.data.findIndex((item:any)=>item.status)
-	const idx = ev.target.name.split('-')[1]
-}
 
 let updateDiscreteValues = async ()=>{
 	// UPDATE DiscreteValue COMPONENTS
@@ -175,7 +170,7 @@ const changeContPar = (ev:any) => {
 			</!--div-->
 			{#if node.data && index != -1}
 				{#each node.data[index].status as Status, i}
-					<div class='list-item'>
+					<!--div class='list-item'>
 						<label for="name">STATUS: </label>
 						<input size="12" class="statustext" name="name-{i}" type="text" bind:value={Status.name} on:click={modVar}/>
 						{#if node.data[index].type !='NONE'}
@@ -184,7 +179,8 @@ const changeContPar = (ev:any) => {
 						<label for="description">DESCRIPTION: </label>
 						<input class="statustext" name="description-{i}" type="text" bind:value={Status.description} />
 						<input  type="button" name="IDX-{i}" value="X" on:click={delVar}  />
-					</div>
+					</!--div-->
+					<BayesDataPanelDiscrete node={node} i={i} Status={Status} index={index} delVar={delVar}/>
 				{/each}	
 			{/if}
 		</div>
@@ -258,7 +254,7 @@ const changeContPar = (ev:any) => {
 		/*height: 250px;*/
 		width: 100%;
 	}
-	.list-item{
+	/*.list-item{
 		display:flex;
 		justify-content: space-between;
 		align-items:center ;
@@ -270,7 +266,7 @@ const changeContPar = (ev:any) => {
 		width:550px;
 		height: 15px;
 		margin: 10px 3px 10px 3px;
-	}
+	}*/
 
 	label{
 		font-size: x-small;

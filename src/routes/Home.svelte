@@ -14,23 +14,23 @@
 	let currentnode = ''
 	let editnode:any = {}
 	//let sgnode:any = {}
-	let innernode = BayesNode
+	//let innernode = BayesNode
 	let graph = {nodes:[],edges:[]}
-	//let innernode = InnerNode
+	let innernode = InnerNode
 
-	/*let typeOptions = [
+	let typeOptions = [
 		{value:"COMPANY",options:{level:'level1'}},
 		{value:"PLANT",options:{level:'level2'}},
 		{value:"DEPARTMENT",options:{level:'level3'}},
 		{value:"LINE",options:{level:'level4'}},
 		{value:"MACHINE",options:{level:'level5'}},
 		{value:"CONTROLLER",options:{level:'level6'}}
-	]*/
+	]
 
-	let typeOptions = [
+	/*let typeOptions = [
 		{value:"DISCRETE",options:{level:'level1'}},
 		{value:"CONTINUOUS",options:{level:'level1'}}
-	]
+	]*/
 
 	let panel = [
 		{type:'text',name:'name',option:'COMPANY'},
@@ -83,14 +83,15 @@
 			element.click()
 	}
 
-	const options = {datacomp:'BAYES'}
+	const options = {datacomp:'ISA'}
+	//const options = {datacomp:'BAYES'}
 
 </script>
 
 	<GraphEditor bind:graph={graph} typeOptions={typeOptions}  bind:editnode={editnode} innernode={innernode} options={options}>
-		<!--IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
-		<BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
-		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/>
+		<!--BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/-->
 
     </GraphEditor>
 

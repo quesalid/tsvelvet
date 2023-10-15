@@ -57,7 +57,37 @@ const changeVal = (ev:any)=>{
 			propArrayVal[ev.target.id]= Number(ev.target.value)
 		else
 			propArrayVal[ev.target.id] = ev.target.value
-		// PUSH AUTOMATIC NODE LEVEL AND NODETYPE
+		// PUSH AUTOMATIC NODE LEVEL AND NODETYPE  IF graphtype is ISA
+		if(propArrayVal.graphtype == 'ISA'){
+			switch(propArrayVal){
+				case 'nodetype':
+					let level = typeOptions.find((item:any)=>item.value == ev.target.value)
+					const dt = {type:'text', key:'level', value:level.options.level}
+					const dt1 = {type:'text', key:'nodetype', value:ev.target.value}
+					const index = propArrayVal['data'].findIndex((item:any)=>item.key == 'level')
+					const index1 = propArrayVal['data'].findIndex((item:any)=>item.key == 'nodetype')
+					if(index > -1)
+						propArrayVal['data'][index] = dt
+					else
+						propArrayVal['data'].push(dt)
+					if(index1 > -1)
+						propArrayVal['data'][index1] = dt1
+					else
+						propArrayVal['data'].push(dt1)
+					break
+				case 'label':
+					const dt2 =  {type:'text', key:'name', value:ev.target.value}
+					const index2 = propArrayVal['data'].findIndex((item:any)=>item.key == 'name')
+					if(index2 > -1)
+						propArrayVal['data'][index2] = dt2
+					else
+						propArrayVal['data'].push(dt2)
+					break
+				default:
+					break
+			}
+		}
+		/*
 		if(ev.target.id == 'nodetype'){
 			let level = typeOptions.find((item:any)=>item.value == ev.target.value)
 			const dt = {type:'text', key:'level', value:level.options.level}
@@ -82,7 +112,8 @@ const changeVal = (ev:any)=>{
 			else
 				propArrayVal['data'].push(dt2)
 
-		}
+		}*/
+		
 		//modify(ev)
 }
 
