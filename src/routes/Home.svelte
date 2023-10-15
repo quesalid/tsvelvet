@@ -8,12 +8,9 @@
 	import BayesNode from '../lib/components/BayesNode.svelte'
 
     let defaultNodes: any[] = [];
-	//let anchors: any[] = [];
-	//let edges: any[] = []
 	let contextmenu = 'myContext'
 	let currentnode = ''
 	let editnode:any = {}
-	//let sgnode:any = {}
 	//let innernode = BayesNode
 	let graph = {nodes:[],edges:[]}
 	let innernode = InnerNode
@@ -49,13 +46,6 @@
 	// LIST OF DATA FIELDS NOT EDITABLE
 	const filterKey = ['level','nodetype']
 	
-	/*const filterKey = (key:string)=>{
-		// level and nodetype are not editable
-		if(key && key !='level' && key !='nodetype')
-			return(true) 
-		else
-			return(false)
-	}*/
 
 	const exportData = async ()=>{
 		let expdata = []

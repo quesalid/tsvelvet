@@ -267,16 +267,27 @@
 	 * @param e export graph event
 	 */
 	const exportGraph = async (e:any|undefined)=>{
+		let filestring = ''
 		setZoomValue(1.0)
 		const exp = updateGraph()
-		//console.log("GRAPH",exp)
-		/*if(exp.nodes && exp.nodes.length > 0){
+		console.log("GRAPH",exp)
+		if(exp.nodes && exp.nodes.length > 0 && exp.nodes[0].graphtype == 'ISA'){
 			 const tree = await getTreeFromGraph(exp,exp.nodes[0],null)
 			 console.log("TREE",tree)
-			 const backgraph = await getGraphFromTree(tree)
-			 console.log("BACKGRAPH",backgraph)
-		}*/
-		const filestring = JSON.stringify(exp)
+			 /*const backgraph = await getGraphFromTree(tree)
+			 console.log("BACKGRAPH",backgraph)*/
+			 let seen = []
+		     filestring = JSON.stringify(tree, function (key, val) {
+					if (typeof val == "object") {
+						if (seen.indexOf(val) >= 0)
+							return
+						seen.push(val)
+					}
+					return val
+				});
+		}else{
+			filestring = JSON.stringify(exp)
+		}
 		uploadFile(filestring,'TEST.json')
 	}
 
@@ -394,7 +405,14 @@
 		setZoomValue(1.0)
 		let file = e.target.files[0]
 		const result = await downloadJSON(file)
-		graph = JSON.parse(result)
+		// FROM TREE TO GRAPH IF options.datacomp == 'ISA'
+		if(options.datacomp == 'ISA'){
+			const tree = JSON.parse(result)
+			graph = await getGraphFromTree(tree)
+		}
+		else
+			graph = JSON.parse(result)
+		
 		// DEFAULT NODES
 		const nodes = graph.nodes
 		edges = graph.edges

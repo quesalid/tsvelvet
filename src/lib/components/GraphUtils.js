@@ -360,7 +360,7 @@ export const getGraphFromTree = (tree) => {
     const root = tree
     const rootnode = {
         id: root.key,
-        data: root.value.data
+        data: getDataFromTree(root.value.data)
     }
     for (let i = 0; i < tree.graph.length; i++) {
         const prop = tree.graph[i]
@@ -372,7 +372,7 @@ export const getGraphFromTree = (tree) => {
         for (let i = 0; i < edges.length; i++) {
             const edge = {
                 id: edges[i].id,
-                source: rootnode.id,
+                source: edges[i].source,
                 sourceanchor: edges[i].sourceanchor,
                 destination: edges[i].destination,
                 destanchor: edges[i].destanchor,
@@ -388,6 +388,28 @@ export const getGraphFromTree = (tree) => {
         graph.edges = graph.edges.concat(subtree.edges)
     }
     return (graph)
+}
+
+const getDataFromTree = (data) => {
+    const keys = Object.keys(data)
+    let dataarray = []
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i]
+        if (key != 'params') {
+            const value = data[key]
+            const prop = { key: key, value: value, type: 'text' }
+            dataarray.push(prop)
+        } else {
+            const keys2 = Object.keys(data[key])
+            for (let j = 0; j < keys2.length; j++) {
+                const key2 = keys2[j]
+                const value2 = data[key][key2]
+                const prop = { key: key2, value: value2, type: 'text' }
+                dataarray.push(prop)
+            }
+        }
+    }
+    return dataarray
 }
 
 /**
