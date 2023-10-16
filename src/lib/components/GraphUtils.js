@@ -487,7 +487,8 @@ export const getInitialDistribution = (node, graph) => {
         const statusArray = buildStatusArray(node,parents)
         const cases = allPossibleCases(statusArray)
         for (let i = 0; i < cases.length; i++) {
-            const dist = { cond: cases[i], prob: 1/states.length}
+            //const dist = { cond: cases[i], prob: 1 / states.length }
+            const dist = { cond: cases[i], prob: 1 / states.length , mean:1.0, variance:1.0}
             if (statusArray.length == 1)
                 dist['cond'] = [cases[i]]
             distribution.push(dist)
@@ -573,7 +574,7 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
  * @param {any} index bayes data index
  * @returns fromatted distribution array
  */
-export const getArrayFromDistribution = (node, index) => {
+export const getArrayFromDistribution = (node, index, type='DISCRETE') => {
     let retArray = { header: [], distarray: [] }
     let distribution = node.data[index].distribution
     let variable = node.label
@@ -583,7 +584,15 @@ export const getArrayFromDistribution = (node, index) => {
     // GET HEADER
     header = getRetArrayHeader(distribution, states, variable)
     // GET DISTRIBUTION
-    distArray = getRetArrayDist(distribution, states, variable)
+    switch (type) {
+        case 'CONTINUOUS':
+            distArray = getRetArrayDistCont(distribution, states, variable)
+            break;
+        default:
+            distArray = getRetArrayDist(distribution, states, variable)
+            break
+    }
+    
 
     retArray.distarray = distArray
     retArray.header = header
@@ -633,6 +642,32 @@ const getRetArrayDist = (distribution, states, variable) => {
         if (i % states.length == 0) {
             const carray = row.concat(probs)
             dist.push({ array:carray,idx:i})
+            probs.length = 0
+        }
+    }
+    return dist
+}
+
+const getRetArrayDistCont = (distribution, states, variable) => {
+    const dist = []
+    const probs = []
+    for (let i = distribution.length - 1; i >= 0; i--) {
+        const row = []
+        const cond = distribution[i].cond
+        for (let j = cond.length - 1; j >= 0; j--) {
+            if (cond[j].variable != variable)
+                row.push({ state: cond[j].states.name })
+        }
+        let mean = 0.0
+        let variance = 1.0
+        if (distribution[i].mean)
+            mean = distribution[i].mean
+        if (distribution[i].variance)
+            variance = distribution[i].variance
+        probs.push({ mean: mean, variance: variance })
+        if (i % states.length == 0) {
+            const carray = row.concat(probs)
+            dist.push({ array: carray, idx: i })
             probs.length = 0
         }
     }

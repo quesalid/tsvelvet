@@ -2,7 +2,6 @@
 // https://math.stackexchange.com/questions/1332879/conditional-probability-combining-discrete-and-continous-random-variables
 
 import {onMount} from "svelte"
-import {updateAllDValues,getAllCheckedStatus} from './GraphUtils'
 
 //export let value : any
 export let node: any
@@ -89,14 +88,17 @@ Gaussian.prototype = {
   }
 };
 
+export let distDefClicked:any
+
 </script>
-     <div class="bayes-node-cont-value" id="{'NWC-'+node.id+'-'+node.label}" data-node={node.label}>
-		<canvas id={"cont-canvas"+node.label} width={width} height={height}></canvas>
+     <div class="bayes-node-cont-value" id="{'NWC-'+node.id+'-'+node.label}" data-node="{'N-'+node.id}">
+		<canvas id={"cont-canvas"+node.label} width={width} height={height} data-node="{'N-'+node.id}" on:click={distDefClicked}></canvas>
 	</div>
 <style>
 
 .bayes-node-cont-value{
     margin-left: 10px;
     padding-bottom: 20px;
+    cursor: pointer;
 }
 </style>

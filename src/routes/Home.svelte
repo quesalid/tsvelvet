@@ -3,6 +3,7 @@
 	import IsaDataPanel from '../lib/components/IsaDataPanel.svelte'
 	import BayesDataPanel from '../lib/components/BayesDataPanel.svelte'
 	import BayesDistrPanel from '../lib/components/BayesDistrPanel.svelte'
+	import BayesDistrDefPanel from '../lib/components/BayesDistrDefPanel.svelte'
 	import { uploadFile} from '../lib/components/GraphUtils.js'
 	import IsaNode from '../lib/components/IsaNode.svelte'
 	import BayesNode from '../lib/components/BayesNode.svelte'
@@ -82,6 +83,7 @@
 		<!--IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
 		<BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 
     </GraphEditor>
 

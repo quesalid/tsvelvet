@@ -5,6 +5,8 @@ export let graph: any = {nodes:[],edges:[]}
 export let deleteNodeClicked = (ev:any)=>{console.log("DELETENODE CLICKED")}
 export let dataNodeClicked = (ev:any)=>{console.log("DATANODE CLICKED")}
 export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
+export let distDefClicked = (ev:any)=>{console.log("DISTDEF CLICKED")}
+
 
 
 </script>

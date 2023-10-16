@@ -10,6 +10,8 @@ export let graph: any = {nodes:[],edges:[]}
 export let deleteNodeClicked = (ev:any)=>{console.log("DELETENODE CLICKED")}
 export let dataNodeClicked = (ev:any)=>{console.log("DATANODE CLICKED")}
 export let distNodeClicked = (ev:any)=>{console.log("DISTNODE CLICKED")}
+export let distDefClicked = (ev:any)=>{console.log("DISTDEF CLICKED")}
+
 
 let index = 0
 
@@ -41,7 +43,7 @@ const getVal = (i:any)=>{
 			<div style="display:flex;justify-content:last baseline;align-items: center;">
 				{node.nodetype}
 				{#if node.nodetype == "CONTINUOUS"}
-					<ContValue graph={graph} bind:node={node}/>
+					<ContValue graph={graph} bind:node={node} distDefClicked={distDefClicked}/>
 				{/if}
 			</div>
 			{#if node.data && index != -1}

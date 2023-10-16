@@ -55,6 +55,7 @@
 	let zoom = 1
 	let x = 0
 	let y = 0
+	let title = 'GRAPH MENU'
 	
 	onMount(async () => {  
 		defaultNodes = []
@@ -72,8 +73,11 @@
 			svwidth = options.svwidth
 		if(options.svheight)
 			svheight = options.svheight
+		if(options.title)
+			title = options.title
 		nodePropsVals.data = loadData(datacomp)
 
+		title += '-'+datacomp
 		await addMouseListener()
 		
 	})
@@ -545,6 +549,19 @@
 			div.style.visibility='visible'
 	}
 
+	/**
+	 * Show distribution definition panel on node click
+	 * @param ev distribution node click event
+	 */
+	const distDefClicked = (ev:any)=>{
+		const id = ev.target.getAttribute('data-node').substring(2)
+		const found = defaultNodes.find((item:any)=> item.id == id )
+		editnode = found
+		const div = document.getElementById("defaultDistributionDefContainer")
+		if(div)
+			div.style.visibility='visible'
+	}
+
 	/*const openGraphClicked = (ev:any)=>{
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
@@ -627,14 +644,14 @@
 				{/each}
 					<!-- HERE SHOULD ADD SUBGRAPH SPECIFIC NODE TYPE -->
 					<Resizer width height rotation/>
-					<svelte:component this={innernode} graph={graph} bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} distNodeClicked={distNodeClicked}/>
+					<svelte:component this={innernode} graph={graph} bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} distNodeClicked={distNodeClicked} distDefClicked={distDefClicked}/>
 					
 			</Node>
 		{/each}
 		<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
 	</Svelvet>
 	
-	<ContextMenu bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
+	<ContextMenu title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
 	
 	<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
 	<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>
@@ -643,6 +660,9 @@
 	</div>
 	<div id="defaultDistributionMenuContainer">
 		<slot name="distribution">No slot</slot>
+	</div>
+	<div id="defaultDistributionDefContainer">
+		<slot name="distributiondef">No slot</slot>
 	</div>
 	<!--div id="defaultSubgraphMenuContainer">
 		<Subgraph id="defaultSubgraphMenuContainer" bind:node={sgnode} svwidth={svwidth} svheight={svheight} />
@@ -686,6 +706,19 @@
   background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
 }
 
+#defaultDistributionDefContainer{
+  visibility: hidden; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width:inherit; /* Full width */
+  height: inherit; /* Full height */
+  overflow: auto; /*Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
+}
 
 
 
