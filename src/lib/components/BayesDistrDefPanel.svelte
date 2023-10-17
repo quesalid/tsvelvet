@@ -3,7 +3,11 @@
 
 import { onMount} from "svelte";
 
-import {dragElement, getArrayFromDistribution, getStatusDistribution,updateAllDValues} from './GraphUtils'
+import {dragElement, 
+	getArrayFromDistribution, 
+	getStatusDistribution,
+	updateAllDValues,
+	getMeansVariancesWeight} from './GraphUtils'
 import GaussParams from './GaussParams.svelte'
 
 export let id: string|any = 'defaultDistributionDefContainer'
@@ -34,13 +38,20 @@ const closeMenu = async(ev:any)=>{
 	updateAllDValues(document,graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
+	// GET MEAN AND VARIANCE ARRAY FROM DISTRIBUTION
+	const mv = getMeansVariancesWeight(node,index)
+	// UPDATE ContValue COMPNENT 
+	const element = document.getElementById('NWC-'+node.id+'-'+node.label)
+	if(element){
+		const event = new CustomEvent('changevalue', {detail: {mv:mv}})
+		element.dispatchEvent(event)
+	}
 }
 
 
 let defDist = (ev:any|undefined)=>{
 	index = node.data.findIndex((item:any)=>item.distribution)
 	const arrayDist = getArrayFromDistribution(node,index)
-	console.log("ARRAY DIST",arrayDist)
 	const dataset = ev.target.dataset
 	const row = dataset.row
 	const col = dataset.col
@@ -73,7 +84,7 @@ let defDist = (ev:any|undefined)=>{
 		}
 	}
 	node = node
-
+	
 }
 
 const isNumber = (value:any)=>{

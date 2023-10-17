@@ -488,7 +488,7 @@ export const getInitialDistribution = (node, graph) => {
         const cases = allPossibleCases(statusArray)
         for (let i = 0; i < cases.length; i++) {
             //const dist = { cond: cases[i], prob: 1 / states.length }
-            const dist = { cond: cases[i], prob: 1 / states.length , mean:1.0, variance:1.0}
+            const dist = { cond: cases[i], prob: 1 / states.length , mean:0.0, variance:1.0}
             if (statusArray.length == 1)
                 dist['cond'] = [cases[i]]
             distribution.push(dist)
@@ -545,16 +545,20 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
                                 node.data[index].distribution = dist
+                                //console.log("NODE ADDED",node.label,dist)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
                                 node.data[index].distribution = dist
+                                //console.log("NODE REMOVED", node.label, dist)
                                 break
                             case "STATUSADDED":
                                 node.data[index].distribution = dist
+                                //console.log("STATUS ADDED", node.label, dist)
                                 break
                             case "STATUSREMOVED":
                                 node.data[index].distribution = dist
+                                //console.log("STATUS  REMOVED", node.label, dist)
                                 break
                             default:
                                 //console.log("NO CHANGE")
@@ -600,6 +604,22 @@ export const getArrayFromDistribution = (node, index, type='DISCRETE') => {
    
 }
 
+export const getMeansVariancesWeight = (node, index) => {
+    let distribution = node.data[index].distribution
+    let means = []
+    let variances = []
+    let weights = []
+    for (let i = 0; i < distribution.length; i++) {
+        const dist = distribution[i]
+        if(dist.mean!=undefined)
+            means.push(dist.mean)
+        if (dist.variance!=undefined)
+            variances.push(dist.variance)
+        if (dist.prob!=undefined)
+            weights.push(dist.prob)
+    }
+    return { means: means, variances: variances, weights: weights}
+}
 
 
 const getRetArrayHeader = (distribution, states, variable) => {
@@ -966,3 +986,80 @@ export const STATETYPE = {
     INTERVAL: 'INTERVAL',
     NONE: 'NONE'
 }
+
+export var Mixture = function (mean, std, wg) {
+    this.wg = wg;
+    this.mean = mean;
+    this.std = std;
+    this.a = 1 / Math.sqrt(2 * Math.PI);
+    this.uplim = 10;
+    this.lowlim = -10;
+}
+
+Mixture.prototype = {
+    addStd: function (v) {
+        this.std += v;
+    },
+
+    setLimits: function (low, up) {
+        this.lowlim = low;
+        this.uplim = up;
+    },
+
+    getProbability: function (x) {
+        var result = 0.0
+        var step = (Math.abs(this.lowlim) + Math.abs(this.uplim)) / 100;
+        var i = -100
+        var cx = i * step
+        if (x < this.lowlim || x > this.uplim)
+            return 0.0
+        while (cx <= x && i < 100) {
+            result += this.get(cx) * step;
+            i++
+            cx = i * step
+        }
+        return result
+        
+    },
+
+    get: function (x) {
+        var result = 0.0
+        for (let i = 0; i < this.mean.length; i++) {
+            var f = this.a / this.std[i];
+            var p = -1 / 2;
+            var c = (x - this.mean[i]) / this.std[i];
+            c *= c;
+            p *= c;
+            result += this.wg[i] * f * Math.pow(Math.E, p);
+        }
+        return result
+    },
+
+    generateValues: function (start, end) {
+        var LUT = [];
+        var step = (Math.abs(start) + Math.abs(end)) / 100;
+        for (var i = start; i < end; i += step) {
+            LUT.push(this.get(i));
+        }
+        return LUT;
+    },
+
+
+    draw: function (ctx,cvs,width,height) {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        var points = this.generateValues(this.lowlim, this.uplim);
+        var len = points.length;
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        var p0 = points[0];
+        ctx.moveTo(0, height - (height * p0));
+        points.forEach(function (p, i) {
+            if (i === 0) {
+                return;
+            }
+            ctx.lineTo(width * i / len, height - (height * p));
+            p0 = p;
+        });
+        ctx.stroke();
+    }
+};

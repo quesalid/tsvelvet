@@ -40,12 +40,12 @@ const closeMenu = async(ev:any)=>{
 let defDist = (ev:any|undefined)=>{
 	index = node.data.findIndex((item:any)=>item.distribution)
 	const arrayDist = getArrayFromDistribution(node,index)
-	console.log("ARRAY DIST",arrayDist)
 	const dataset = ev.target.dataset
 	const row = dataset.row
 	const col = dataset.col
 	const status = arrayDist.distarray[row].array[0]
 	const variables = arrayDist.header.filter((item:any)=>!item.includes('='))
+	console.log("ARRAY DIST",arrayDist,dataset,status,variables)
 	const pLength = variables.length
 	variables.push(node.label)
 	const states = []

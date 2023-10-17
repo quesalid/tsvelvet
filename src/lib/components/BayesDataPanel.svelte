@@ -150,17 +150,6 @@ const changeContPar = (ev:any) => {
 						{/if}
 					{/each}
 				</select>
-				{#if node.nodetype == 'CONTINUOUS'}
-					<label class="tooltip"  for="name">MEAN: 
-						<span class="tooltiptext">Gaussian distribution mean vakue</span>
-					</label>
-					<input size="8" class="statustext" name="mean-input"  type="text" value="{mean}" on:change={changeContPar}/>
-					<label class="tooltip"  for="name">VARIANCE: 
-							<span class="tooltiptext">Gaussian distribution variance value</span>
-					</label>
-					<input size="8" class="statustext"  name="variance-input" type="text" value="{variance}" on:change={changeContPar}/>
-				{/if}
-
 			{/if}
 			</div>
 		</div>

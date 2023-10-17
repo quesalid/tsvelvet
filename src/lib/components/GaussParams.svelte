@@ -14,18 +14,9 @@ export let col:any
 
 
 onMount(()=>{
-		/*const element = document.getElementById('NWC-'+node.id+'-'+node.label)
-		if(element){
-			element.addEventListener('changevalue',evHandler)
-		}*/
 		
-       
 })
 
-
-const evHandler = async(ev:any)=>{
-        console.log("EV HANDLER",ev)
-	}
 
 
 

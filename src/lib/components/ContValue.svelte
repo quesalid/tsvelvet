@@ -2,11 +2,12 @@
 // https://math.stackexchange.com/questions/1332879/conditional-probability-combining-discrete-and-continous-random-variables
 
 import {onMount} from "svelte"
+import {Mixture} from "./GraphUtils"
 
 //export let value : any
 export let node: any
 export let graph: any = {nodes:[],edges:[]}
-export let  width = 40;
+export let  width = 80;
 export let  height = 40;
 
 let gauss:any
@@ -14,6 +15,10 @@ let ctx:any
 let cvs:any
 let mean = 0
 let variance = 1
+let means = [0,0.5]
+let variances = [1,1]
+let weigths = [0.5,0.5]
+let mixture:any
 
 onMount(()=>{
 		const element = document.getElementById('NWC-'+node.id+'-'+node.label)
@@ -22,25 +27,35 @@ onMount(()=>{
 		}
 		cvs = document.querySelector("#cont-canvas"+node.label);
 		ctx = cvs.getContext("2d");
-        gauss = new Gaussian(mean,variance);
+        //gauss = new Gaussian(mean,variance);
+        mixture = new Mixture(means,variances,weigths);
+        mixture.setLimits(-20,20)
+        const p0 = mixture.getProbability(19)
+        console.log("PROBABILITY p0: ",p0)
 		showStd()
 })
 
 const  showStd = () => {
-  gauss.draw(ctx);
+  //gauss.draw(ctx);
+  mixture.draw(ctx,cvs,width,height);
 }
 
+const sleep = function (ms:any) {
+						return new Promise(resolve => setTimeout(resolve, ms));
+						}
+
 const evHandler = async(ev:any)=>{
-        if(ev.detail.mean && !isNaN(Number(ev.detail.mean)))
-            mean = Number(ev.detail.mean)
-		if(ev.detail.variance && !isNaN(Number(ev.detail.variance)))
-			variance =  ev.detail.variance
-		gauss = new Gaussian(mean,variance);
+        let mv = ev.detail.mv
+        await sleep(50)
+        mixture = new Mixture(mv.means,mv.variances,mv.weights);
+        mixture.setLimits(-20,20)
+        const p0 = mixture.getProbability(19)
+        console.log("PROBABILITY p0: ",p0)
         showStd()
 	}
 
-	
-var Gaussian = function(mean, std) {
+
+/*var Gaussian = function(mean, std) {
   this.mean = mean;
   this.std = std;
   this.a = 1/Math.sqrt(2*Math.PI);
@@ -86,7 +101,7 @@ Gaussian.prototype = {
     });
     ctx.stroke();
   }
-};
+};*/
 
 export let distDefClicked:any
 
