@@ -22,7 +22,10 @@
 		loadData,
 		getDefaultProperties,
 		getDefaultPropertiesNames,
-	    adjustNodeHeight} from './GraphUtils.js'
+	    adjustNodeHeight,
+		getParamsAddNode,
+		getParamsModNode} from './GraphUtils.js'
+    import App from "../../App.svelte";
 
 	
 	// BINDINGS
@@ -192,15 +195,8 @@
 		let ancs
 		let nodeParam = JSON.parse(JSON.stringify(nodePropsVals))
 
-		// Set data to zero for new node 
-		if(nodeParam.graphtype == 'ISA'){
-				nodeParam.data = []
-				let level = typeOptions.find((item:any)=>item.value == nodeParam['nodetype'])
-				const dt = {type:'text', key:'level', value:level.options.level}
-				const dt1 = {type:'text', key:'nodetype', value:nodeParam['nodetype']}
-				nodeParam['data'].push(dt)
-				nodeParam['data'].push(dt1)
-		}
+		// Adjust node params to current node type and graph type
+		getParamsAddNode(nodeParam,typeOptions)
 
 		// CHECK IF NODE LABEL IS UNIQUE
 		const found = defaultNodes.find((item:any)=> item.label == nodeParam.label)
@@ -229,6 +225,7 @@
 
 	}
 
+
 	/**
 	 * Modify current graph node
 	 * @param e modify node event
@@ -237,21 +234,9 @@
 		const index = defaultNodes.findIndex((item:any)=>item.id == currentnode)
 		if(index > -1){
 			nodePropsVals.id = currentnode
-			if(nodePropsVals.graphtype == 'ISA'){
-				let level = typeOptions.find((item:any)=>item.value == nodePropsVals['nodetype'])
-				const dt = {type:'text', key:'level',  value:level.options.level}
-				const dt1 = {type:'text', key:'nodetype', value:nodePropsVals['nodetype']}
-				const index = nodePropsVals['data'].findIndex((item:any)=>item.key == 'level')
-				const index1 = nodePropsVals['data'].findIndex((item:any)=>item.key == 'nodetype')
-				if(index > -1)
-					nodePropsVals['data'][index] = dt
-				else
-					nodePropsVals['data'].push(dt)
-				if(index1 > -1)
-					nodePropsVals['data'][index1] = dt1
-				else
-					nodePropsVals['data'].push(dt1)
-			}
+			
+			// Adjust node params to current node type and graph type
+			getParamsModNode(nodePropsVals,typeOptions)
 			const nodeProps = utilAddNode(e,nodePropsVals)
 			defaultNodes[index] = nodeProps
 

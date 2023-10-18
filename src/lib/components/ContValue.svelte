@@ -50,7 +50,7 @@ const evHandler = async(ev:any)=>{
         mixture = new Mixture(mv.means,mv.variances,mv.weights);
         mixture.setLimits(-20,20)
         const p0 = mixture.getProbability(19)
-        console.log("PROBABILITY p0: ",p0)
+        console.log("PROBABILITY p0: ",p0,mv)
         showStd()
 	}
 
@@ -115,5 +115,11 @@ export let distDefClicked:any
     margin-left: 10px;
     padding-bottom: 20px;
     cursor: pointer;
+}
+.bayes-node-cont-value canvas{
+    border: solid 1px;
+}
+.bayes-node-cont-value canvas:hover{
+    background: #F9F9F9;
 }
 </style>

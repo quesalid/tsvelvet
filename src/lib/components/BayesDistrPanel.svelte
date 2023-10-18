@@ -3,7 +3,12 @@
 
 import { onMount} from "svelte";
 
-import {dragElement, getArrayFromDistribution, getStatusDistribution,updateAllDValues} from './GraphUtils'
+import {dragElement, 
+	getArrayFromDistribution, 
+	getStatusDistribution,
+	updateAllDValues,
+	Mixture,
+	getMeansVariancesWeight} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -65,8 +70,9 @@ let defDist = (ev:any|undefined)=>{
 					match = false
 			}
 		}
-		if(match)
+		if(match){
 			dist.prob = Number(ev.target.value)
+		}
 	}
 	node = node
 
@@ -102,11 +108,11 @@ const isNumber = (value:any)=>{
 								{#if !isNumber(col)}
 									<td>{col}</td>
 								{:else}
-									<td><input size="6" type="text" name={'NW-'+node.id+'_'+i} data-col={i} data-row={index} value={col} on:change={defDist} /></td>
+									<td><input class="{node.nodetype}" size="6" type="text" name={'NW-'+node.id+'_'+i} data-col={i} data-row={index} value={col} on:change={defDist} /></td>
 								{/if}
 							{/each}
 						  </tr>
-					  {/each}
+					  {/each}  
 				{/if}
 			{/if}
 		</table>
@@ -157,5 +163,10 @@ const isNumber = (value:any)=>{
 	th, td {
 		padding: 3px;
 	}
+
+	.CONTINUOUS{ 
+            pointer-events: none;
+			background-color: #EDEDED;
+     } 
 	
 </style>

@@ -32,11 +32,11 @@ const getVal = (i:any)=>{
 	<div class="bayes-node-wrapper-p" id="{'NW-'+node.id}" >
 		<div class="node-menu-p" style="--background-color:{node.bgColor};">
 			<div style="text-align: center ;">
-				<input id="label" size="5" class="node-datacomp" value="{node.graphtype}" type="text" min="0" style="text-align: left;"/>
+				<input id="label" size="5" class="node-datacomp" value="{node.graphtype}" type="text" min="0" style="text-align: left;" disabled/>
 			</div>
 			<input type="button" value="VAR" data-node="{'N-'+node.id}" on:click={dataNodeClicked}/>
 			<input type="button" value="DIST" data-node="{'N-'+node.id}" on:click={distNodeClicked}/>
-			<input type="button" value="DELETE" data-node="{'N-'+node.id}" on:click={deleteNodeClicked}/>
+			<input type="button" value="X" data-node="{'N-'+node.id}" on:click={deleteNodeClicked}/>
 		</div>
 		<div class="node-body-p">
 			<div class="bayes-node-label">{node.label}</div>
@@ -115,5 +115,6 @@ const getVal = (i:any)=>{
 		 color: #777777;
 		 padding-left: 10px;
 		 text-align: center;
+		 cursor:pointer;
 	}
 </style>

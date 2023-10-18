@@ -52,7 +52,7 @@
 	<label class="tooltip" for="meter-{status.name}">{status.name}
 		<span class="tooltiptext">{status.description}</span>
 	</label>
-	<meter id="meter-{status.name}" value="{value}">{getPercent(value)}</meter>
+	<meter id="meter-{status.name}" value="{!isNaN(value)?value:0.5}">{getPercent(value)}</meter>
 	<label class="spaced-label" for="meter-{status.name}">{getPercent(value)}</label>
 	<input type="checkbox" id="check-{status.name}" on:change="{statusChecked}" name="check-{status.name}" value="60%">
 </div>

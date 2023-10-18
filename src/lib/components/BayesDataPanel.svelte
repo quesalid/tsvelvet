@@ -29,8 +29,7 @@ let newtype='text'
 let newvalue= ''
 let index = 0
 let keys = []
-let mean = 0
-let variance = 1
+
 
 const sleep = function (ms:any) {
 						return new Promise(resolve => setTimeout(resolve, ms));
@@ -104,7 +103,7 @@ const changeVal = (ev:any) => {
 	node.data[index].type = ev.target.value
 }
 
-const changeContPar = (ev:any) => {
+/*const changeContPar = (ev:any) => {
 	if(ev.target.name == 'mean-input')
 		mean = ev.target.value
 	else
@@ -122,7 +121,7 @@ const changeContPar = (ev:any) => {
 		const valueEvent = new CustomEvent("changevalue", { detail: {mean:mean,variance:variance} });
 		element.dispatchEvent(valueEvent)
 	}
-}
+}*/
 
 </script>
 
@@ -138,10 +137,10 @@ const changeContPar = (ev:any) => {
 			<input type="button" value="IMP" on:click={imp} />
 			<div>
 			{#if node.data && index != -1 && node.data[index].type}
-				<label class="tooltip" for="nodetype">TYPE: 
+				<label class="tooltip" for="nodetype-select">TYPE: 
 					<span class="tooltiptext">State value type</span>
 				</label>
-				<select name="nodetype" id="nodetype" on:change={changeVal}>
+				<select name="nodetype" id="nodetype-select" on:change={changeVal} disabled={node.nodetype=="CONTINUOUS"?true:false}>
 					{#each keys as key,i}
 						{#if node.data[index].type == STATETYPE[key]}
 							<option value={STATETYPE[key]} selected>{STATETYPE[key]}</option>

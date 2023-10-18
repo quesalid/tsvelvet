@@ -101,7 +101,7 @@ const clearLoc = (event:any)=>{
 	<header id="{id+'dragzoneContext'}">
     <div class="context-menu-header">
 		<span>{title}</span>
-		<input type="button" value="CLOSE" on:click={closeMenu} />
+		<input type="button" value="X" on:click={closeMenu} />
 	</div>
 	 <div class="context-menu-toolbar">
 		<input type="button" value="+" on:click={add} />

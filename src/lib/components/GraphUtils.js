@@ -460,7 +460,7 @@ export const loadData = (type) => {
     switch (type) {
         case 'BAYES':
             const bayes = {
-                status: [], distribution: [], type: STATETYPE.NONE, params: {} }
+                status: [], distribution: [], type: STATETYPE.INTERVAL, params: {} }
             data.push(bayes)
             break
         default:
@@ -488,7 +488,7 @@ export const getInitialDistribution = (node, graph) => {
         const cases = allPossibleCases(statusArray)
         for (let i = 0; i < cases.length; i++) {
             //const dist = { cond: cases[i], prob: 1 / states.length }
-            const dist = { cond: cases[i], prob: 1 / states.length , mean:0.0, variance:1.0}
+            const dist = { cond: cases[i], prob: 1 / states.length, mean: 0.0, variance: 1.0, weight: 1 / states.length }
             if (statusArray.length == 1)
                 dist['cond'] = [cases[i]]
             distribution.push(dist)
@@ -545,23 +545,23 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
                                 node.data[index].distribution = dist
-                                //console.log("NODE ADDED",node.label,dist)
+                                console.log("NODE ADDED",node.label,dist)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
                                 node.data[index].distribution = dist
-                                //console.log("NODE REMOVED", node.label, dist)
+                                console.log("NODE REMOVED", node.label, dist)
                                 break
                             case "STATUSADDED":
                                 node.data[index].distribution = dist
-                                //console.log("STATUS ADDED", node.label, dist)
+                                console.log("STATUS ADDED", node.label, dist)
                                 break
                             case "STATUSREMOVED":
                                 node.data[index].distribution = dist
-                                //console.log("STATUS  REMOVED", node.label, dist)
+                                console.log("STATUS  REMOVED", node.label, dist)
                                 break
                             default:
-                                //console.log("NO CHANGE")
+                                console.log("NO CHANGE")
                                 break
                         }
                     }
@@ -615,8 +615,8 @@ export const getMeansVariancesWeight = (node, index) => {
             means.push(dist.mean)
         if (dist.variance!=undefined)
             variances.push(dist.variance)
-        if (dist.prob!=undefined)
-            weights.push(dist.prob)
+        if (dist.weight!=undefined)
+            weights.push(dist.weight)
     }
     return { means: means, variances: variances, weights: weights}
 }
@@ -680,11 +680,14 @@ const getRetArrayDistCont = (distribution, states, variable) => {
         }
         let mean = 0.0
         let variance = 1.0
+        let weight = 1.0
         if (distribution[i].mean)
             mean = distribution[i].mean
         if (distribution[i].variance)
             variance = distribution[i].variance
-        probs.push({ mean: mean, variance: variance })
+        if (distribution[i].weight)
+            weight = distribution[i].weight
+        probs.push({ mean: mean, variance: variance, weight:weight })
         if (i % states.length == 0) {
             const carray = row.concat(probs)
             dist.push({ array: carray, idx: i })
@@ -747,9 +750,11 @@ const buildStatusArray = (node, parents) => {
 
 /**
  * Gets marginal distribution for "status" state of node random variable
+ * @param {any} graph graph object
  * @param {any} node node random variable
  * @param {any} status status of random variable
- * @returns
+ * @param {any} given given status for other random variables
+ * @returns distribution
  */
 export const getStatusDistribution = (graph, node, status, given = {}) => {
     // UPDATE DISTRIBUTION
@@ -762,6 +767,11 @@ export const getStatusDistribution = (graph, node, status, given = {}) => {
     return (distval)
 }
 
+/**
+ * Returns bayes structure for bayesjs
+ * @param {any} graph graph object
+ * @returns bayes structure
+ */
 export const getBayesjsStructure = (graph) => {
     const network = {}
     /**
@@ -835,6 +845,12 @@ const getCPT = (dist,slength) => {
     return cpt
 }
 
+/**
+ * Returns default node propertires
+ * @param {any} typeOptions options for context menu panel
+ * @param {any} options other options
+ * @returns node default properties
+ */
 export let getDefaultProperties = (typeOptions, options) => {
     let svwidth = 1000
     let svheight = 600
@@ -861,7 +877,7 @@ export let getDefaultProperties = (typeOptions, options) => {
     let useDefaults
     let uid = ''
     let position = { x: svwidth / 2, y: svheight / 2 }
-    let nodetype = typeOptions[0].value
+    let nodetype = typeOptions[0] ? typeOptions[0].value:"COMPANY"
     
 
     const nodePropsVals = {
@@ -888,6 +904,10 @@ export let getDefaultProperties = (typeOptions, options) => {
     return nodePropsVals
 }
 
+/**
+ * Return default property names
+ * @returns node default property names
+ */
 export let getDefaultPropertiesNames = () => {
     let nodePropNames = [
         'bgColor',
@@ -914,6 +934,12 @@ export let getDefaultPropertiesNames = () => {
     return(nodePropNames)
 }
 
+/**
+ * Update all discrete values sending "changevalue" event
+ * @param {any} document dom 
+ * @param {any} graph graph 
+ * @param {any} given given status for other random variables
+ */
 export const updateAllDValues = (document, graph, given = {}) => {
     const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
     for (let i = 0; i < dvComponents.length; i++) {
@@ -941,6 +967,11 @@ export const updateAllDValues = (document, graph, given = {}) => {
     }
 }
 
+/**
+ * Return all status checked
+ * @param {any} document dom
+ * @returns list of checked statuses
+ */
 export const getAllCheckedStatus = (document) => {
     let given = {}
     const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
@@ -964,6 +995,10 @@ export const getAllCheckedStatus = (document) => {
     return given
 }
 
+/**
+ * Adjust  heigth baed on new node content for all graph nodes
+ * @param {any} graph graph
+ */
 export const adjustNodeHeight = (graph) => {
     for (let i = 0; i < graph.nodes.length; i++) {
         const node = graph.nodes[i]
@@ -980,13 +1015,21 @@ export const adjustNodeHeight = (graph) => {
     }
 }
 
+/**
+ * STATETYPE: type of state value
+ */
 export const STATETYPE = {
     BOOL: 'BOOL',
     INT: 'INT',
     INTERVAL: 'INTERVAL',
     NONE: 'NONE'
 }
-
+/**
+ * Mixture distribution class
+ * @param {any} mean array of means
+ * @param {any} std array of variances
+ * @param {any} wg array of weights
+ */
 export var Mixture = function (mean, std, wg) {
     this.wg = wg;
     this.mean = mean;
@@ -1063,3 +1106,62 @@ Mixture.prototype = {
         ctx.stroke();
     }
 };
+
+/**
+ * Adjust nodeParam on node add
+ * @param {any} nodeParam node parameters
+ * @param {any} typeOptions node type options
+ */
+export const getParamsAddNode = (nodeParam, typeOptions) => {
+    switch (nodeParam.graphtype) {
+        case 'ISA':
+            nodeParam.data = []
+            let level = typeOptions.find((item) => item.value == nodeParam['nodetype'])
+            const dt = { type: 'text', key: 'level', value: level.options.level }
+            const dt1 = { type: 'text', key: 'nodetype', value: nodeParam['nodetype'] }
+            nodeParam['data'].push(dt)
+            nodeParam['data'].push(dt1)
+            break
+        case 'BAYES':
+            //const ini = loadData(nodeParam.graphtype)
+            if (nodeParam.nodetype == 'CONTINUOUS') {
+                nodeParam.data[0].type = STATETYPE.INTERVAL
+                nodeParam.bgColor = '#FF00FF'
+            }
+            if (nodeParam.nodetype == 'DISCRETE') {
+                nodeParam.data[0].type = STATETYPE.NONE
+                nodeParam.bgColor = '#FFFF00'
+            }
+            break
+    }
+}
+
+export const getParamsModNode = (nodePropsVals, typeOptions) => {
+    switch (nodePropsVals.graphtype) {
+        case 'ISA':
+            let level = typeOptions.find((item) => item.value == nodePropsVals['nodetype'])
+            const dt = { type: 'text', key: 'level', value: level.options.level }
+            const dt1 = { type: 'text', key: 'nodetype', value: nodePropsVals['nodetype'] }
+            const index = nodePropsVals['data'].findIndex((item) => item.key == 'level')
+            const index1 = nodePropsVals['data'].findIndex((item) => item.key == 'nodetype')
+            if (index > -1)
+                nodePropsVals['data'][index] = dt
+            else
+                nodePropsVals['data'].push(dt)
+            if (index1 > -1)
+                nodePropsVals['data'][index1] = dt1
+            else
+                nodePropsVals['data'].push(dt1)
+            break
+        case 'BAYES':
+            if (nodePropsVals.nodetype == 'CONTINUOUS') {
+                nodePropsVals.bgColor = '#FF00FF'
+                nodePropsVals.data[0].type = STATETYPE.INTERVAL
+            }
+            if (nodePropsVals.nodetype == 'DISCRETE') {
+                nodePropsVals.bgColor = '#FFFF00'
+            }
+            break
+    }
+}
+
