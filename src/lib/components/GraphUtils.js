@@ -1136,6 +1136,11 @@ export const getParamsAddNode = (nodeParam, typeOptions) => {
     }
 }
 
+/**
+ * Adjust nodeParam on node modify
+ * @param {any} nodePropsVals  node parameters
+ * @param {any} typeOptions node type options
+ */
 export const getParamsModNode = (nodePropsVals, typeOptions) => {
     switch (nodePropsVals.graphtype) {
         case 'ISA':
@@ -1165,3 +1170,41 @@ export const getParamsModNode = (nodePropsVals, typeOptions) => {
     }
 }
 
+/**
+ * Normalize probability distribution
+ * @param {any} node node 
+ */
+export const normalizeProb = (node) => {
+    const index = node.data.findIndex((item) => item.distribution)
+    const arrayDist = getArrayFromDistribution(node, index)
+    // Conditioning variables (if any)
+    const variables = arrayDist.header.filter((item) => (!item.includes('=')))
+    // Conditioned variable
+    const nodevar = node.label
+    // A. Normalize probability in arrayDist
+    for (let i = 0; i < arrayDist.distarray.length; i++) {
+        const dist = arrayDist.distarray[i]
+        let sum = 0
+        for (let j = variables.length ; j < dist.array.length; j++) {
+            if (dist.array[j] < 0) // check for negative values
+                dist.array[j] = -dist.array[j]
+            if (isNaN(dist.array[j])) // check for not a number
+                dist.array[j] = 0
+            sum += dist.array[j]
+        }
+        for (let j = variables.length; j < dist.array.length; j++) {
+            if(sum > 0)
+                dist.array[j] /= sum
+            else
+                dist.array[j] = 1 / (dist.array.length - variables.length)
+        }
+    }
+    // B. Update probability in node.data[index].distribution
+    for (let i = 0; i < node.data[index].distribution.length; i++) {
+        const col = variables.length + i % node.data[index].status.length
+        const row = Math.floor(i / node.data[index].status.length)
+        node.data[index].distribution[node.data[index].distribution.length - i - 1].prob = arrayDist.distarray[row].array[col]
+        console.log("*** FOUND ***",node.data[index].distribution[node.data[index].distribution.length-i-1])
+
+    }
+}

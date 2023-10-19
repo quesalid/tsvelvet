@@ -8,7 +8,8 @@ import {dragElement,
 	getStatusDistribution,
 	updateAllDValues,
 	Mixture,
-	getMeansVariancesWeight} from './GraphUtils'
+	getMeansVariancesWeight,
+	normalizeProb} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -35,6 +36,8 @@ onMount(async () => {
  })
 
 const closeMenu = async(ev:any)=>{
+	// NORMALIZE PROBABILITIES
+	normalizeProb(node)
 	// UPDATE ALL DiscreteValue COMPONENTS
 	updateAllDValues(document,graph)
 	let dataMenu = document.getElementById(id);
@@ -48,11 +51,14 @@ let defDist = (ev:any|undefined)=>{
 	const dataset = ev.target.dataset
 	const row = dataset.row
 	const col = dataset.col
+	// First column is the status
 	const status = arrayDist.distarray[row].array[0]
-	const variables = arrayDist.header.filter((item:any)=>!item.includes('='))
+	// Get variables and discard node variable status
+	const variables = arrayDist.header.filter((item:any)=>(!item.includes('=')))
 	console.log("ARRAY DIST",arrayDist,dataset,status,variables)
 	const pLength = variables.length
 	variables.push(node.label)
+	console.log("ARRAY DIST VRIABLES",variables)
 	const states = []
 	for(let i=0; i<pLength;i++){
 		states[i]=arrayDist.distarray[row].array[i]
