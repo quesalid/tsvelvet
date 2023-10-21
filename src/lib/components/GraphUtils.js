@@ -1037,6 +1037,7 @@ export var Mixture = function (mean, std, wg) {
     this.a = 1 / Math.sqrt(2 * Math.PI);
     this.uplim = 10;
     this.lowlim = -10;
+    this.norm = 1.0;
 }
 
 Mixture.prototype = {
@@ -1047,6 +1048,10 @@ Mixture.prototype = {
     setLimits: function (low, up) {
         this.lowlim = low;
         this.uplim = up;
+    },
+
+    setNorm: function (norm) {
+        this.norm = norm;
     },
 
     getProbability: function (x) {
@@ -1075,20 +1080,24 @@ Mixture.prototype = {
             p *= c;
             result += this.wg[i] * f * Math.pow(Math.E, p);
         }
-        return result
+        // Normalize result
+        //result /= this.mean.length
+        return result/this.norm
     },
 
     generateValues: function (start, end) {
+        const magnify = 2.0
         var LUT = [];
         var step = (Math.abs(start) + Math.abs(end)) / 100;
         for (var i = start; i < end; i += step) {
-            LUT.push(this.get(i));
+            LUT.push(this.get(i)*magnify);
         }
+        console.log("***** LUT *****",LUT)
         return LUT;
     },
 
 
-    draw: function (ctx,cvs,width,height) {
+    draw: function (ctx, cvs, width, height) {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
         var points = this.generateValues(this.lowlim, this.uplim);
         var len = points.length;

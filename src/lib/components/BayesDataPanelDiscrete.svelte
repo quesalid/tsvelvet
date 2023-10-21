@@ -6,13 +6,32 @@ export let i:any
 export let delVar:any
 export let Status:any
 
+const defValue = (ev:any|undefined)=>{
+	const div = document.getElementById('id-class-data-input-type')
+	if(div){
+			
+			div.style.height='inherit'
+			div.style.visibility='visible'
+			const cevent = new CustomEvent("clickinput", 
+			{
+				bubbles: true,
+				detail: { status: Status }
+			}
+		)
+		
+		div.dispatchEvent( cevent)
+	}
+	
+		
+}
+
  </script>
 
 	<div class='list-item'>
 		<label for="name">STATUS: </label>
 		<input size="12" class="statustext" name="name-{i}" type="text" bind:value={Status.name}/>
 		{#if node.data[index].type !='NONE'}
-			<input  type="button" name="IDX-{index}" value=".."/>
+			<input  type="button" name="IDX-{index}" value=".." on:click={defValue}/>
 		{/if}
 		<label for="description">DESCRIPTION: </label>
 		<input class="statustext" name="description-{i}" type="text" bind:value={Status.description} />

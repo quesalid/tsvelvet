@@ -4,6 +4,8 @@
 import { onMount} from "svelte";
 
 import BayesDataPanelDiscrete from "./BayesDataPanelDiscrete.svelte";
+import BayesInputVariable from "./BayesInputVariable.svelte";
+
 
 import {dragElement, 
 		setGraphInitialDistribution,
@@ -29,6 +31,8 @@ let newtype='text'
 let newvalue= ''
 let index = 0
 let keys = []
+let inpuHeaderColor = '#f1f1f1'
+let inputStatus = {name:''}
 
 
 const sleep = function (ms:any) {
@@ -47,6 +51,11 @@ const closeMenu = (ev:any)=>{
 	setGraphInitialDistribution(graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
+	 let div  = document.getElementById('id-class-data-input-type')
+	if(div){
+		div.style.height= "10px";
+		div.style.visibility = "hidden";
+	}
 	 setGraphInitialDistribution(graph)
 	 updateDiscreteValues()
 }
@@ -123,6 +132,15 @@ const changeVal = (ev:any) => {
 	}
 }*/
 
+
+
+const getInputStatus = ()=>{
+	let div  = document.getElementById('id-class-data-input-type')
+	if(div)
+		console.log("INPUT STATUS",div.dataset.status)
+	return div?div.dataset.status:''
+}
+
 </script>
 
 <div class="data-menu" id="{'dragable'+id}">
@@ -162,8 +180,10 @@ const changeVal = (ev:any) => {
 				{/each}	
 			{/if}
 		</div>
+			<BayesInputVariable node={node} index={index} bind:inputStatus={inputStatus} inpuHeaderColor={inpuHeaderColor}/>
 	</header>
 </div>
+
 
 <style>
 	.data-menu{
@@ -280,5 +300,7 @@ const changeVal = (ev:any) => {
   visibility: visible;
   opacity: 1;
 }
+
+
 	
 </style>

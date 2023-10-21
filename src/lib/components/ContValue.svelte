@@ -20,7 +20,7 @@ let variances = [1,1]
 let weigths = [0.5,0.5]
 let mixture:any
 
-onMount(()=>{
+onMount(async()=>{
 		const element = document.getElementById('NWC-'+node.id+'-'+node.label)
 		if(element){
 			element.addEventListener('changevalue',evHandler)
@@ -28,10 +28,12 @@ onMount(()=>{
 		cvs = document.querySelector("#cont-canvas"+node.label);
 		ctx = cvs.getContext("2d");
         //gauss = new Gaussian(mean,variance);
+        await sleep(50)
         mixture = new Mixture(means,variances,weigths);
         mixture.setLimits(-20,20)
+        mixture.setNorm(node.data[0].distribution.length/node.data[0].status.length)
         const p0 = mixture.getProbability(19)
-        console.log("PROBABILITY p0: ",p0)
+        console.log("PROBABILITY p0: ",p0,mixture.norm)
 		showStd()
 })
 
@@ -49,6 +51,7 @@ const evHandler = async(ev:any)=>{
         await sleep(50)
         mixture = new Mixture(mv.means,mv.variances,mv.weights);
         mixture.setLimits(-20,20)
+        mixture.setNorm(node.data[0].distribution.length/node.data[0].status.length)
         const p0 = mixture.getProbability(19)
         console.log("PROBABILITY p0: ",p0,mv)
         showStd()
