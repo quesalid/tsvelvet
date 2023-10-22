@@ -40,12 +40,13 @@ const closeMenu = async(ev:any)=>{
 	 dataMenu.style.visibility = "hidden";
 	// GET MEAN AND VARIANCE ARRAY FROM DISTRIBUTION
 	const mv = getMeansVariancesWeight(node,index)
-	// UPDATE ContValue COMPNENT 
+	// UPDATE ContValue COMPONENT 
 	const element = document.getElementById('NWC-'+node.id+'-'+node.label)
 	if(element){
 		const event = new CustomEvent('changevalue', {detail: {mv:mv}})
 		element.dispatchEvent(event)
 	}
+
 }
 
 

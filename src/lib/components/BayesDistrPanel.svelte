@@ -9,7 +9,8 @@ import {dragElement,
 	updateAllDValues,
 	Mixture,
 	getMeansVariancesWeight,
-	normalizeProb} from './GraphUtils'
+	normalizeProb,
+	normalizeWeight} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -36,7 +37,19 @@ onMount(async () => {
  })
 
 const closeMenu = async(ev:any)=>{
-	// NORMALIZE PROBABILITIES
+	 if(node.nodetype == 'CONTINUOUS'){
+		 // A. NORMALIZE WEIGTHS
+		normalizeWeight(node)
+		 // GET MEAN,VARIANCE,WEIGTH ARRAY FROM DISTRIBUTION
+		const mv = getMeansVariancesWeight(node,index)
+		// B. UPDATE ContValue COMPONENT 
+		const element = document.getElementById('NWC-'+node.id+'-'+node.label)
+		if(element){
+			const event = new CustomEvent('changevalue', {detail: {mv:mv}})
+			element.dispatchEvent(event)
+		}
+	 }
+	 // NORMALIZE PROBABILITIES
 	normalizeProb(node)
 	// UPDATE ALL DiscreteValue COMPONENTS
 	updateAllDValues(document,graph)
@@ -55,16 +68,14 @@ let defDist = (ev:any|undefined)=>{
 	const status = arrayDist.distarray[row].array[0]
 	// Get variables and discard node variable status
 	const variables = arrayDist.header.filter((item:any)=>(!item.includes('=')))
-	console.log("ARRAY DIST",arrayDist,dataset,status,variables)
 	const pLength = variables.length
 	variables.push(node.label)
-	console.log("ARRAY DIST VRIABLES",variables)
 	const states = []
 	for(let i=0; i<pLength;i++){
 		states[i]=arrayDist.distarray[row].array[i]
 	}
 	states[pLength]=arrayDist.header[col].split('=')[1]
-	// Update data didtribution
+	// Update data didtribution if DISCRETE and weigths if CONTINUOUS
 	for(let i=0; i<node.data[index].distribution.length;i++){
 		const dist = node.data[index].distribution[i]
 		let match = true
@@ -77,7 +88,12 @@ let defDist = (ev:any|undefined)=>{
 			}
 		}
 		if(match){
-			dist.prob = Number(ev.target.value)
+			if(node.nodetype == 'CONTINUOUS'){
+				console.log("SET WIGTH",Number(ev.target.value))
+				dist.weight = Number(ev.target.value)
+			}else{
+				dist.prob = Number(ev.target.value)
+			}
 		}
 	}
 	node = node
@@ -108,7 +124,8 @@ const isNumber = (value:any)=>{
 								<th align='left'>{col}</th>
 							 {/each}
 						</tr>
-					  {#each getArrayFromDistribution(node,index).distarray as row, index}
+					{#if node.nodetype == 'CONTINUOUS'}
+					  {#each getArrayFromDistribution(node,index,'WEIGHT').distarray as row, index}
 						  <tr>
 							{#each row.array as col,i}
 								{#if !isNumber(col)}
@@ -118,7 +135,20 @@ const isNumber = (value:any)=>{
 								{/if}
 							{/each}
 						  </tr>
-					  {/each}  
+					  {/each} 
+					 {:else}
+						{#each getArrayFromDistribution(node,index).distarray as row, index}
+						  <tr>
+							{#each row.array as col,i}
+								{#if !isNumber(col)}
+									<td>{col}</td>
+								{:else}
+									<td><input class="{node.nodetype}" size="6" type="text" name={'NW-'+node.id+'_'+i} data-col={i} data-row={index} value={col} on:change={defDist} /></td>
+								{/if}
+							{/each}
+						  </tr>
+					  {/each} 
+					  {/if}
 				{/if}
 			{/if}
 		</table>
@@ -170,9 +200,9 @@ const isNumber = (value:any)=>{
 		padding: 3px;
 	}
 
-	.CONTINUOUS{ 
+	/*.CONTINUOUS{ 
             pointer-events: none;
 			background-color: #EDEDED;
-     } 
+     } */
 	
 </style>

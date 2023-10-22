@@ -32,8 +32,8 @@ onMount(async()=>{
         mixture = new Mixture(means,variances,weigths);
         mixture.setLimits(-20,20)
         mixture.setNorm(node.data[0].distribution.length/node.data[0].status.length)
-        const p0 = mixture.getProbability(19)
-        console.log("PROBABILITY p0: ",p0,mixture.norm)
+        /*const p0 = mixture.getProbability(19)
+        console.log("PROBABILITY p0: ",p0,mixture.norm)*/
 		showStd()
 })
 

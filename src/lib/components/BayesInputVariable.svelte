@@ -1,5 +1,6 @@
 <script lang="ts">
 import {onMount} from "svelte"
+    import App from "../../App.svelte";
 
 import DRangeSlider from './DRangeSlider.svelte'
 
@@ -10,6 +11,8 @@ export let index = 0
 
 let start;
 let end;
+let scale = 20;
+let shift = 0.5
 
 onMount(async()=>{
 		let div  = document.getElementById('id-class-data-input-type')
@@ -21,6 +24,18 @@ onMount(async()=>{
 const evHandler = async(ev:any)=>{
         let status = ev.detail.status
         inputStatus = status
+		if( node.data && node.data[index].type =='INTERVAL'){
+			if(inputStatus.value != undefined){
+				const minmax = inputStatus.value.split(',')
+				console.log("INTERVAL",minmax)
+				start=(Number(minmax[0])/scale - shift +0.5) <=1?Number(minmax[0])/scale - shift +0.5:1
+				end=(Number(minmax[1])/scale -shift+0.5) >=0?Number(minmax[1])/scale -shift+0.5:0
+				console.log("INTERVAL",start,end)
+			}else{
+				start = 0
+				end = 1
+			}
+		}
        
 	}
 
@@ -62,7 +77,7 @@ const valueNumber = (ev:any)=>{
 					<input type="number" id="value-number" on:change="{valueNumber}" name="value-number" value={inputStatus.value}>
 				{/if}
 				{#if node.data && node.data[index].type =='INTERVAL'}
-					<DRangeSlider bind:start bind:end bind:value={inputStatus.value}/>
+					<DRangeSlider bind:start bind:end bind:value={inputStatus.value} scale={scale} shift={shift}/>
 				{/if}
 			</div>
 		</div>

@@ -25,7 +25,7 @@
 	    adjustNodeHeight,
 		getParamsAddNode,
 		getParamsModNode} from './GraphUtils.js'
-    import App from "../../App.svelte";
+    
 
 	
 	// BINDINGS
@@ -49,7 +49,7 @@
 	let svwidth = 1000
 	let svheight = 600
 	let oldanchors = []
-	
+	let intnode:any
 	
 	// LOCAL VARS
 	let inListener = false
@@ -220,8 +220,7 @@
 		defaultNodes = [...defaultNodes, { ...nodeProps }];
 		currentnode = nodeProps['id']
 		graph = updateGraph()
-		await redrawGraph(e,graph.nodes,graph.edges)
-		adjustNodeHeight(graph)
+		await redrawGraph(e,graph)
 
 	}
 
@@ -244,8 +243,7 @@
 
 		}
 		graph = updateGraph()
-		await redrawGraph(e,graph.nodes,graph.edges)
-		adjustNodeHeight(graph)
+		await redrawGraph(e,graph)
 		
 	}
 
@@ -321,12 +319,14 @@
 
 	/**
 	 * Redraw graph from nodes and edges
+	 * called by: addNode, modifyNode, downloadFile, deleteNodeClicked, destroyEdge
 	 * @param e event
 	 * @param nodes graph nodes
 	 * @param edges graph edges
 	 */
-	const redrawGraph = async (e:any,nodes:any,edges:any)=>{
-		
+	const redrawGraph = async (e:any,graph:any)=>{
+		const nodes = graph.nodes
+		const edges = graph.edges
 		anchors = []
 		defaultNodes = []
 
@@ -347,6 +347,7 @@
 		//console.log("OLD ANCHORS",oldanchors)
 		addAnchorListener()
 		addZoomListener()
+		adjustNodeHeight(graph)
 	}
 
 
@@ -400,8 +401,7 @@
 		const nodes = graph.nodes
 		edges = graph.edges
 		setGraphInitialDistribution(graph)
-		await redrawGraph(e,nodes,edges)
-		adjustNodeHeight(graph)
+		await redrawGraph(e,graph)
 	}
 
 	/**
@@ -441,8 +441,7 @@
 		// REDRAW GRAPH
 		element = document.getElementById("file-db-input")
 		setGraphInitialDistribution(graph)
-		redrawGraph(element,graph.nodes,edges)
-		adjustNodeHeight(graph)
+		redrawGraph(element,graph)
 	}
 
 	
@@ -451,6 +450,7 @@
 	 * @param ev node click event
 	 */
 	const nodeClicked = (ev:any)=>{
+		
 		// SET CURRENT NODE
 		currentnode = ev.detail.node.id.substring(2)
 		// HIGHLIGTH NODE
@@ -485,6 +485,11 @@
 		}
 	}
 
+	const nodeReleased = (ev:any)=>{
+		// SET CURRENT NODE
+		//console.log("NODE RELEASED",ev.detail.node)
+	}
+
 	/**
 	 * Delete clicked node
 	 * @param ev delete node click event
@@ -502,8 +507,7 @@
 		const nodes = graph.nodes
 		edges = graph.edges
 		setGraphInitialDistribution(graph)
-		await redrawGraph(element,nodes,edges)
-		adjustNodeHeight(graph)
+		await redrawGraph(element,graph)
 		
 	}
 
@@ -610,6 +614,8 @@
 		return(EDGES)
 	}
 
+
+
 </script>
 
 
@@ -621,7 +627,8 @@
 
 	<Svelvet  bind:zoom={zoom} minimap controls id="GRAPH-CANVAS">
 		{#each defaultNodes as node,index}
-			<Node {...node}  drop="cursor"  bind:position={node.position} on:nodeClicked={nodeClicked}  style="display:flex;justify-content: left;">
+			<Node {...node}
+			drop="cursor"  bind:position={node.position} on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased} style="display:flex;justify-content: left;">
 				{#each anchors[index] as anch}
 						<Anchor {...anch} multiple>
 							<CustomEdge slot=edge label="DEL" destroyEdge={destroyEdge}/>

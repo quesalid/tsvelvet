@@ -545,23 +545,23 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
                                 node.data[index].distribution = dist
-                                console.log("NODE ADDED",node.label,dist)
+                                //console.log("NODE ADDED",node.label,dist)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
                                 node.data[index].distribution = dist
-                                console.log("NODE REMOVED", node.label, dist)
+                                //console.log("NODE REMOVED", node.label, dist)
                                 break
                             case "STATUSADDED":
                                 node.data[index].distribution = dist
-                                console.log("STATUS ADDED", node.label, dist)
+                                //console.log("STATUS ADDED", node.label, dist)
                                 break
                             case "STATUSREMOVED":
                                 node.data[index].distribution = dist
-                                console.log("STATUS  REMOVED", node.label, dist)
+                                //console.log("STATUS  REMOVED", node.label, dist)
                                 break
                             default:
-                                console.log("NO CHANGE")
+                                //console.log("NO CHANGE")
                                 break
                         }
                     }
@@ -591,6 +591,9 @@ export const getArrayFromDistribution = (node, index, type='DISCRETE') => {
     switch (type) {
         case 'CONTINUOUS':
             distArray = getRetArrayDistCont(distribution, states, variable)
+            break;
+        case 'WEIGHT':
+            distArray = getRetArrayWeight(distribution, states, variable)
             break;
         default:
             distArray = getRetArrayDist(distribution, states, variable)
@@ -662,6 +665,26 @@ const getRetArrayDist = (distribution, states, variable) => {
         if (i % states.length == 0) {
             const carray = row.concat(probs)
             dist.push({ array:carray,idx:i})
+            probs.length = 0
+        }
+    }
+    return dist
+}
+
+const getRetArrayWeight = (distribution, states, variable) => {
+    const dist = []
+    const probs = []
+    for (let i = distribution.length - 1; i >= 0; i--) {
+        const row = []
+        const cond = distribution[i].cond
+        for (let j = cond.length - 1; j >= 0; j--) {
+            if (cond[j].variable != variable)
+                row.push(cond[j].states.name)
+        }
+        probs.push(distribution[i].weight)
+        if (i % states.length == 0) {
+            const carray = row.concat(probs)
+            dist.push({ array: carray, idx: i })
             probs.length = 0
         }
     }
@@ -1092,7 +1115,6 @@ Mixture.prototype = {
         for (var i = start; i < end; i += step) {
             LUT.push(this.get(i)*magnify);
         }
-        console.log("***** LUT *****",LUT)
         return LUT;
     },
 
@@ -1213,7 +1235,39 @@ export const normalizeProb = (node) => {
         const col = variables.length + i % node.data[index].status.length
         const row = Math.floor(i / node.data[index].status.length)
         node.data[index].distribution[node.data[index].distribution.length - i - 1].prob = arrayDist.distarray[row].array[col]
-        console.log("*** FOUND ***",node.data[index].distribution[node.data[index].distribution.length-i-1])
 
+    }
+}
+
+export const normalizeWeight = (node) => {
+    const index = node.data.findIndex((item) => item.distribution)
+    const arrayDist = getArrayFromDistribution(node, index,'WEIGHT')
+    // Conditioning variables (if any)
+    const variables = arrayDist.header.filter((item) => (!item.includes('=')))
+    // Conditioned variable
+    const nodevar = node.label
+    // A. Normalize probability in arrayDist
+    for (let i = 0; i < arrayDist.distarray.length; i++) {
+        const dist = arrayDist.distarray[i]
+        let sum = 0
+        for (let j = variables.length; j < dist.array.length; j++) {
+            if (dist.array[j] < 0) // check for negative values
+                dist.array[j] = -dist.array[j]
+            if (isNaN(dist.array[j])) // check for not a number
+                dist.array[j] = 0
+            sum += dist.array[j]
+        }
+        for (let j = variables.length; j < dist.array.length; j++) {
+            if (sum > 0)
+                dist.array[j] /= sum
+            else
+                dist.array[j] = 1 / (dist.array.length - variables.length)
+        }
+    }
+    // B. Update weight in node.data[index].distribution
+    for (let i = 0; i < node.data[index].distribution.length; i++) {
+        const col = variables.length + i % node.data[index].status.length
+        const row = Math.floor(i / node.data[index].status.length)
+        node.data[index].distribution[node.data[index].distribution.length - i - 1].weight = arrayDist.distarray[row].array[col]
     }
 }
