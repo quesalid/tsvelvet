@@ -28,7 +28,7 @@ export const utilAddNode = (e, node, svwidth = 100, svhwight = 100) => {
     let y
     let event = true
 
-    if (!e.target)
+    if (!e || !e.target)
         event = false
 	
 	// MOVE MOUSE
@@ -73,10 +73,12 @@ export const utilAddNode = (e, node, svwidth = 100, svhwight = 100) => {
 }
 
 
-const addProp2 = (vals, nodeProps, all = false) => {
-	const keys = Object.keys(vals)
+const addProp2 = (node, nodeProps, all = false) => {
+	const keys = Object.keys(node)
 	for (let i = 0; i < keys.length; i++) {
-		if (vals[keys[i]]) nodeProps[keys[i]] = vals[keys[i]];
+        if (node[keys[i]]) {
+            nodeProps[keys[i]] = node[keys[i]];
+        }
 	}
 };
 

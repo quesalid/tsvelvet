@@ -2,7 +2,7 @@
 import {onMount} from "svelte"
     import App from "../../App.svelte";
 
-import DRangeSlider from './DRangeSlider.svelte'
+import DRangeInput from './DRangeInput.svelte'
 
 export let node:any
 export let inpuHeaderColor = '#f1f1f1'
@@ -28,8 +28,8 @@ const evHandler = async(ev:any)=>{
 			if(inputStatus.value != undefined){
 				const minmax = inputStatus.value.split(',')
 				console.log("INTERVAL",minmax)
-				start=(Number(minmax[0])/scale - shift +0.5) <=1?Number(minmax[0])/scale - shift +0.5:1
-				end=(Number(minmax[1])/scale -shift+0.5) >=0?Number(minmax[1])/scale -shift+0.5:0
+				start=minmax[0]
+				end=minmax[1]
 				console.log("INTERVAL",start,end)
 			}else{
 				start = 0
@@ -77,7 +77,7 @@ const valueNumber = (ev:any)=>{
 					<input type="number" id="value-number" on:change="{valueNumber}" name="value-number" value={inputStatus.value}>
 				{/if}
 				{#if node.data && node.data[index].type =='INTERVAL'}
-					<DRangeSlider bind:start bind:end bind:value={inputStatus.value} scale={scale} shift={shift}/>
+					<DRangeInput bind:start bind:end bind:value={inputStatus.value}/>
 				{/if}
 			</div>
 		</div>

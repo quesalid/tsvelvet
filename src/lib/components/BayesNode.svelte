@@ -27,9 +27,14 @@ const getVal = (i:any)=>{
 	return value
 }
 
+
+
+	
+
 </script>
 
-	<div class="bayes-node-wrapper-p" id="{'NW-'+node.id}" >
+	<div class="bayes-node-wrapper-p" id="{'NW-'+node.id}" 
+	 >
 		<div class="node-menu-p" style="--background-color:{node.bgColor};">
 			<div style="text-align: center ;">
 				<input id="label" size="5" class="node-datacomp" value="{node.graphtype}" type="text" min="0" style="text-align: left;" disabled/>

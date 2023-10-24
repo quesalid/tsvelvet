@@ -49,7 +49,7 @@
 	let svwidth = 1000
 	let svheight = 600
 	let oldanchors = []
-	let intnode:any
+	
 	
 	// LOCAL VARS
 	let inListener = false
@@ -59,6 +59,8 @@
 	let x = 0
 	let y = 0
 	let title = 'GRAPH MENU'
+	let wrapperClassName = "node-wrapper-p"
+	
 	
 	onMount(async () => {  
 		defaultNodes = []
@@ -79,6 +81,8 @@
 		if(options.title)
 			title = options.title
 		nodePropsVals.data = loadData(datacomp)
+		if(datacomp == 'BAYES')
+				wrapperClassName = "bayes-node-wrapper-p"
 
 		title += '-'+datacomp
 		await addMouseListener()
@@ -121,6 +125,7 @@
 						zoom = zoom - 0.1
 					else
 						zoom = zoom + 0.1
+
 				})
 			}
 		}
@@ -131,7 +136,9 @@
 	}
 
 	const resetListener = async(ev:any)=>{
-		//setZoomValue(1.0)
+		setZoomValue(1.0)
+		graph = updateGraph()
+		console.log("RESET LISTENER",graph,defaultNodes)
 	}
 
 	/**
@@ -164,6 +171,13 @@
 					}
 				}
 			break
+		}
+	}
+
+	const clickReset = ()=>{
+		const resets = document.getElementsByClassName("reset")
+		if(resets.length){
+			resets.item(0).dispatchEvent(new Event('mousedown'));
 		}
 	}
 
@@ -212,7 +226,7 @@
 		ancs = utilAddAnchor(nodeProps,edges)
 
 		if(node){
-			const idx = defaultNodes.findIndex((item:any)=>item.id == node)
+			const idx = defaultNodes.findIndex((item:any)=>item.id == node.id)
 			anchors[idx]=ancs
 		}else{
 			anchors.push(ancs)
@@ -253,7 +267,8 @@
 	 */
 	const exportGraph = async (e:any|undefined)=>{
 		let filestring = ''
-		setZoomValue(1.0)
+		//setZoomValue(1.0)
+		clickReset()
 		const exp = updateGraph()
 		console.log("GRAPH",exp)
 		if(exp.nodes && exp.nodes.length > 0 && exp.nodes[0].graphtype == 'ISA'){
@@ -295,6 +310,8 @@
 		const element = document.getElementById("file-db-input")
 		if(element)
 			element.click()
+		// CLICK RESET TO CENTER GRAPH
+		clickReset()
 	}
 
 	/**
@@ -386,7 +403,8 @@
 	 * @param e hidden input event
 	 */
 	const downloadFile = async (e:any|undefined)=>{
-		setZoomValue(1.0)
+		//setZoomValue(1.0)
+		clickReset()
 		let file = e.target.files[0]
 		const result = await downloadJSON(file)
 		// FROM TREE TO GRAPH IF options.datacomp == 'ISA'
@@ -441,6 +459,7 @@
 		// REDRAW GRAPH
 		element = document.getElementById("file-db-input")
 		setGraphInitialDistribution(graph)
+		graph.nodes = defaultNodes
 		redrawGraph(element,graph)
 	}
 
@@ -454,14 +473,14 @@
 		// SET CURRENT NODE
 		currentnode = ev.detail.node.id.substring(2)
 		// HIGHLIGTH NODE
-		const wrappers = document.getElementsByClassName("node-wrapper-p")
+		const wrappers = document.getElementsByClassName(wrapperClassName)
 		for(let i=0;i<wrappers.length;i++){
 			wrappers[i].setAttribute('style','border: 1px solid black')
 		}
 		const nwuid = 'NW-'+ev.detail.node.id.substring(2)
 		const wrapper = document.getElementById(nwuid)
 		if(wrapper){
-			wrapper.setAttribute('style','border: 3px solid red;')
+			wrapper.setAttribute('style','border: 4px solid red;')
 			// SET CURRENT PANEL VALUE FROM defaultNodes
 			const found = defaultNodes.find((item:any)=> item.id == currentnode)
 			// UPDATE DEFAULT + CUSTOM VALUES FOR CONTEXT PANEL
@@ -507,6 +526,7 @@
 		const nodes = graph.nodes
 		edges = graph.edges
 		setGraphInitialDistribution(graph)
+		//graph = updateGraph()
 		await redrawGraph(element,graph)
 		
 	}
@@ -614,7 +634,7 @@
 		return(EDGES)
 	}
 
-
+	
 
 </script>
 
@@ -623,42 +643,43 @@
 	id="drop_zone"
 	on:contextmenu={onContextMenu}
 	class="editor-container"
-	style="--width:{svwidth+'px'};--height:{svheight+'px'};position:relative;">
+	style="--width:{svwidth+'px'};--height:{svheight+'px'};position:relative;"
+	>
 
-	<Svelvet  bind:zoom={zoom} minimap controls id="GRAPH-CANVAS">
-		{#each defaultNodes as node,index}
-			<Node {...node}
-			drop="cursor"  bind:position={node.position} on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased} style="display:flex;justify-content: left;">
-				{#each anchors[index] as anch}
-						<Anchor {...anch} multiple>
-							<CustomEdge slot=edge label="DEL" destroyEdge={destroyEdge}/>
-						</Anchor>
-				{/each}
-					<!-- HERE SHOULD ADD SUBGRAPH SPECIFIC NODE TYPE -->
-					<Resizer width height rotation/>
-					<svelte:component this={innernode} graph={graph} bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} distNodeClicked={distNodeClicked} distDefClicked={distDefClicked}/>
+		<Svelvet  bind:zoom={zoom} minimap controls id="GRAPH-CANVAS">
+			{#each defaultNodes as node , index}
+				<Node {...node}
+				drop="cursor" bind:position={node.position} on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased} style="display:flex;justify-content: left;">
+					{#each anchors[index] as anch}
+							<Anchor {...anch} multiple>
+								<CustomEdge slot=edge label="DEL" destroyEdge={destroyEdge}/>
+							</Anchor>
+					{/each}
+						<!-- HERE SHOULD ADD SUBGRAPH SPECIFIC NODE TYPE -->
+						<Resizer width height rotation/>
+						<svelte:component this={innernode} graph={graph} bind:node={node} deleteNodeClicked={deleteNodeClicked} dataNodeClicked={dataNodeClicked} distNodeClicked={distNodeClicked} distDefClicked={distDefClicked}/>
 					
-			</Node>
-		{/each}
-		<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
-	</Svelvet>
+				</Node>
+			{/each}
+			<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
+		</Svelvet>
 	
-	<ContextMenu title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
+		<ContextMenu title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
 	
-	<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
-	<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>
-	<div id="defaultDataMenuContainer">
-		<slot name="data">No slot </slot>
-	</div>
-	<div id="defaultDistributionMenuContainer">
-		<slot name="distribution">No slot</slot>
-	</div>
-	<div id="defaultDistributionDefContainer">
-		<slot name="distributiondef">No slot</slot>
-	</div>
-	<!--div id="defaultSubgraphMenuContainer">
-		<Subgraph id="defaultSubgraphMenuContainer" bind:node={sgnode} svwidth={svwidth} svheight={svheight} />
-	</!-div-->
+		<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
+		<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>
+		<div id="defaultDataMenuContainer">
+			<slot name="data">No slot </slot>
+		</div>
+		<div id="defaultDistributionMenuContainer">
+			<slot name="distribution">No slot</slot>
+		</div>
+		<div id="defaultDistributionDefContainer">
+			<slot name="distributiondef">No slot</slot>
+		</div>
+		<!--div id="defaultSubgraphMenuContainer">
+			<Subgraph id="defaultSubgraphMenuContainer" bind:node={sgnode} svwidth={svwidth} svheight={svheight} />
+		</!-div-->
 </div>
 
 <style>

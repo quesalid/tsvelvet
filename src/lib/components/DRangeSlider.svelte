@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { clamp } from 'yootils';
-    import App from '../../App.svelte';
 	export let start = 0;
-	export let end = 1;
+	export let end = 20;
 	export let value:any
 	export let scale = 20;
 	export let shift = 0.5
