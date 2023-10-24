@@ -8,6 +8,7 @@ import {dragElement,
 	getStatusDistribution,
 	updateAllDValues,
 	getMeansVariancesWeight} from './GraphUtils'
+
 import GaussParams from './GaussParams.svelte'
 
 export let id: string|any = 'defaultDistributionDefContainer'
@@ -46,7 +47,6 @@ const closeMenu = async(ev:any)=>{
 		const event = new CustomEvent('changevalue', {detail: {mv:mv}})
 		element.dispatchEvent(event)
 	}
-
 }
 
 

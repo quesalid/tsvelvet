@@ -27,10 +27,8 @@ const evHandler = async(ev:any)=>{
 		if( node.data && node.data[index].type =='INTERVAL'){
 			if(inputStatus.value != undefined){
 				const minmax = inputStatus.value.split(',')
-				console.log("INTERVAL",minmax)
 				start=minmax[0]
 				end=minmax[1]
-				console.log("INTERVAL",start,end)
 			}else{
 				start = 0
 				end = 1
@@ -68,7 +66,7 @@ const valueNumber = (ev:any)=>{
 				<label for="status-value">STATE:</label>
 				<input size="10" class="status-value" name="status-value" type="text" bind:value={inputStatus.name} disabled/>
 				<label for="status-value">VALUE:</label>
-				<input size="10" class="status-value" name="status-value" type="text" bind:value={inputStatus.value} disabled/>
+				<input size="16" class="status-value" name="status-value" type="text" bind:value={inputStatus.value} disabled/>
 				<!-- ADD EDIT TOOL DEPENDING ON VARIABLE TYPE-->
 				{#if node.data && node.data[index].type =='BOOL'}
 					<input type="checkbox" id="check-boolean" on:change="{valueChecked}" name="check-boolean" checked={inputStatus.value}>

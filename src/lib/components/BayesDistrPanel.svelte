@@ -10,7 +10,7 @@ import {dragElement,
 	Mixture,
 	getMeansVariancesWeight,
 	normalizeProb,
-	normalizeWeight} from './GraphUtils'
+	normalizeWeight,} from './GraphUtils'
 
 
 export let id: string|any = 'defaultDistributionMenuContainer'
@@ -55,6 +55,33 @@ const closeMenu = async(ev:any)=>{
 	updateAllDValues(document,graph)
 	let dataMenu = document.getElementById(id);
 	 dataMenu.style.visibility = "hidden";
+
+	 // UPDATE NODE PROBABILITY
+	// B. For each state compute probability
+	if(node.nodetype == 'CONTINUOUS'){
+		for(let i=0;i<node.data[0].distribution.length;i++){
+			const dist = node.data[0].distribution[i]
+			const means = [dist.mean]
+			const variances = [dist.variance]
+			const weigths = [dist.weight]
+			const mixture = new Mixture(means,variances,weigths);
+			mixture.setLimits(-20,20)
+			mixture.setNorm(node.data[0].distribution.length/node.data[0].status.length)
+			// B. For each state compute probability
+			const status = node.data[0].status.find((item:any)=>item.name == dist.cond[0].states.name)
+			console.log("CALC PROB",status.value, dist.cond[0].states.name)
+			let minmax = ['0','0']
+			if(status.value && typeof(status.value) == 'string')
+				minmax = status.value.split(',')
+			const start = !isNaN(Number(minmax[0]))?Number(minmax[0]):0
+			const end = !isNaN(Number(minmax[1]))?Number(minmax[1]):0
+			const pstart = mixture.getProbability(start)
+			const pend = mixture.getProbability(end)
+			console.log("CALC PROB",pstart, pend)
+			const p = pend - pstart
+			dist.prob = p
+		}
+	}
 }
 
 
@@ -89,7 +116,6 @@ let defDist = (ev:any|undefined)=>{
 		}
 		if(match){
 			if(node.nodetype == 'CONTINUOUS'){
-				console.log("SET WIGTH",Number(ev.target.value))
 				dist.weight = Number(ev.target.value)
 			}else{
 				dist.prob = Number(ev.target.value)

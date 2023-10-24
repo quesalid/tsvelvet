@@ -11,14 +11,17 @@ const changeValue = (ev:any)=>{
 	}else{
 		end = ev.target.value
 	}
+	if(start > end){
+		start = end
+	}
 	value = `${start},${end}`
 }
 
 </script>
 
 <div class="double-range-container">
-	<input type="number" id="value-number-min" on:change="{changeValue}" name="value-number" value={start}>
-	<input type="number" id="value-number-max" on:change="{changeValue}" name="value-number" value={end}>
+	<input size="10" max={end} type="number" id="value-number-min" on:input={changeValue} on:change="{changeValue}" name="value-number" value={start}>
+	<input size="10" min={start} type="number" id="value-number-max" on:input={changeValue} on:change="{changeValue}" name="value-number" value={end}>
 </div>
 
 <style>
