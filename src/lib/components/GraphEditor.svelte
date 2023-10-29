@@ -24,7 +24,9 @@
 		getDefaultPropertiesNames,
 	    adjustNodeHeight,
 		getParamsAddNode,
-		getParamsModNode} from './GraphUtils.js'
+		getParamsModNode,
+		getAllEdges } from './GraphUtils.js'
+   
     
 
 	
@@ -91,14 +93,19 @@
 
 	const addMouseListener = async ()=>{
 		const dropzone = document.getElementById("drop_zone")
+		const canvas = document.getElementById("G-GRAPH_CANVAS")
 		if(dropzone){
 			dropzone.addEventListener("mousemove",  function(e:any) {
 				x = e.clientX
 				y = e.clientY
 			})
 		}
+		if(canvas){
+			canvas.addEventListener("mousedown",  function(e:any) {
+				console.log("CANVAS MOUSEDOWN")
+			})
+		}
 	}
-
 	
    /**
 	 * Add zoom listener to zoom in/out buttons
@@ -135,10 +142,10 @@
 		}
 	}
 
+	
 	const resetListener = async(ev:any)=>{
 		setZoomValue(1.0)
 		graph = updateGraph()
-		console.log("RESET LISTENER",graph,defaultNodes)
 	}
 
 	/**
@@ -188,9 +195,6 @@
 	const onContextMenu = (ev:any)=>{
 		ev.preventDefault()
 		let contextMenu = document.getElementById(contextmenu);
-		/*let subgraphmenu = document.getElementById("defaultSubgraphMenuContainer")
-		console.log("SUBGRAPH VISIBILITY",subgraphmenu.style.visibility)
-		if(subgraphmenu.style.visibility != 'visible')*/
 			contextMenu.style.visibility = "visible";
 	}
 
@@ -234,6 +238,8 @@
 		defaultNodes = [...defaultNodes, { ...nodeProps }];
 		currentnode = nodeProps['id']
 		graph = updateGraph()
+		//currentnode = graph.nodes.find((item:any)=> item.id ==  nodeProps['id'])
+		editnode = graph.nodes.find((item:any)=> item.id ==  nodeProps['id'])
 		await redrawGraph(e,graph)
 
 	}
@@ -244,20 +250,33 @@
 	 * @param e modify node event
 	 */
 	const modifyNode = async (e:any|undefined)=>{
-		const index = defaultNodes.findIndex((item:any)=>item.id == currentnode)
+		const index = defaultNodes.findIndex((item:any)=>item.id == currentnode.substring(2))
+		let found
 		if(index > -1){
-			nodePropsVals.id = currentnode
-			
+			nodePropsVals.id = currentnode.substring(2)
+			//nodePropsVals.id = editnode.id
+			found = defaultNodes.find((item:any)=> item.id == currentnode.substring(2))
 			// Adjust node params to current node type and graph type
 			getParamsModNode(nodePropsVals,typeOptions)
 			const nodeProps = utilAddNode(e,nodePropsVals)
 			defaultNodes[index] = nodeProps
-
 			defaultNodes = defaultNodes
 
 		}
 		graph = updateGraph()
 		await redrawGraph(e,graph)
+		if(found){
+			console.log("MODIFY NODE FOUND")
+			const div = document.getElementById("dragabledefaultDataMenuContainer")
+			// Force panel update
+			const event = new CustomEvent("checknodedata", 
+				{
+					bubbles: true,
+					detail: { node: found }
+				}
+			)
+			div.dispatchEvent(event)
+		}
 		
 	}
 
@@ -270,12 +289,8 @@
 		//setZoomValue(1.0)
 		clickReset()
 		const exp = updateGraph()
-		console.log("GRAPH",exp)
 		if(exp.nodes && exp.nodes.length > 0 && exp.nodes[0].graphtype == 'ISA'){
 			 const tree = await getTreeFromGraph(exp,exp.nodes[0],null)
-			 console.log("TREE",tree)
-			 /*const backgraph = await getGraphFromTree(tree)
-			 console.log("BACKGRAPH",backgraph)*/
 			 let seen = []
 		     filestring = JSON.stringify(tree, function (key, val) {
 					if (typeof val == "object") {
@@ -295,7 +310,7 @@
 	 * Update graph from current edges and nodes
 	 */
 	const updateGraph = ()=>{
-		const edges = getAllEdges()
+		const edges = getAllEdges(document)
 		const nodes = defaultNodes
 		const exp = {nodes:nodes,edges:edges}
 		return exp
@@ -342,10 +357,18 @@
 	 * @param edges graph edges
 	 */
 	const redrawGraph = async (e:any,graph:any)=>{
+		/*anchors = []
+		defaultNodes = []
+		currentnode = ''*/
+		console.log("REDRAW GRAPH -- CURRENT ZOOM",zoom)
+		const currentzoom = zoom
+		// SHOUlD ADJUST NODE POSITIN TO CURRENT ZOOM
+		clearGraph(e)
+		setZoomValue(1.0)
 		const nodes = graph.nodes
 		const edges = graph.edges
-		anchors = []
-		defaultNodes = []
+
+		await adjustNodeHeight(graph,document)
 
 		for(let i=0;i<nodes.length;i++){
 			const node = nodes[i]
@@ -357,14 +380,17 @@
 			defaultNodes = [...defaultNodes, { ...nodeProps }]
 			await sleep(30)
 		}
-		defaultNodes = defaultNodes
-		if(nodes.length > 0)
-			currentnode = nodes[0]
+		//defaultNodes = defaultNodes
+		if(nodes.length > 0){
+			currentnode = nodes[0].id
+			//editnode = nodes[0]
+		}
 		oldanchors = anchors
 		//console.log("OLD ANCHORS",oldanchors)
 		addAnchorListener()
 		addZoomListener()
-		adjustNodeHeight(graph)
+		setZoomValue(currentzoom)
+		defaultNodes = defaultNodes
 	}
 
 
@@ -392,10 +418,11 @@
 	 */
 	const anchorMouseUp = (ev:any)=>{
 		// UPDATES GRAPH EDGES
-		edges = getAllEdges()
+		edges = getAllEdges(document)
 		graph.edges = edges
-		setGraphInitialDistribution(graph)
-
+		if(graph.nodes && graph.nodes.length > 0 && graph.nodes[0].graphtype == 'BAYES'){
+			setGraphInitialDistribution(graph)
+		}
 	}
 
 	/**
@@ -418,7 +445,8 @@
 		// DEFAULT NODES
 		const nodes = graph.nodes
 		edges = graph.edges
-		setGraphInitialDistribution(graph)
+		if(options.datacomp == 'bayes')
+			setGraphInitialDistribution(graph)
 		await redrawGraph(e,graph)
 	}
 
@@ -430,6 +458,7 @@
 		anchors = []
 		defaultNodes = []
 		currentnode = ''
+		//editnode = {}
 	}
 
 	/**
@@ -458,7 +487,8 @@
 		graph.edges = edges
 		// REDRAW GRAPH
 		element = document.getElementById("file-db-input")
-		setGraphInitialDistribution(graph)
+		if(options.datacomp == 'bayes')
+			setGraphInitialDistribution(graph)
 		graph.nodes = defaultNodes
 		redrawGraph(element,graph)
 	}
@@ -471,7 +501,8 @@
 	const nodeClicked = (ev:any)=>{
 		
 		// SET CURRENT NODE
-		currentnode = ev.detail.node.id.substring(2)
+		currentnode = ev.detail.node.id
+		//editnode = ev.detail.node
 		// HIGHLIGTH NODE
 		const wrappers = document.getElementsByClassName(wrapperClassName)
 		for(let i=0;i<wrappers.length;i++){
@@ -482,9 +513,10 @@
 		if(wrapper){
 			wrapper.setAttribute('style','border: 4px solid red;')
 			// SET CURRENT PANEL VALUE FROM defaultNodes
-			const found = defaultNodes.find((item:any)=> item.id == currentnode)
+			const found = defaultNodes.find((item:any)=> item.id == currentnode.substring(2))
 			// UPDATE DEFAULT + CUSTOM VALUES FOR CONTEXT PANEL
 			if(found){
+				editnode = found
 				const keys = Object.keys(found)
 				for(let i=0;i<keys.length;i++){
 					const value = found[keys[i]]
@@ -525,7 +557,8 @@
 
 		const nodes = graph.nodes
 		edges = graph.edges
-		setGraphInitialDistribution(graph)
+		if(options.datacomp == 'bayes')
+			setGraphInitialDistribution(graph)
 		//graph = updateGraph()
 		await redrawGraph(element,graph)
 		
@@ -538,10 +571,12 @@
 	const dataNodeClicked = (ev:any)=>{
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
-		editnode = found
-		const div = document.getElementById("defaultDataMenuContainer")
-		if(div)
-			div.style.visibility='visible'
+		if(found){
+			editnode = found
+			const div = document.getElementById("defaultDataMenuContainer")
+			if(div)
+				div.style.visibility='visible'
+		}
 		
 	}
 
@@ -570,73 +605,9 @@
 		if(div)
 			div.style.visibility='visible'
 	}
-
-	/*const openGraphClicked = (ev:any)=>{
-		const id = ev.target.getAttribute('data-node').substring(2)
-		const found = defaultNodes.find((item:any)=> item.id == id )
-		sgnode = found
-		const index = sgnode.data.findIndex((item:any)=>item.subgraph != null)
-		if(index < 0)
-			sgnode.data.push({subgraph:{nodes:[],edges:[]}})
-		console.log("openGraphClicked ......",sgnode)
-		const div = document.getElementById("defaultSubgraphMenuContainer")
-		const cevent = new CustomEvent("subgraphVisible", 
-			{
-				bubbles: true,
-				detail: { sgnode: sgnode,edges:[] }
-			}
-		)
-		div.dispatchEvent( cevent)
-		if(div)
-			div.style.visibility='visible'
-	}*/
-
-	/**
-	 * Get all graph edges by document parsing
-	 * Temporary because library doesn't have import/export yet
-	 * @retunn all graph edges
-	 */
-	const getAllEdges = ()=>{
-		const EDGES = []
-		// Query the dom to get all edges
-		let edgeArray:any
-		const edgewrappers = document.getElementsByClassName("edges-wrapper")
-		edgeArray = Array.from(edgewrappers)
-		for(let i=0;i<edgeArray.length;i++){
-			let pathArray:any
-			var dummyEl = document.createElement( 'html' )
-			dummyEl.innerHTML = edgeArray[i].innerHTML
-			let paths = dummyEl.getElementsByTagName("path")
-			pathArray = Array.from(paths)
-			for(let j=0;j<pathArray.length;j++){
-				// Split source destination
-				if(pathArray[j].id && pathArray[j].id.includes('+')){
-					const splitted = pathArray[j].id.split('+')
-					const destsplit = splitted[0].split('/')
-					const sourcesplit = splitted[1].split('/')
-					const sourcenode = sourcesplit[1].replace('-target', '')
-					const sourceanch = sourcesplit[0]
-					const destnode = destsplit[1]
-					const destanch = destsplit[0]
-					const path = pathArray[j].getAttribute("d")
-					const edge = {
-						id:pathArray[j].id,
-						source:sourcenode,
-						sourceanchor:sourceanch,
-						destination:destnode,
-						destanchor:destanch,
-						path:path
-					}
-					EDGES.push(edge)
-				}
-			}
-		}
-		return(EDGES)
-	}
-
 	
 
-</script>
+	</script>
 
 
 <div

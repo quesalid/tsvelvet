@@ -1024,7 +1024,8 @@ export const getAllCheckedStatus = (document) => {
  * Adjust  heigth baed on new node content for all graph nodes
  * @param {any} graph graph
  */
-export const adjustNodeHeight = (graph) => {
+export const adjustNodeHeight = (graph,document) => {
+    
     for (let i = 0; i < graph.nodes.length; i++) {
         const node = graph.nodes[i]
         const nwuid = 'NW-' + node.id
@@ -1148,12 +1149,15 @@ Mixture.prototype = {
 export const getParamsAddNode = (nodeParam, typeOptions) => {
     switch (nodeParam.graphtype) {
         case 'ISA':
+            let typeopt = typeOptions.find((item) => item.value == nodeParam['nodetype'])
             nodeParam.data = []
             let level = typeOptions.find((item) => item.value == nodeParam['nodetype'])
             const dt = { type: 'text', key: 'level', value: level.options.level }
             const dt1 = { type: 'text', key: 'nodetype', value: nodeParam['nodetype'] }
             nodeParam['data'].push(dt)
             nodeParam['data'].push(dt1)
+            if (typeopt.options.color)
+                nodeParam.bgColor = typeopt.options.color
             break
         case 'BAYES':
             //const ini = loadData(nodeParam.graphtype)
@@ -1177,11 +1181,12 @@ export const getParamsAddNode = (nodeParam, typeOptions) => {
 export const getParamsModNode = (nodePropsVals, typeOptions) => {
     switch (nodePropsVals.graphtype) {
         case 'ISA':
-            let level = typeOptions.find((item) => item.value == nodePropsVals['nodetype'])
-            const dt = { type: 'text', key: 'level', value: level.options.level }
+            let typeopt = typeOptions.find((item) => item.value == nodePropsVals['nodetype'])
+            const dt = { type: 'text', key: 'level', value: typeopt.options.level }
             const dt1 = { type: 'text', key: 'nodetype', value: nodePropsVals['nodetype'] }
             const index = nodePropsVals['data'].findIndex((item) => item.key == 'level')
             const index1 = nodePropsVals['data'].findIndex((item) => item.key == 'nodetype')
+            //const index2 = nodePropsVals['data'].findIndex((item) => item.key == 'bgColor')
             if (index > -1)
                 nodePropsVals['data'][index] = dt
             else
@@ -1190,6 +1195,9 @@ export const getParamsModNode = (nodePropsVals, typeOptions) => {
                 nodePropsVals['data'][index1] = dt1
             else
                 nodePropsVals['data'].push(dt1)
+            if (typeopt.options.color) { 
+                nodePropsVals.bgColor = typeopt.options.color
+            }
             break
         case 'BAYES':
             if (nodePropsVals.nodetype == 'CONTINUOUS') {
@@ -1201,6 +1209,49 @@ export const getParamsModNode = (nodePropsVals, typeOptions) => {
             }
             break
     }
+}
+
+/**
+     * Get all graph edges by document parsing
+     * Temporary because library doesn't have import/export yet
+     * @retunn all graph edges
+     */
+export const getAllEdges = (document) => {
+    const EDGES = []
+    // Query the dom to get all edges
+    let edgeArray
+    const edgewrappers = document.getElementsByClassName("edges-wrapper")
+    edgeArray = Array.from(edgewrappers)
+    for (let i = 0; i < edgeArray.length; i++) {
+        let pathArray
+        var dummyEl = document.createElement('html')
+        dummyEl.innerHTML = edgeArray[i].innerHTML
+        let paths = dummyEl.getElementsByTagName("path")
+        pathArray = Array.from(paths)
+        for (let j = 0; j < pathArray.length; j++) {
+            // Split source destination
+            if (pathArray[j].id && pathArray[j].id.includes('+')) {
+                const splitted = pathArray[j].id.split('+')
+                const destsplit = splitted[0].split('/')
+                const sourcesplit = splitted[1].split('/')
+                const sourcenode = sourcesplit[1].replace('-target', '')
+                const sourceanch = sourcesplit[0]
+                const destnode = destsplit[1]
+                const destanch = destsplit[0]
+                const path = pathArray[j].getAttribute("d")
+                const edge = {
+                    id: pathArray[j].id,
+                    source: sourcenode,
+                    sourceanchor: sourceanch,
+                    destination: destnode,
+                    destanchor: destanch,
+                    path: path
+                }
+                EDGES.push(edge)
+            }
+        }
+    }
+    return (EDGES)
 }
 
 /**

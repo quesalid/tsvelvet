@@ -1,5 +1,6 @@
 <script lang="ts">
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
+// https://www.w3schools.com/colors/colors_converter.asp
 
 import { onMount} from "svelte";
 
@@ -8,12 +9,9 @@ import {dragElement} from './GraphUtils'
 
 export let id: string|any = 'defaultDataMenuContainer'
 export let node: any 
-
 export let exp = (ev:any|undefined)=>console.log("EXPORT DATA")
 export let imp = (ev:any|undefined)=>console.log("INPORT DATA")
 export let filterKey = []
-
-
 export let panel = []
 export let graph = {nodes:[],edges:[]}
 
@@ -29,9 +27,35 @@ onMount(async () => {
 	const dragable = document.getElementById("dragable"+id);
     const dragzone = document.getElementById("dragzone"+id);
 
+	if(dragable){
+			dragable.addEventListener('checknodedata',evHandler)
+	}
+
 	newkey = 'name'
 	dragElement(dragable, dragzone);
  })
+
+ const evHandler = async(ev:any)=>{
+		const dataupdate = []
+		for(let i=0;i<filterKey.length;i++){
+			const found = node.data.find((item:any)=> item.key == filterKey[i])
+			dataupdate.push(found)
+		}
+		const panelfilter = panel.filter((item:any)=> item.option == node.nodetype)
+		const intersection = node.data.filter(o => panelfilter.some(({name}) => o.key === name));
+		for(let i=0;i<intersection.length;i++){
+			dataupdate.push(intersection[i])
+		}
+		console.log("EVHANDLER",node.data,dataupdate)
+		const index = graph.nodes.findIndex((item:any)=> item.id == node.id)
+		if(index >-1){
+			graph.nodes[index].data = dataupdate
+			node.data = dataupdate
+			graph = graph
+			console.log("EVHANDLER",graph.nodes[index].data)
+		}
+		
+	}
 
 const closeMenu = (ev:any)=>{
 	let dataMenu = document.getElementById(id);
@@ -131,7 +155,7 @@ let filterData = (key:any)=>{
 						<div class="inputs1">
 							{#each node.data as Item}
 								{#if filterData(Item.key)}
-									<input name="{'IN'+Item.key}" id="{Item.key}" type="{Item.type}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData} />
+									<input name="{'IN'+Item.key}" id="{Item.key}" type="{Item.type}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData}/>
 								{/if}
 							{/each}
 						</div>
