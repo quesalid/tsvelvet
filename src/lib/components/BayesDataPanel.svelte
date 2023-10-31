@@ -125,7 +125,7 @@ const getInputStatus = ()=>{
 <div class="data-menu" id="{'dragable'+id}">
 	<header id="{'dragzone'+id}">
 		<div class="data-menu-header" style="--background-color:{node.bgColor}">
-			<span>STATE MENU - {node.nodetype} VARIABLE</span>
+			<span>STATES DEFINITION - {node.label}</span>
 			<input type="button" value="CLOSE" on:click={closeMenu} />
 		</div>
 		 <div class="data-menu-toolbar">
