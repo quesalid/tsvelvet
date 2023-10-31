@@ -124,7 +124,7 @@ let filterData = (key:any)=>{
 <div class="data-menu" id="{'dragable'+id}">
 	<header id="{'dragzone'+id}">
 		<div class="data-menu-header" style="--background-color:{node.bgColor}">
-			<span>DATA MENU</span>
+			<span>DATA MENU {node.label}</span>
 			<input type="button" value="CLOSE" on:click={closeMenu} />
 		</div>
 		 <div class="data-menu-toolbar">
@@ -155,6 +155,7 @@ let filterData = (key:any)=>{
 						<div class="inputs1">
 							{#each node.data as Item}
 								{#if filterData(Item.key)}
+									<!-- INSERT INPUT TYPES-->
 									<input name="{'IN'+Item.key}" id="{Item.key}" type="{Item.type}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData}/>
 								{/if}
 							{/each}

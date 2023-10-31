@@ -46,6 +46,11 @@
 	}
 	.edge-button{
 		border: 1px solid;
+		font-size:x-small;
+	}
+	.edge-button:hover{
+		border: 2px solid;
+		border-color: #f00;
 	}
 </style>
 

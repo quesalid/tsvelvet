@@ -13,40 +13,40 @@
 	let currentnode = {}
 	let editnode:any = {}
 	let graph = {nodes:[],edges:[]}
-	//let innernode = IsaNode
-	let innernode = BayesNode
+	let innernode = IsaNode
+	//let innernode = BayesNode
 
-	/*let typeOptions = [
+	let typeOptions = [
 		{value:"COMPANY",options:{level:'level1',color:'#ffff80'}},
 		{value:"PLANT",options:{level:'level2',color:'#80ff80'}},
 		{value:"DEPARTMENT",options:{level:'level3',color:'#ff80ff'}},
 		{value:"LINE",options:{level:'level4',color:'#8080ff'}},
 		{value:"MACHINE",options:{level:'level5',color:'#ff00ff'}},
 		{value:"CONTROLLER",options:{level:'level6',color:'#ffc800'}}
-	]*/
-
-	let typeOptions = [
-		{value:"DISCRETE",options:{level:'level1'}},
-		{value:"CONTINUOUS",options:{level:'level1'}}
 	]
 
+	/*let typeOptions = [
+		{value:"DISCRETE",options:{level:'level1'}},
+		{value:"CONTINUOUS",options:{level:'level1'}}
+	]*/
+
 	let panel = [
-		{type:'text',name:'name',option:'COMPANY'},
-		{type:'date',name:'createdAt',option:'COMPANY'},
-		{type:'text',name:'name',option:'PLANT'},
-		{type:'text',name:'address',option:'PLANT'},
-		{type:'text',name:'name',option:'DEPARTMENT'},
-		{type:'text',name:'description',option:'DEPARTMENT'},
-		{type:'text',name:'name',option:'LINE'},
-		{type:'text',name:'description',option:'LINE'},
-		{type:'text',name:'name',option:'MACHINE'},
-		{type:'text',name:'description',option:'MACHINE'},
-		{type:'text',name:'supplier',option:'MACHINE'},
-		{type:'text',name:'name',option:'CONTROLLER'},
-		{type:'text',name:'description',option:'CONTROLLER'},
-		{type:'text',name:'model',option:'CONTROLLER'},
-		{type:'text',name:'ip',option:'CONTROLLER'},
-		{type:'number',name:'port',option:'CONTROLLER'},
+		{type:'text',subtype:'',name:'name',option:'COMPANY'},
+		{type:'date',subtype:'',name:'createdAt',option:'COMPANY'},
+		{type:'text',subtype:'',name:'name',option:'PLANT'},
+		{type:'text',subtype:'',name:'address',option:'PLANT'},
+		{type:'text',subtype:'',name:'name',option:'DEPARTMENT'},
+		{type:'text',subtype:'',name:'description',option:'DEPARTMENT'},
+		{type:'text',subtype:'',name:'name',option:'LINE'},
+		{type:'text',subtype:'',name:'description',option:'LINE'},
+		{type:'text',subtype:'',name:'name',option:'MACHINE'},
+		{type:'text',subtype:'',name:'description',option:'MACHINE'},
+		{type:'text',subtype:'',name:'supplier',option:'MACHINE'},
+		{type:'text',subtype:'',name:'name',option:'CONTROLLER'},
+		{type:'text',subtype:'',name:'description',option:'CONTROLLER'},
+		{type:'text',subtype:'',name:'model',option:'CONTROLLER'},
+		{type:'text',subtype:'ip',name:'ip',option:'CONTROLLER'},
+		{type:'number',subtype:'',name:'port',option:'CONTROLLER'},
 	]
 
 	// LIST OF DATA FIELDS NOT EDITABLE
@@ -79,16 +79,16 @@
 			element.click()
 	}
 
-	//const options = {datacomp:'ISA'}
-	const options = {datacomp:'BAYES'}
+	const options = {datacomp:'ISA'}
+	//const options = {datacomp:'BAYES'}
 
 </script>
 
 	<GraphEditor bind:graph={graph} typeOptions={typeOptions}  bind:editnode={editnode} innernode={innernode} options={options}>
-		<!--IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
-		<BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/>
+		<!--BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
-		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/-->
 
     </GraphEditor>
 

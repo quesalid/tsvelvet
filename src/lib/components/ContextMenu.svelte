@@ -205,6 +205,7 @@ const minimize = (event:any)=>{
 		margin-bottom: 2px;
 		margin-left: 2px;
 		background-color: #e9e9e9;
+		cursor:grab;
 	}
 
 	.context-menu-header input {

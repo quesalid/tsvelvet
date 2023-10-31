@@ -154,6 +154,14 @@
 	}
 
 	/**
+	 * Set Context title
+	 * @param name name to add to title
+	 */
+	const setContextTitle = (name:any)=>{
+		title = "GRAPH MENU - "+name
+	}
+
+	/**
 	 * Set zoom value
 	 * @param wanted zoom value
 	 */
@@ -377,10 +385,6 @@
 	 * @param edges graph edges
 	 */
 	const redrawGraph = async (e:any,graph:any)=>{
-		/*anchors = []
-		defaultNodes = []
-		currentnode = ''*/
-		console.log("REDRAW GRAPH -- CURRENT ZOOM",zoom)
 		const currentzoom = zoom
 		// SHOUlD ADJUST NODE POSITIN TO CURRENT ZOOM
 		clearGraph(e)
@@ -453,6 +457,8 @@
 		//setZoomValue(1.0)
 		clickReset()
 		let file = e.target.files[0]
+		//console.log("DOWNLOAD DATA",file.name)
+		setContextTitle(file.name)
 		const result = await downloadJSON(file)
 		// FROM TREE TO GRAPH IF options.datacomp == 'ISA'
 		if(options.datacomp == 'ISA'){
@@ -478,6 +484,7 @@
 		anchors = []
 		defaultNodes = []
 		currentnode = ''
+		//setContextTitle(datacomp)
 		//editnode = {}
 	}
 
@@ -663,7 +670,7 @@
 			<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
 		</Svelvet>
 	
-		<ContextMenu title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
+		<ContextMenu bind:title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
 	
 		<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
 		<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>
