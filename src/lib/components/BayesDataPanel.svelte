@@ -105,33 +105,12 @@ let updateDiscreteValues = async ()=>{
 		}
 		await sleep(50)
 	}
-	adjustNodeHeight(graph)
+	adjustNodeHeight(graph,document)
 }
 
 const changeVal = (ev:any) => {
 	node.data[index].type = ev.target.value
 }
-
-/*const changeContPar = (ev:any) => {
-	if(ev.target.name == 'mean-input')
-		mean = ev.target.value
-	else
-		variance = ev.target.value
-	// UPDATE NODE DATA
-	if(!isNaN(Number(mean)) && !isNaN(Number(variance)) && node.nodetype == 'CONTINUOUS'){
-		if(!node.data[index].params)
-			node.data[index].params = {}
-		node.data[index].params['mean'] = Number(mean)
-		node.data[index].params['variance'] = Number(variance)
-	}
-	// UPDATE DiscreteValue COMPONENTS
-	const element = document.getElementById('NWC-'+node.id+'-'+node.label)
-	if(element){
-		const valueEvent = new CustomEvent("changevalue", { detail: {mean:mean,variance:variance} });
-		element.dispatchEvent(valueEvent)
-	}
-}*/
-
 
 
 const getInputStatus = ()=>{

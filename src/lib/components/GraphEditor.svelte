@@ -124,12 +124,17 @@
 		if(zoomouts.length >0 && !outListener){
 			zoomouts.item(0).addEventListener("mousedown", function() {
 				zoom = zoom - 0.1
+				if(zoom < 0.1)
+					setZoomValue(0.1)
 			})
 			outListener = true
 			if(dropzone ){
 				dropzone.addEventListener("wheel", function(e) {
-					if(e.deltaY > 0)
+					if(e.deltaY > 0){
 						zoom = zoom - 0.1
+						if(zoom < 0.1)
+							setZoomValue(0.1)
+					}
 					else
 						zoom = zoom + 0.1
 
@@ -236,12 +241,26 @@
 			anchors.push(ancs)
 		}
 		defaultNodes = [...defaultNodes, { ...nodeProps }];
-		currentnode = nodeProps['id']
 		graph = updateGraph()
-		//currentnode = graph.nodes.find((item:any)=> item.id ==  nodeProps['id'])
-		editnode = graph.nodes.find((item:any)=> item.id ==  nodeProps['id'])
 		await redrawGraph(e,graph)
+		currentnode = nodeProps['id']
+		editnode = graph.nodes.find((item:any)=> item.id ==  nodeProps['id'])
+		// Highlight node
+		highlightNode(nodeProps.id)
 
+	}
+
+	const highlightNode = (id:any)=>{
+		const wrappers = document.getElementsByClassName(wrapperClassName)
+		for(let i=0;i<wrappers.length;i++){
+			const style = window.getComputedStyle(wrappers[i], null)
+			const border = style.getPropertyValue('border')
+			wrappers[i].setAttribute('style',border)
+		}
+		const nwuid = 'NW-'+id
+		const wrapper = document.getElementById(nwuid)
+		if(wrapper)
+			wrapper.setAttribute('style','border: 4px solid red;')
 	}
 
 
@@ -506,7 +525,9 @@
 		// HIGHLIGTH NODE
 		const wrappers = document.getElementsByClassName(wrapperClassName)
 		for(let i=0;i<wrappers.length;i++){
-			wrappers[i].setAttribute('style','border: 1px solid black')
+			const style = window.getComputedStyle(wrappers[i], null)
+			const border = style.getPropertyValue('border')
+			wrappers[i].setAttribute('style',border)
 		}
 		const nwuid = 'NW-'+ev.detail.node.id.substring(2)
 		const wrapper = document.getElementById(nwuid)
@@ -571,6 +592,8 @@
 	const dataNodeClicked = (ev:any)=>{
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
+		// Highlight node
+		highlightNode(id)
 		if(found){
 			editnode = found
 			const div = document.getElementById("defaultDataMenuContainer")
@@ -588,6 +611,8 @@
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
 		editnode = found
+		// Highlight node
+		highlightNode(id)
 		const div = document.getElementById("defaultDistributionMenuContainer")
 		if(div)
 			div.style.visibility='visible'
@@ -601,6 +626,8 @@
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
 		editnode = found
+		// Highlight node
+		highlightNode(id)
 		const div = document.getElementById("defaultDistributionDefContainer")
 		if(div)
 			div.style.visibility='visible'

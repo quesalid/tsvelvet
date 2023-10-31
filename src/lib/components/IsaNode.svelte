@@ -17,11 +17,15 @@ export let distDefClicked = (ev:any)=>{console.log("DISTDEF CLICKED")}
 				<input id="label" size="5" class="node-datacomp" value="{node.graphtype}" type="text" min="0" style="text-align: left;"/>
 			</div>
 			<input type="button" value="DATA" data-node="{'N-'+node.id}" on:click={dataNodeClicked}/>
-			<input type="button" value="DELETE" data-node="{'N-'+node.id}" on:click={deleteNodeClicked}/>
+			<input type="button" value="X" data-node="{'N-'+node.id}" on:click={deleteNodeClicked}/>
 		</div>
 		<div class="node-body-p">
-			<div>{node.label}</div>
-			<div>{node.nodetype}</div>
+			<div class="node-body-left-p">
+				<div>{node.label}</div>
+				<div>{node.nodetype}</div>
+			</div>
+			<div class="node-body-right-p">
+			</div>
 		</div>
 	</div>
 
@@ -41,7 +45,7 @@ export let distDefClicked = (ev:any)=>{console.log("DISTDEF CLICKED")}
   flex-direction: column;
   padding: 1px;
   gap: 10px;
-  border: 1px solid;
+  border: 3px solid;
   background-color: white;
 }
 .node-menu-p{
@@ -55,15 +59,31 @@ export let distDefClicked = (ev:any)=>{console.log("DISTDEF CLICKED")}
 	cursor: pointer;
 }
 
-.node-body-p{
-	display:block;
-	justify-content: left;
-	background-color: white
-}
-
-.node-body-p div{
+.node-body-p {
+	display:inline-flex;
 	margin-left: 5px;
 }
+
+.node-body-left-p{
+	display:flexbox;
+	justify-content: left;
+	float: left;
+	width: 50%;
+	padding: 10px;
+}
+
+.node-body-right-p{
+  display:flexbox;
+  justify-content:center;
+  float: left;
+  padding: 10px;
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  border-color: #222;
+  border: 1px solid;
+}
+
 
 .node-datacomp{
 		-webkit-border-radius: 30px;

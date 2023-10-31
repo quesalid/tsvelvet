@@ -81,7 +81,7 @@ const getVal = (i:any)=>{
   flex-direction: column;
   padding: 1px;
   gap: 10px;
-  border: 1px solid;
+  border: 3px solid;
   background-color: white;
 }
 .node-menu-p{

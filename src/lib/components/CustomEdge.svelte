@@ -21,8 +21,8 @@
 					viewBox="0 0 10 10"
 					refX="11"
 					refY="5"
-					markerWidth="6"
-					markerHeight="6"
+					markerWidth="7"
+					markerHeight="7"
 					orient="auto-start-reverse"
 				>
 					<!--path d="M 0 0 L 10 5 L 0 10 z" fill="#f00"/-->
@@ -33,16 +33,19 @@
 				d={path}
 				marker-start="url(#arrow)"
 			/>
-			<button  on:click={destroyEdge} slot="label">
+			<button  class="edge-button" on:click={destroyEdge} slot="label">
 				{label}
 			</button>
 	</Edge>
 
 <style>
 	path {
-		stroke: rgb(200, 200, 200);
-		stroke-width: 2px;
+		stroke: rgb(120, 120, 120);
+		stroke-width: 3px;
 		z-index: 4;
+	}
+	.edge-button{
+		border: 1px solid;
 	}
 </style>
 
