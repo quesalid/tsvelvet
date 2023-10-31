@@ -200,7 +200,8 @@
 	const onContextMenu = (ev:any)=>{
 		ev.preventDefault()
 		let contextMenu = document.getElementById(contextmenu);
-			contextMenu.style.visibility = "visible";
+		contextMenu.style.height = ""
+		contextMenu.style.visibility = "visible";
 	}
 
 	

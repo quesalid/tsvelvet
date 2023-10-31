@@ -1,6 +1,7 @@
 <script lang="ts">
 
 import { onMount} from "svelte";
+    import App from "../../App.svelte";
 import {dragElement,
 		getDefaultProperties} from './GraphUtils'
 
@@ -25,6 +26,7 @@ const formattedZoom = (zoom)=>{return new Intl.NumberFormat('en-IN', { maximumSi
 const getX = ()=>{return x}
 const getY = ()=>{return y}
 
+let contextHeight = ''
 
 export let typeOptions = [
 	{value:"DEFAULT",options:{level:'level0'}},
@@ -95,13 +97,27 @@ const clearLoc = (event:any)=>{
 	clear(event)
 }
 
+const minimize = (event:any)=>{
+	let contextMenu = document.getElementById(id);
+	contextHeight = contextMenu.style.height
+	if(contextHeight == '')
+      contextHeight ="20px"
+	else
+	  contextHeight = ""
+
+	contextMenu.style.height = contextHeight;
+}
+
 </script>
 
 <div class="context-menu" id="{id}">
 	<header id="{id+'dragzoneContext'}">
     <div class="context-menu-header">
 		<span>{title}</span>
-		<input type="button" value="X" on:click={closeMenu} />
+		<div>
+			<input type="button" value="-" on:click={minimize} />
+			<input type="button" value="X" on:click={closeMenu} />
+		</div>
 	</div>
 	 <div class="context-menu-toolbar">
 		<input type="button" value="+" on:click={add} />
@@ -188,6 +204,7 @@ const clearLoc = (event:any)=>{
 		margin-top: 2px;
 		margin-bottom: 2px;
 		margin-left: 2px;
+		background-color: #e9e9e9;
 	}
 
 	.context-menu-header input {
