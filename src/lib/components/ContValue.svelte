@@ -116,7 +116,6 @@ export let distDefClicked:any
 
 .bayes-node-cont-value{
     margin-left: 10px;
-    padding-bottom: 20px;
     cursor: pointer;
 }
 .bayes-node-cont-value canvas{

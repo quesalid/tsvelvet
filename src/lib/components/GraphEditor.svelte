@@ -22,7 +22,8 @@
 	    adjustNodeHeight,
 		getParamsAddNode,
 		getParamsModNode,
-		getAllEdges } from './GraphUtils.js'
+		getAllEdges,
+		updateAllCValues} from './GraphUtils.js'
    
     
 
@@ -91,6 +92,7 @@
 			console.log("ADDED REDRAW LISTENER")
 			div.addEventListener('redrawgraph',redrawEvent)
 		}
+
 		
 	})
 		
@@ -483,6 +485,7 @@
 		if(options.datacomp == 'bayes')
 			setGraphInitialDistribution(graph)
 		await redrawGraph(e,graph)
+		updateAllCValues(document,graph)
 	}
 
 	/**

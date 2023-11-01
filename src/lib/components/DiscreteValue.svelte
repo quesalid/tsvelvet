@@ -47,7 +47,7 @@
 	}
 </script>
 
-<div class="bayes-node-dicrete-value" id="{'NW-'+node.id+'-'+status.name}" data-node={node.label}>
+<div class="bayes-node-discrete-value" id="{'NW-'+node.id+'-'+status.name}" data-node={node.label}>
    
 	<label class="tooltip" for="meter-{status.name}">{status.name}
 		<span class="tooltiptext">{status.description}</span>
@@ -58,7 +58,7 @@
 </div>
 
 <style>
-.bayes-node-dicrete-value{
+.bayes-node-discrete-value{
 	display:grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	margin-top: 2px;

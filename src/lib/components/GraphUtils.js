@@ -967,7 +967,7 @@ export let getDefaultPropertiesNames = () => {
  * @param {any} given given status for other random variables
  */
 export const updateAllDValues = (document, graph, given = {}) => {
-    const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
+    const dvComponents = document.querySelectorAll('.bayes-node-discrete-value')
     for (let i = 0; i < dvComponents.length; i++) {
         const element = dvComponents[i]
         const idstr = element.id
@@ -993,6 +993,22 @@ export const updateAllDValues = (document, graph, given = {}) => {
     }
 }
 
+export const updateAllCValues = (document, graph, given = {}) => {
+    updateAllDValues(document, graph)
+    const dvComponents = document.querySelectorAll('.bayes-node-cont-value')
+    for (let i = 0; i < dvComponents.length; i++) {
+        const comp = dvComponents[i]
+        const id = comp.dataset.node.substring(2)
+        console.log("UPDATEALLCVALUES", id)
+        const found = graph.nodes.find((item) => item.id == id)
+        if (found) {
+            const mv = getMeansVariancesWeight(found, 0)
+            const event = new CustomEvent('changevalue', { detail: { mv: mv } })
+            comp.dispatchEvent(event)
+        }
+    }
+}
+
 /**
  * Return all status checked
  * @param {any} document dom
@@ -1000,7 +1016,7 @@ export const updateAllDValues = (document, graph, given = {}) => {
  */
 export const getAllCheckedStatus = (document) => {
     let given = {}
-    const dvComponents = document.querySelectorAll('.bayes-node-dicrete-value')
+    const dvComponents = document.querySelectorAll('.bayes-node-discrete-value')
     for (let i = 0; i < dvComponents.length; i++) {
         const element = dvComponents[i]
         const idstr = element.id

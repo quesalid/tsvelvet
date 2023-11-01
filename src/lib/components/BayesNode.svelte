@@ -51,6 +51,7 @@ const getVal = (i:any)=>{
 					<ContValue graph={graph} bind:node={node} distDefClicked={distDefClicked}/>
 				{/if}
 			</div>
+			<div class="divider"></div>
 			{#if node.data && index != -1}
 				<div class="dscrete-container">
 				{#each node.data[index].status as Status, i}
@@ -123,4 +124,8 @@ const getVal = (i:any)=>{
 		 text-align: center;
 		 cursor:pointer;
 	}
+.divider {
+  border-bottom: 1px solid black;
+  margin: 5px
+}
 </style>
