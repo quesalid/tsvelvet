@@ -5,7 +5,7 @@
 import { onMount} from "svelte";
 
 import {dragElement} from './GraphUtils'
-
+import IpInput from './IpInput.svelte'
 
 export let id: string|any = 'defaultDataMenuContainer'
 export let node: any 
@@ -20,6 +20,10 @@ export let graph = {nodes:[],edges:[]}
 let newkey = ''
 let newtype='text'
 let newvalue= ''
+let newsubtype=''
+let newoptions = []
+let ipArray = ['','','','']
+let ipAddress = ''
 
 
 onMount(async () => {  
@@ -33,6 +37,7 @@ onMount(async () => {
 
 	newkey = 'name'
 	dragElement(dragable, dragzone);
+	console.log("PANEL",panel)
  })
 
  const evHandler = async(ev:any)=>{
@@ -72,8 +77,11 @@ const changeKey = (ev:any)=>{
 		const target = ev.target
 		newkey = target.value
 		const item = panel.find((item:any)=> item.name == newkey)
-		if(item)
-		newtype = item.type
+		if(item){
+			newtype = item.type
+			newsubtype = item.subtype
+			newoptions = item.options
+		}
 }
 
 const changeValData = (ev:any)=>{
@@ -88,13 +96,14 @@ const changeValData = (ev:any)=>{
 const addToNode =  (ev:any)=>{
 	    
 	    if(validateKey(newkey.trim())){
-			const newitem = {type:newtype, key:newkey, value:newvalue}
+			const newitem = {type:newtype, key:newkey, subtype:newsubtype,value:newvalue, options:newoptions}
 			node.data.push(newitem)
 			node = node
 		}
 		newkey = ''
 		//newtype='text'
 		newvalue = ''
+		newsubtype=''
 }
 
 const deleteFromNode = (ev:any)=>{
@@ -117,6 +126,23 @@ const validateKey = (key:string)=>{
 
 let filterData = (key:any)=>{
 	return !filterKey.includes(key)
+}
+
+const updateIp = (ev:any)=>{
+	//check if valid triple
+	const num = parseInt(ev.target.value)
+	if(isNaN(num) || num < 0 || num > 255){
+		ev.target.value = ''
+		return
+	}
+	ipArray[ev.target.id] = ev.target.value.trim()
+	ipAddress = ipArray.join('.')
+	ipArray = ipArray
+	console.log("UPDATE IP",ipAddress)
+	const key = ev.target.name
+	const index = node.data.findIndex((item:any)=> item.key == key)
+	if(index > -1)
+			node.data[index].value = ipAddress
 }
 
 </script>
@@ -156,7 +182,19 @@ let filterData = (key:any)=>{
 							{#each node.data as Item}
 								{#if filterData(Item.key)}
 									<!-- INSERT INPUT TYPES-->
-									<input name="{'IN'+Item.key}" id="{Item.key}" type="{Item.type}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData}/>
+									{#if Item.subtype == 'ip'}
+										<IpInput key={Item.key} bind:ipArray={ipArray} updateIp={updateIp}/>
+									{:else if Item.subtype == 'select'}
+										<select name="{'IN'+Item.key}" id="{Item.key}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData}>
+											{#each Item.options as Option}
+												<option value={Option.name}>{Option.name}</option>
+											{/each}
+										</select>
+									{:else if Item.subtype == 'textarea'}
+										<textarea name="{'IN'+Item.key}" id="{Item.key}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData}></textarea>
+									{:else}
+										<input min="0" max="65535" name="{'IN'+Item.key}" id="{Item.key}" type="{Item.type}" value={Item.value} style=" margin: 10px 0 0;" on:change={changeValData}/>
+									{/if}
 								{/if}
 							{/each}
 						</div>

@@ -999,7 +999,6 @@ export const updateAllCValues = (document, graph, given = {}) => {
     for (let i = 0; i < dvComponents.length; i++) {
         const comp = dvComponents[i]
         const id = comp.dataset.node.substring(2)
-        console.log("UPDATEALLCVALUES", id)
         const found = graph.nodes.find((item) => item.id == id)
         if (found) {
             const mv = getMeansVariancesWeight(found, 0)
