@@ -7,28 +7,32 @@
 	import { loadData, uploadFile} from '../lib/components/GraphUtils.js'
 	import IsaNode from '../lib/components/IsaNode.svelte'
 	import BayesNode from '../lib/components/BayesNode.svelte'
+	import LoadGraph from '../lib/components/LoadGraph.svelte'
+	import SaveGraph from '../lib/components/SaveGraph.svelte'
+	import DeleteGraph from '../lib/components/DeleteGraph.svelte'
 
     let defaultNodes: any[] = [];
 	let contextmenu = 'myContext'
 	let currentnode = {}
 	let editnode:any = {}
-	let graph = {nodes:[],edges:[]}
-	//let innernode = IsaNode
-	let innernode = BayesNode
+	let graph = {nodes:[],edges:[],name:''}
+	let graphs = []
+	let innernode = IsaNode
+	//let innernode = BayesNode
 
-	/*let typeOptions = [
+	let typeOptions = [
 		{value:"COMPANY",options:{level:'level1',color:'#ffff80'}},
 		{value:"PLANT",options:{level:'level2',color:'#80ff80'}},
 		{value:"DEPARTMENT",options:{level:'level3',color:'#ff80ff'}},
 		{value:"LINE",options:{level:'level4',color:'#8080ff'}},
 		{value:"MACHINE",options:{level:'level5',color:'#ff00ff'}},
 		{value:"CONTROLLER",options:{level:'level6',color:'#ffc800'}}
-	]*/
+	]
 
-	let typeOptions = [
+	/*let typeOptions = [
 		{value:"DISCRETE",options:{level:'level1'}},
 		{value:"CONTINUOUS",options:{level:'level1'}}
-	]
+	]*/
 
 	let panel = [
 		{type:'text',subtype:'',name:'name',option:'COMPANY'},
@@ -79,16 +83,55 @@
 			element.click()
 	}
 
-	//const options = {datacomp:'ISA'}
-	const options = {datacomp:'BAYES'}
+	const graphSelect = async (ev:any)=>{
+		const graphid = ev.target.value
+		const graphtext = ev.target.options[ev.target.selectedIndex].dataset.graph
+		if(graphtext){
+			graph = JSON.parse(graphtext)
+		}
+		console.log("GRAPH SELECT",graphid,graph)
+	}
+
+	const submitQuery = async (ev:any|undefined)=>{
+		const elem = document.getElementById("ggraph-search") 
+		const query = elem?elem.value:''
+	
+		graphs = [
+			{id:'s3547dslfh6dfhcxtuw3797jhas',name:'GRAPH1',graph:{nodes:[],edges:[]}},
+			{id:'fr57945taiqd6gvxt67rtu9rt0p',name:'GRAPH2',graph:{nodes:[],edges:[]}},
+		]
+	
+		console.log("SUBMIT QUERY",query)
+
+		const select = document.getElementById("ggraph-select")
+		if(select){
+			select.style.visibility = "visible";
+		}
+	}
+
+	const saveQuery = async (ev:any|undefined)=>{
+		
+		console.log("SAVE GRAPH",graph)
+	}
+
+	const deleteQuery = async (ev:any|undefined)=>{
+		
+		console.log("DELETE GRAPH",graph)
+	}
+
+	const options = {datacomp:'ISA'}
+	//const options = {datacomp:'BAYES'}
 
 </script>
 
 	<GraphEditor bind:graph={graph} typeOptions={typeOptions}  bind:editnode={editnode} innernode={innernode} options={options}>
-		<!--IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
-		<BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/>
+		<!--BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
-		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/-->
+		<LoadGraph slot="importgraph" id="defaultLoadGraphContainer" bind:graph={graph} bind:graphs={graphs} submitQuery={submitQuery} graphSelect={graphSelect}/>"
+		<SaveGraph slot="savegraph" id="defaultSaveGraphContainer" bind:graph={graph}  saveQuery={saveQuery} />"
+		<DeleteGraph slot="deletegraph" id="defaultDeleteGraphContainer" bind:graph={graph}  deleteQuery={deleteQuery} />"
 		<!-- ADD LOAD,SAVE AND DELETE PANELS-->
 
 

@@ -21,7 +21,7 @@ export let distDefClicked = (ev:any)=>{console.log("DISTDEF CLICKED")}
 		</div>
 		<div class="node-body-p">
 			<div class="node-body-left-p">
-				<div>{node.label}</div>
+				<div style="font-weight:bold;">{node.label}</div>
 				<div>{node.nodetype}</div>
 			</div>
 			<div class="node-body-right-p">

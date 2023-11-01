@@ -46,7 +46,7 @@ const getVal = (i:any)=>{
 		<div class="node-body-p">
 			<div class="bayes-node-label">{node.label}</div>
 			<div style="display:flex;justify-content:last baseline;align-items: center;">
-				{node.nodetype}
+				<span>{node.nodetype}</span>
 				{#if node.nodetype == "CONTINUOUS"}
 					<ContValue graph={graph} bind:node={node} distDefClicked={distDefClicked}/>
 				{/if}
@@ -98,7 +98,8 @@ const getVal = (i:any)=>{
 .node-body-p{
 	display:block;
 	justify-content: left;
-	background-color: white
+	background-color: white;
+	padding-bottom: 2px;
 }
 
 .node-body-p div{

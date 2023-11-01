@@ -124,9 +124,9 @@ const minimize = (event:any)=>{
 		<input type="button" value="M" on:click={modify} />
 		<input type="button" value="EXP" on:click={exp} />
 		<input type="button" value="IMP" on:click={imp} />
-		<input type="button" value="LOAD" on:click={load} />
-		<input type="button" value="SAVE" on:click={save} />
-		<input type="button" value="DEL" on:click={del} />
+		<input class="db-button" type="button" value="LOAD" on:click={load} />
+		<input class="db-button" type="button" value="SAVE" on:click={save} />
+		<input class="db-button" type="button" value="DEL" on:click={del} />
 		<input type="button" value="CLEAR" on:click={clearLoc} />
 	</div>
 	<div class="context-menu-body">
@@ -253,6 +253,9 @@ const minimize = (event:any)=>{
 		 background-color: #777777;
 		 color: #FFFFFF;
 		 padding-left: 10px;
+	}
+	.db-button{
+		color: #f00;
 	}
 	
 </style>

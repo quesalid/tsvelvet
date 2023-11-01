@@ -7,10 +7,7 @@
 	import IsaNode from './IsaNode.svelte'
 	import CustomEdge from './CustomEdge.svelte';
 
-	// FOR NOW SUBGRAPH SUPPORT DISABLED DUE TO SVELVET LIB LACK OF SUPPORT
-	//import SubgraphNode from './SubgraphNode.svelte'
-	//import Subgraph from './Subgraph.svelte'
-
+	
 	import { utilAddNode, 
 		utilAddAnchor,
 		getTreeFromGraph,
@@ -60,7 +57,7 @@
 	let zoom = 1
 	let x = 0
 	let y = 0
-	let title = 'GRAPH MENU'
+	let title = ''
 	let wrapperClassName = "node-wrapper-p"
 	
 	
@@ -86,10 +83,21 @@
 		if(datacomp == 'BAYES')
 				wrapperClassName = "bayes-node-wrapper-p"
 
-		title += '-'+datacomp
+		setContextTitle(datacomp)
 		await addMouseListener()
+		// ADD REDRAW GRAPH LISTENER
+		const div = document.getElementById("drop_zone")
+		if(div){
+			console.log("ADDED REDRAW LISTENER")
+			div.addEventListener('redrawgraph',redrawEvent)
+		}
 		
 	})
+		
+	const redrawEvent = (ev:any)=>{
+		console.log("REDRAW EVENT",ev.detail.graph)
+		redrawGraph(ev,graph)
+	}
 
 	const addMouseListener = async ()=>{
 		const dropzone = document.getElementById("drop_zone")
@@ -158,7 +166,7 @@
 	 * @param name name to add to title
 	 */
 	const setContextTitle = (name:any)=>{
-		title = "GRAPH MENU - "+name
+		title = datacomp+" GRAPH - "+name
 	}
 
 	/**
@@ -392,7 +400,6 @@
 		const nodes = graph.nodes
 		const edges = graph.edges
 
-		await adjustNodeHeight(graph,document)
 
 		for(let i=0;i<nodes.length;i++){
 			const node = nodes[i]
@@ -414,6 +421,7 @@
 		addAnchorListener()
 		addZoomListener()
 		setZoomValue(currentzoom)
+		adjustNodeHeight(graph,document)
 		defaultNodes = defaultNodes
 	}
 
@@ -458,7 +466,8 @@
 		clickReset()
 		let file = e.target.files[0]
 		//console.log("DOWNLOAD DATA",file.name)
-		setContextTitle(file.name)
+		const fname = file.name.split('.')[0]
+		setContextTitle(fname)
 		const result = await downloadJSON(file)
 		// FROM TREE TO GRAPH IF options.datacomp == 'ISA'
 		if(options.datacomp == 'ISA'){
@@ -640,6 +649,24 @@
 		if(div)
 			div.style.visibility='visible'
 	}
+
+	const loadGraph = (ev:any)=>{
+		const div = document.getElementById("defaultLoadGraphContainer")
+		if(div)
+			div.style.visibility='visible'
+	}
+
+	const saveGraph = (ev:any)=>{
+		const div = document.getElementById("defaultSaveGraphContainer")
+		if(div)
+			div.style.visibility='visible'
+	}
+
+	const deleteGraph = (ev:any)=>{
+		const div = document.getElementById("defaultDeleteGraphContainer")
+		if(div)
+			div.style.visibility='visible'
+	}
 	
 
 	</script>
@@ -670,7 +697,7 @@
 			<!--ThemeToggle main="light" alt="dark" slot="toggle" /-->
 		</Svelvet>
 	
-		<ContextMenu bind:title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
+		<ContextMenu bind:title={title} bind:x={x} bind:y={y} bind:zoom={zoom} id="{contextmenu}" del={deleteGraph} save={saveGraph} load={loadGraph} add={addNode} modify={modifyNode} exp={exportGraph} imp={importGraph} clear={clearGraph} bind:propArrayVal={nodePropsVals} typeOptions={typeOptions} options={options}/>
 	
 		<input id="file-db-input"name="file-db-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadFile} >
 		<input id="file-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>
@@ -683,9 +710,15 @@
 		<div id="defaultDistributionDefContainer">
 			<slot name="distributiondef">No slot</slot>
 		</div>
-		<!--div id="defaultSubgraphMenuContainer">
-			<Subgraph id="defaultSubgraphMenuContainer" bind:node={sgnode} svwidth={svwidth} svheight={svheight} />
-		</!-div-->
+		<div id="defaultLoadGraphContainer">
+			<slot name="importgraph">No slot</slot>
+		</div>
+		<div id="defaultSaveGraphContainer">
+			<slot name="savegraph">No slot</slot>
+		</div>
+		<div id="defaultDeleteGraphContainer">
+			<slot name="deletegraph">No slot</slot>
+		</div>
 </div>
 
 <style>
@@ -739,7 +772,47 @@
   background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
 }
 
+#defaultLoadGraphContainer{
+  visibility: hidden; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width:inherit; /* Full width */
+  height: inherit; /* Full height */
+  overflow: auto; /*Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
+}
 
+#defaultSaveGraphContainer{
+  visibility: hidden; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width:inherit; /* Full width */
+  height: inherit; /* Full height */
+  overflow: auto; /*Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
+}
+
+#defaultDeleteGraphContainer{
+  visibility: hidden; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width:inherit; /* Full width */
+  height: inherit; /* Full height */
+  overflow: auto; /*Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
+}
 
 </style>
 

@@ -273,14 +273,15 @@ const getEdges = (graph, id) => {
 
 const getDataObject = (origin) => {
     let data = {}
+    console.log(origin)
+    if (!data['params'])
+        data['params'] = {}
+    data['params']['name'] = origin.label
     for (let i = 0; i < origin.data.length; i++) {
 
         switch (origin.data[i].key) {
             case 'level':
                 data['level'] = origin.data[i].value
-                break
-            case 'nodetype':
-                data['name'] = origin.data[i].value
                 break
             default:
                 if (!data['params'])
@@ -327,7 +328,7 @@ export const getTreeFromGraph = (graph, node, parent) => {
     for (let i = 0; i < nodes.length; i++) {
         // For strange reason this check is needed to avoid bad recursion from getChildrens
         if (nodes[i].id) {
-            const parent = tree
+            const parent = node.id
             const subtree = getTreeFromGraph(graph, nodes[i], parent)
             tree.children.push(subtree)
         }

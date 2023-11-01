@@ -61,7 +61,8 @@
 .bayes-node-dicrete-value{
 	display:grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
-	margin-top: 3px;
+	margin-top: 2px;
+	margin-bottom: 2px;
 }
 .spaced-label{
 	margin-left: 10px;
