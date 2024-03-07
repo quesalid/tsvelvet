@@ -1,0 +1,326 @@
+<script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
+	
+
+	let isOpen = false;
+	let nodeContainerOpen = false;
+	let edgeContainerOpen = false;
+	let anchorContainerOpen = false;
+	let nav: HTMLElement;
+	let drawerBtn: HTMLElement;
+	let nodeBtn: HTMLElement;
+	let edgeBtn: HTMLElement;
+	let anchorBtn: HTMLElement;
+	let drawerContents: HTMLElement;
+	let nodeContainer: HTMLElement;
+	let anchorContainer: HTMLElement;
+	let edgeContainer: HTMLElement;
+
+	const icons = {
+		north_west:'<path d="M758-160 260-658v294h-60v-396h396v60H302l498 498-42 42Z" />',
+		south_east:'<path d="M364-200v-60h294L160-758l42-42 498 498v-294h60v396H364Z" />',
+	};
+
+	let icon = isOpen ? 'south_east' : 'north_west'
+
+	let width = 16;
+
+	const handleDragStart = (e: DragEvent) => {
+		if (!e.dataTransfer) return;
+		e.dataTransfer.dropEffect = 'move';
+		/*
+		// Create props for anchor or edge if values were given
+		const anchorProps = createAnchorProps(true);
+		const edgeCreated = createEdgeProps();
+		// Create props for node
+		createNodeProps(edgeCreated, anchorProps);*/
+	};
+
+	const handleDrawer = () => {
+		if (!isOpen) {
+			isOpen = true;
+			nav.style.height = 'fit-content';
+			nav.style.width = '300px';
+		} else {
+			isOpen = false;
+			nav.style.height = '35px';
+			nav.style.width = '35px';
+			anchorContainerOpen = false;
+			edgeContainerOpen = false;
+			nodeContainerOpen = false;
+			nodeContainer.style.display = 'block';
+			edgeContainer.style.display = 'none';
+			anchorContainer.style.display = 'none';
+			nodeBtn.style.borderBottom =
+				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
+			edgeBtn.style.borderBottom = 'none';
+			anchorBtn.style.borderBottom = 'none';
+		}
+	};
+
+	const handleNodeContainer = () => {
+		if (!nodeContainerOpen) {
+			nodeContainerOpen = true;
+			anchorContainerOpen = false;
+			edgeContainerOpen = false;
+			nodeContainer.style.display = 'block';
+			edgeContainer.style.display = 'none';
+			anchorContainer.style.display = 'none';
+			nodeBtn.style.borderBottom =
+				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
+			edgeBtn.style.borderBottom = 'none';
+			anchorBtn.style.borderBottom = 'none';
+		}
+	};
+	const handleAnchorContainer = () => {
+		if (!anchorContainerOpen) {
+			anchorContainerOpen = true;
+			edgeContainerOpen = false;
+			nodeContainerOpen = false;
+			anchorContainer.style.display = 'block';
+			edgeContainer.style.display = 'none';
+			nodeContainer.style.display = 'none';
+			nodeBtn.style.borderBottom = 'none';
+			edgeBtn.style.borderBottom = 'none';
+			anchorBtn.style.borderBottom =
+				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
+		}
+	};
+	const handleEdgeContainer = () => {
+		if (!edgeContainerOpen) {
+			edgeContainerOpen = true;
+			nodeContainerOpen = false;
+			anchorContainerOpen = false;
+			edgeContainer.style.display = 'block';
+			anchorContainer.style.display = 'none';
+			nodeContainer.style.display = 'none';
+			nodeBtn.style.borderBottom = 'none';
+			edgeBtn.style.borderBottom =
+				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
+			anchorBtn.style.borderBottom = 'none';
+		}
+	};
+
+	let currentComponent = 'Node'; // Add this line
+
+	const handleKeyPress = (e: KeyboardEvent) => {
+		if (e.key === 'D') {
+			handleDrawer();
+		} else if (e.key === 'T' && isOpen) {
+			// Only toggle components if the drawer is open
+			if (currentComponent === 'Node') {
+				handleAnchorContainer();
+				currentComponent = 'Anchor';
+			} else if (currentComponent === 'Anchor') {
+				handleEdgeContainer();
+				currentComponent = 'Edge';
+			} else if (currentComponent === 'Edge') {
+				handleNodeContainer();
+				currentComponent = 'Node';
+			}
+		}
+	};
+
+	// Add the event listener when the component mounts
+	onMount(() => {
+		window.addEventListener('keydown', handleKeyPress);
+	});
+
+	// Remove the event listener when the component unmounts
+	onDestroy(() => {
+		window.removeEventListener('keydown', handleKeyPress);
+	});
+</script>
+
+<nav id="drawerWrapper" bind:this={nav}>
+	
+		<button
+			class="drawerBtn"
+			bind:this={drawerBtn}
+			on:click={handleDrawer}
+			aria-label="Open/Close Drawer"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" height={width} viewBox="0 -960 960 960" {width}>
+					{icons[icon]}
+			</svg>
+		</button>
+		<ul class="drawerContents" bind:this={drawerContents}>
+			<li class="list-item">
+				<div class="menu">
+					<button
+						class="dropdown"
+						bind:this={nodeBtn}
+						on:click={handleNodeContainer}
+						aria-label="Component"
+					>
+						Node
+					</button>
+					<button
+						class="dropdown"
+						bind:this={anchorBtn}
+						on:click={handleAnchorContainer}
+						aria-label="Component"
+					>
+						Anchor
+					</button>
+					<button
+						class="dropdown"
+						bind:this={edgeBtn}
+						on:click={handleEdgeContainer}
+						aria-label="Component"
+					>
+						Edge
+					</button>
+				</div>
+			</li>
+			<!-- Handle Node Dropdown -->
+			<li class="list-item">
+				<div class="propsContainer nodeContainer" bind:this={nodeContainer}>
+					<!--DrawerNode /-->
+				</div>
+			</li>
+			<!-- Handle Anchor Dropdown -->
+			<li class="list-item">
+				<div class="propsContainer anchorContainer" bind:this={anchorContainer}>
+					<!--DrawerAnchor /-->
+				</div>
+			</li>
+			<!-- Handle Edge Dropdown -->
+			<li class="list-item">
+				<div class="propsContainer edgeContainer" bind:this={edgeContainer}>
+					<!--DrawerEdge /-->
+				</div>
+			</li>
+			<li class="list-item">
+				<div
+					role="presentation"
+					class="defaultNodes"
+					draggable="true"
+					on:dragstart={handleDragStart}
+				>
+					Node
+				</div>
+			</li>
+		</ul>
+</nav>
+
+<style>
+	#drawerWrapper {
+		position: absolute;
+		width: 35px;
+		height: 30px;
+		border-radius: 6px;
+		left: 10px;
+		top: 10px;
+		border: solid 1px;
+		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		transition: 1s;
+		padding-top: 10px;
+		cursor: auto;
+		color: var(
+			--prop-controls-text-color,
+			var(--controls-text-color, var(--default-controls-text-color))
+		);
+		background-color: var(
+			--prop-controls-background-color,
+			var(--controls-background-color, var(--default-controls-background-color))
+		);
+	}
+
+	#drawerWrapper ul {
+		display: flex;
+		flex-direction: column;
+		list-style: none;
+		width: 100%;
+		text-decoration: none;
+		font-size: 20px;
+		overflow: hidden;
+		transition: 0.3s;
+		padding: 0;
+		margin-top: 45px;
+	}
+
+	.drawerBtn {
+		position: fixed;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		top: 20px;
+		left: 20px;
+		font-size: 20px;
+		cursor: pointer;
+		padding: 0.2rem 0;
+		border: none;
+		background: none;
+		color: inherit;
+	}
+	.menu {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.menu .dropdown {
+		padding: 10px;
+		font-size: 1rem;
+		flex-grow: 1;
+		cursor: pointer;
+		border: none;
+		margin: 0;
+		color: var(
+			--prop-drawer-button-text-color,
+			var(--drawer-button-text-color, var(--default-drawer-button-text-color))
+		);
+		background-color: var(
+			--prop-drawer-button-color,
+			var(--drawer-button-color, var(--default-drawer-button-color))
+		);
+	}
+
+	.menu .dropdown:first-child {
+		border-bottom: 3px solid
+			var(
+				--prop-drawer-button-text-color,
+				var(--drawer-button-text-color, var(--default-drawer-button-text-color))
+			);
+	}
+
+	.defaultNodes {
+		margin: auto;
+		margin-top: 15px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 60px;
+		width: 120px;
+		cursor: grab;
+		border-radius: 8px;
+		background-color: var(--prop-background-color, var(--node-color, var(--default-node-color)));
+		color: var(--prop-text-color, var(--text-color, var(--default-text-color)));
+		box-shadow: 0 0 0 var(--final-border-width) var(--final-border-color),
+			var(--default-node-shadow);
+	}
+	button:hover {
+		cursor: pointer;
+	}
+
+	.propsContainer {
+		height: fit-content;
+		width: fit-content;
+		overflow: hidden;
+		padding: 0 18px;
+		margin-top: 20px;
+	}
+
+	.nodeContainer {
+		display: block;
+	}
+	.edgeContainer {
+		display: none;
+	}
+	.anchorContainer {
+		display: none;
+	}
+</style>

@@ -548,20 +548,20 @@ export const setGraphInitialDistribution = (graph, equiprob = false) => {
                             case "NODEADDED":
                                 // If node added set eqprob to distribution
                                 node.data[index].distribution = dist
-                                //console.log("NODE ADDED",node.label,dist)
+                                console.log("NODE ADDED",node.label,dist)
                                 break
                             case "NODEREMOVED":
                                 // If node removed set eqprob to distribution
                                 node.data[index].distribution = dist
-                                //console.log("NODE REMOVED", node.label, dist)
+                                console.log("NODE REMOVED", node.label, dist)
                                 break
                             case "STATUSADDED":
                                 node.data[index].distribution = dist
-                                //console.log("STATUS ADDED", node.label, dist)
+                                console.log("STATUS ADDED", node.label, dist)
                                 break
                             case "STATUSREMOVED":
                                 node.data[index].distribution = dist
-                                //console.log("STATUS  REMOVED", node.label, dist)
+                                console.log("STATUS  REMOVED", node.label, dist)
                                 break
                             default:
                                 //console.log("NO CHANGE")
@@ -785,11 +785,13 @@ const buildStatusArray = (node, parents) => {
 export const getStatusDistribution = (graph, node, status, given = {}) => {
     // UPDATE DISTRIBUTION
     setGraphInitialDistribution(graph)
+    // CALL TO BAYESJS SPECIFIC FUNCTION - PUT IN API INTERFACE
     const bjgraph = getBayesjsStructure(graph)
     const results = inferAll(bjgraph,given, { force: true })
     let distval = 0.0
     if(results[node.label])
         distval = results[node.label][status]
+    // END CALL TO BAYESJS SPECIFIC FUNCTION
     return (distval)
 }
 

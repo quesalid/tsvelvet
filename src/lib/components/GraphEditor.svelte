@@ -95,12 +95,19 @@
 
 		
 	})
-		
+	
+/**
+ * Redraw graph event listener
+ * @param ev redraw graph event
+ */
 	const redrawEvent = (ev:any)=>{
 		console.log("REDRAW EVENT",ev.detail.graph)
 		redrawGraph(ev,graph)
 	}
 
+/**
+ * Add mouse listener to dropzone
+ */
 	const addMouseListener = async ()=>{
 		const dropzone = document.getElementById("drop_zone")
 		const canvas = document.getElementById("G-GRAPH_CANVAS")
@@ -117,9 +124,10 @@
 		}
 	}
 	
-   /**
-	 * Add zoom listener to zoom in/out buttons
-	 */
+/**
+ * Add zoom listener to zoom-in, zoom-out and reset buttons
+ * add wheel listener to dropzone
+ */
    const addZoomListener = async ()=>{
 		const zoomins = document.getElementsByClassName("zoom-in")
 		const zoomouts = document.getElementsByClassName("zoom-out")
@@ -157,24 +165,57 @@
 		}
 	}
 
-	
+/**
+* Add listener to all anchors
+* @param tag tag to filter anchors
+*/
+	const addAnchorListener = (tag="INPUT")=>{
+		// GET ALL INPUT ANCHORS
+		let arcwrapper = document.getElementsByClassName("anchor-wrapper")
+		let arcArray = Array.from(arcwrapper)
+		arcArray = arcArray.filter((item:any)=> item.id.includes(tag))
+		for(let i=0;i<arcArray.length;i++){
+			const elem = document.getElementById(arcArray[i].id)
+			if(elem){
+				elem.removeEventListener("mouseUp", anchorMouseUp)
+				elem.addEventListener("mouseup", anchorMouseUp)
+			}
+		}
+	}
+
+/**
+* Anchor mouseup listener
+* @param tag tag to filter anchors
+*/
+	const anchorMouseUp = (ev:any)=>{
+		// UPDATES GRAPH EDGES
+		edges = getAllEdges(document)
+		graph.edges = edges
+		if(graph.nodes && graph.nodes.length > 0 && graph.nodes[0].graphtype == 'BAYES'){
+			setGraphInitialDistribution(graph)
+		}
+	}
+
+/**
+ * Reset zoom value
+*/
 	const resetListener = async(ev:any)=>{
 		setZoomValue(1.0)
 		graph = updateGraph()
 	}
 
-	/**
-	 * Set Context title
-	 * @param name name to add to title
-	 */
+/**
+* Set Context title
+* @param name name to add to title
+*/
 	const setContextTitle = (name:any)=>{
 		title = datacomp+" GRAPH - "+name
 	}
 
-	/**
-	 * Set zoom value
-	 * @param wanted zoom value
-	 */
+/**
+* Set zoom value
+* @param wanted zoom value
+*/
 	const setZoomValue = (wanted:number)=>{
 		const zoomins = document.getElementsByClassName("zoom-in")
 		const zoomouts = document.getElementsByClassName("zoom-out")
@@ -204,6 +245,9 @@
 		}
 	}
 
+/**
+ * Click reset button programmatically
+ */
 	const clickReset = ()=>{
 		const resets = document.getElementsByClassName("reset")
 		if(resets.length){
@@ -211,10 +255,10 @@
 		}
 	}
 
-	/**
-	 * Dosplay context menu
-	 * @param ev context menu event
-	 */
+/**
+* Display context menu
+* @param ev context menu event
+*/
 	const onContextMenu = (ev:any)=>{
 		ev.preventDefault()
 		let contextMenu = document.getElementById(contextmenu);
@@ -226,12 +270,12 @@
 	let nodePropNames = getDefaultPropertiesNames()
 	let nodePropsVals = getDefaultProperties(typeOptions,options)
 
-	/**
-	 * Add new node to graph
-	 * @param e add node event
-	 * @param node node to add
-	 * @param edges edges to add
-	 */
+/**
+* Add new node to graph
+* @param e add node event
+* @param node node to add
+* @param edges edges to add
+*/
 	const addNode = async (e:any|undefined,node=null,edges=[])=>{
 		let nodeProps
 		let ancs
@@ -240,17 +284,22 @@
 		// Adjust node params to current node type and graph type
 		getParamsAddNode(nodeParam,typeOptions)
 
-		// CHECK IF NODE LABEL IS UNIQUE
-		const found = defaultNodes.find((item:any)=> item.label == nodeParam.label)
-		if(found)
+		
+		// CHECK IF NODE LABEL IS UNIQUE - IF NOT ADD 1
+		let found = defaultNodes.find((item:any)=> item.label == nodeParam.label)
+		while(found){
             nodeParam.label = nodeParam.label + '1'
+			found = defaultNodes.find((item:any)=> item.label == nodeParam.label)
+		}
 
 		if(node){
 			nodeParam = node
 		}
 		
+		// ADD NODE TO GRAPH
 		nodeParam.id = null
 		nodeProps = utilAddNode(e,nodeParam,svwidth,svheight)
+		// ADD ANCHORS TO GRAPH
 		ancs = utilAddAnchor(nodeProps,edges)
 
 		if(node){
@@ -260,15 +309,22 @@
 			anchors.push(ancs)
 		}
 		defaultNodes = [...defaultNodes, { ...nodeProps }];
+
+		// UPDATE GRAPH EDGES
 		graph = updateGraph()
+		// REDRAW GRAPH
 		await redrawGraph(e,graph)
+		// SET NEW NODE AS CURRENT NODE
 		currentnode = nodeProps['id']
 		editnode = graph.nodes.find((item:any)=> item.id ==  nodeProps['id'])
 		// Highlight node
 		highlightNode(nodeProps.id)
 
 	}
-
+/**
+ * Scan document and change node border to red if node id matches
+ * @param id node to highlight
+ */
 	const highlightNode = (id:any)=>{
 		const wrappers = document.getElementsByClassName(wrapperClassName)
 		for(let i=0;i<wrappers.length;i++){
@@ -283,16 +339,15 @@
 	}
 
 
-	/**
-	 * Modify current graph node
-	 * @param e modify node event
-	 */
+/**
+* Modify current graph node
+* @param e modify node event
+*/
 	const modifyNode = async (e:any|undefined)=>{
 		const index = defaultNodes.findIndex((item:any)=>item.id == currentnode.substring(2))
 		let found
 		if(index > -1){
 			nodePropsVals.id = currentnode.substring(2)
-			//nodePropsVals.id = editnode.id
 			found = defaultNodes.find((item:any)=> item.id == currentnode.substring(2))
 			// Adjust node params to current node type and graph type
 			getParamsModNode(nodePropsVals,typeOptions)
@@ -304,7 +359,6 @@
 		graph = updateGraph()
 		await redrawGraph(e,graph)
 		if(found){
-			console.log("MODIFY NODE FOUND")
 			const div = document.getElementById("dragabledefaultDataMenuContainer")
 			// Force panel update
 			const event = new CustomEvent("checknodedata", 
@@ -315,13 +369,12 @@
 			)
 			div.dispatchEvent(event)
 		}
-		
 	}
 
-	/**
-	 * Export graph to json file
-	 * @param e export graph event
-	 */
+/**
+* Export graph to json file
+* @param e export graph event
+*/
 	const exportGraph = async (e:any|undefined)=>{
 		let filestring = ''
 		//setZoomValue(1.0)
@@ -344,9 +397,9 @@
 		uploadFile(filestring,'TEST.json')
 	}
 
-	/**
-	 * Update graph from current edges and nodes
-	 */
+/**
+* Update graph structure from current edges and nodes
+*/
 	const updateGraph = ()=>{
 		const edges = getAllEdges(document)
 		const nodes = defaultNodes
@@ -355,10 +408,10 @@
 	}
 
 	
-	/**
-	 * Import graph from json file clicking on hidden input
-	 * @param e import graph event
-	 */
+/**
+* Import graph from json file clicking on hidden input
+* @param e import graph event
+*/
 	const importGraph = (e:any|undefined)=>{
 		const element = document.getElementById("file-db-input")
 		if(element)
@@ -367,10 +420,10 @@
 		clickReset()
 	}
 
-	/**
-	 * Download data from json file clicking on hidden input
-	 * @param e hidden input event
-	 */
+/**
+* Download data from json file clicking on hidden input
+* @param e hidden input event
+*/
 	const downloadData = async (e:any|undefined)=>{
 		let file = e.target.files[0]
 		const result = await downloadJSON(file)
@@ -387,82 +440,10 @@
 		editnode = editnode
 	}
 
-	/**
-	 * Redraw graph from nodes and edges
-	 * called by: addNode, modifyNode, downloadFile, deleteNodeClicked, destroyEdge
-	 * @param e event
-	 * @param nodes graph nodes
-	 * @param edges graph edges
-	 */
-	const redrawGraph = async (e:any,graph:any)=>{
-		const currentzoom = zoom
-		// SHOUlD ADJUST NODE POSITIN TO CURRENT ZOOM
-		clearGraph(e)
-		setZoomValue(1.0)
-		const nodes = graph.nodes
-		const edges = graph.edges
-
-
-		for(let i=0;i<nodes.length;i++){
-			const node = nodes[i]
-			let nodeProps
-			let ancs
-			nodeProps = utilAddNode(e,node,svwidth,svheight)
-			ancs = utilAddAnchor(node,edges)
-			anchors.push(ancs)
-			defaultNodes = [...defaultNodes, { ...nodeProps }]
-			await sleep(30)
-		}
-		//defaultNodes = defaultNodes
-		if(nodes.length > 0){
-			currentnode = nodes[0].id
-			//editnode = nodes[0]
-		}
-		oldanchors = anchors
-		//console.log("OLD ANCHORS",oldanchors)
-		addAnchorListener()
-		addZoomListener()
-		setZoomValue(currentzoom)
-		adjustNodeHeight(graph,document)
-		defaultNodes = defaultNodes
-	}
-
-
-	/**
-	 * Add listener to all anchors
-	 * @param tag tag to filter anchors
-	 */
-	const addAnchorListener = (tag="INPUT")=>{
-		// GET ALL INPUT ANCHORS
-		let arcwrapper = document.getElementsByClassName("anchor-wrapper")
-		let arcArray = Array.from(arcwrapper)
-		arcArray = arcArray.filter((item:any)=> item.id.includes(tag))
-		for(let i=0;i<arcArray.length;i++){
-			const elem = document.getElementById(arcArray[i].id)
-			if(elem){
-				elem.removeEventListener("mouseUp", anchorMouseUp)
-				elem.addEventListener("mouseup", anchorMouseUp)
-			}
-		}
-	}
-
-	/**
-	 * Anchor mouseup listener
-	 * @param tag tag to filter anchors
-	 */
-	const anchorMouseUp = (ev:any)=>{
-		// UPDATES GRAPH EDGES
-		edges = getAllEdges(document)
-		graph.edges = edges
-		if(graph.nodes && graph.nodes.length > 0 && graph.nodes[0].graphtype == 'BAYES'){
-			setGraphInitialDistribution(graph)
-		}
-	}
-
-	/**
-	 * Dowload graph from json file clicking on hidden input
-	 * @param e hidden input event
-	 */
+/**
+* Dowload graph from json file clicking on hidden input
+* @param e hidden input event
+*/
 	const downloadFile = async (e:any|undefined)=>{
 		//setZoomValue(1.0)
 		clickReset()
@@ -488,10 +469,48 @@
 		updateAllCValues(document,graph)
 	}
 
-	/**
-	 * Clear graph
-	 * @param e clear graph event
-	 */
+/**
+* Redraw graph from nodes and edges
+* called by: addNode, modifyNode, downloadFile, deleteNodeClicked, destroyEdge
+* @param e event
+* @param nodes graph nodes
+* @param edges graph edges
+*/
+	const redrawGraph = async (e:any,graph:any)=>{
+		const currentzoom = zoom
+		// SHOUlD ADJUST NODE POSITIN TO CURRENT ZOOM
+		clearGraph(e)
+		setZoomValue(1.0)
+		const nodes = graph.nodes
+		const edges = graph.edges
+
+
+		for(let i=0;i<nodes.length;i++){
+			const node = nodes[i]
+			let nodeProps
+			let ancs
+			nodeProps = utilAddNode(e,node,svwidth,svheight)
+			ancs = utilAddAnchor(node,edges)
+			anchors.push(ancs)
+			defaultNodes = [...defaultNodes, { ...nodeProps }]
+			await sleep(30)
+		}
+		if(nodes.length > 0){
+			currentnode = nodes[0].id
+		}
+		oldanchors = anchors
+		addAnchorListener()
+		addZoomListener()
+		setZoomValue(currentzoom)
+		adjustNodeHeight(graph,document)
+		defaultNodes = defaultNodes
+	}
+
+
+/**
+* Clear graph
+* @param e clear graph event
+*/
 	const clearGraph = (e:any|undefined)=>{
 		anchors = []
 		defaultNodes = []
@@ -500,10 +519,10 @@
 		//editnode = {}
 	}
 
-	/**
-	 * Destroy edge on button click
-	 * @param ev button click event
-	 */
+/**
+* Destroy edge on button click
+* @param ev button click event
+*/
 	const destroyEdge = (ev:any)=>{
 		let element = ev.target.parentNode 
 		let id = ''
@@ -533,15 +552,13 @@
 	}
 
 	
-	/**
-	 * Select node on clik
-	 * @param ev node click event
-	 */
+/**
+* Select node on clik
+* @param ev node click event
+*/
 	const nodeClicked = (ev:any)=>{
-		
 		// SET CURRENT NODE
 		currentnode = ev.detail.node.id
-		//editnode = ev.detail.node
 		// HIGHLIGTH NODE
 		const wrappers = document.getElementsByClassName(wrapperClassName)
 		for(let i=0;i<wrappers.length;i++){
@@ -582,10 +599,10 @@
 		//console.log("NODE RELEASED",ev.detail.node)
 	}
 
-	/**
-	 * Delete clicked node
-	 * @param ev delete node click event
-	 */
+/**
+* Delete clicked node
+* @param ev delete node click event
+*/
 	const deleteNodeClicked = async(ev:any)=>{
 		// DELETE NODE FROM graph nodes AND EDGES FROM graph edges
 		// THEN REDRAW  graph
@@ -605,10 +622,10 @@
 		
 	}
 
-	/**
-	 * Show data panel on node click
-	 * @param ev data node click event
-	 */
+/**
+* Show data panel on node click
+* @param ev data node click event
+*/
 	const dataNodeClicked = (ev:any)=>{
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
@@ -623,10 +640,10 @@
 		
 	}
 
-	/**
-	 * Show distribution panel on node click
-	 * @param ev distribution node click event
-	 */
+/**
+* Show distribution panel on node click
+* @param ev distribution node click event
+*/
 	const distNodeClicked = (ev:any)=>{
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
@@ -638,10 +655,10 @@
 			div.style.visibility='visible'
 	}
 
-	/**
-	 * Show distribution definition panel on node click
-	 * @param ev distribution node click event
-	 */
+/**
+* Show distribution definition panel on node click
+* @param ev distribution node click event
+*/
 	const distDefClicked = (ev:any)=>{
 		const id = ev.target.getAttribute('data-node').substring(2)
 		const found = defaultNodes.find((item:any)=> item.id == id )
@@ -653,25 +670,37 @@
 			div.style.visibility='visible'
 	}
 
+/**
+* Load graph from db
+* @param ev distribution node click event
+*/
 	const loadGraph = (ev:any)=>{
 		const div = document.getElementById("defaultLoadGraphContainer")
 		if(div)
 			div.style.visibility='visible'
 	}
-
+/**
+ * Save graph to db
+ * @param ev
+ */
 	const saveGraph = (ev:any)=>{
 		const div = document.getElementById("defaultSaveGraphContainer")
 		if(div)
 			div.style.visibility='visible'
 	}
-
+/**
+ * delete graph from db
+ * @param ev
+ */
 	const deleteGraph = (ev:any)=>{
 		const div = document.getElementById("defaultDeleteGraphContainer")
 		if(div)
 			div.style.visibility='visible'
 	}
-	
 
+	const onDrag = (ev:any)=>{
+		console.log("DRAG",ev)
+	}
 	</script>
 
 

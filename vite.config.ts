@@ -3,6 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { UserConfig } from 'vite'
 import path from 'path'
 import { fileURLToPath } from 'url';
+import postcss from './postcss.config.js';
 
 // configure vite to publish the svelte components as a library
 // https://vitejs.dev/guide/build.html#library-mode
@@ -28,7 +29,13 @@ const config: UserConfig = {
             // the proper extensions will be added
             fileName: 'tsvelvet',
         }
-    }
+    },
+    server: {
+        port: 8088
+    },
+    css: {
+        postcss
+    },
 };
 
 export default config;

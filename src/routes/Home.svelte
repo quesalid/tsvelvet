@@ -17,22 +17,22 @@
 	let editnode:any = {}
 	let graph = {nodes:[],edges:[],name:''}
 	let graphs = []
-	let innernode = IsaNode
-	//let innernode = BayesNode
+	//let innernode = IsaNode
+	let innernode = BayesNode
 
-	let typeOptions = [
+	/*let typeOptions = [
 		{value:"COMPANY",options:{level:'level1',color:'#ffff80'}},
 		{value:"PLANT",options:{level:'level2',color:'#80ff80'}},
 		{value:"DEPARTMENT",options:{level:'level3',color:'#ff80ff'}},
 		{value:"LINE",options:{level:'level4',color:'#8080ff'}},
 		{value:"MACHINE",options:{level:'level5',color:'#ff00ff'}},
 		{value:"CONTROLLER",options:{level:'level6',color:'#ffc800'}}
-	]
+	]*/
 
-	/*let typeOptions = [
+	let typeOptions = [
 		{value:"DISCRETE",options:{level:'level1'}},
 		{value:"CONTINUOUS",options:{level:'level1'}}
-	]*/
+	]
 
 	let panel = [
 		{type:'text',subtype:'',name:'name',option:'COMPANY'},
@@ -131,16 +131,16 @@
 		console.log("DELETE GRAPH",graph)
 	}
 
-	const options = {datacomp:'ISA'}
-	//const options = {datacomp:'BAYES'}
+	//const options = {datacomp:'ISA'}
+	const options = {datacomp:'BAYES'}
 
 </script>
 
 	<GraphEditor bind:graph={graph} typeOptions={typeOptions}  bind:editnode={editnode} innernode={innernode} options={options}>
-		<IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/>
-		<!--BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
+		<!--IsaDataPanel slot="data" id="defaultDataMenuContainer" bind:node={editnode} bind:graph={graph} filterKey={filterKey} exp={exportData} imp={importData} panel={panel}/-->
+		<BayesDataPanel slot="data" id="defaultDataMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 		<BayesDistrPanel slot="distribution" id="defaultDistributionMenuContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
-		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/-->
+		<BayesDistrDefPanel slot="distributiondef" id="defaultDistributionDefContainer" bind:graph={graph} bind:node={editnode}  exp={exportData} imp={importData}/>
 		<LoadGraph slot="importgraph" id="defaultLoadGraphContainer" bind:graph={graph} bind:graphs={graphs} submitQuery={submitQuery} graphSelect={graphSelect}/>"
 		<SaveGraph slot="savegraph" id="defaultSaveGraphContainer" bind:graph={graph}  saveQuery={saveQuery} />"
 		<DeleteGraph slot="deletegraph" id="defaultDeleteGraphContainer" bind:graph={graph}  deleteQuery={deleteQuery} />"

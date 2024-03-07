@@ -6,6 +6,7 @@
 import { Router, Route, navigate } from "svelte-routing";
 import { onMount} from "svelte";
 import HOME from "./routes/Home.svelte"
+import EDITOR from "./lib/editor/Editor.svelte"
 
 
 export let url = "/";
@@ -20,7 +21,8 @@ export let url = "/";
 
 <Router url={url}>
   <div>
-    <Route path="/" component={HOME}/>
+    <!--Route path="/" component={HOME}/-->
+    <Route path="/" component={EDITOR}/>
   </div>
 </Router>
 
