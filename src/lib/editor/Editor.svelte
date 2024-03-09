@@ -1,5 +1,6 @@
 <script lang="ts">
     // EXTERNAL
+	import { onMount, onDestroy } from 'svelte';
     import {Svelvet, Node,Anchor,Edge} from 'svelvet';
 	import EditorMenu from './EditorMenu.svelte'
 	import TestMenu from './TestMenu.svelte'
@@ -28,6 +29,7 @@
 	export let modifier: 'alt' | 'ctrl' | 'shift' | 'meta' = 'meta';
 	export let trackpadPan = false;
 	export let toggle = false;
+
 
 	// Store props in object to be passed to svelvet
 	const svelvetProps = {
@@ -85,103 +87,60 @@
 		});
 		const target = e.target as HTMLElement;
 		target.dispatchEvent(moveEvent);
-		console.log("HANDLE DROP **********",e)
+		console.log("HANDLE DROP **********",target,$customDefaultNodes)
 
 		defaultNodes = $customDefaultNodes;
 	};
+	const nodeClicked = (ev:any)=>{
+		ev.preventDefault()
+		console.log("NODE CLICKED")
+	}
+	const nodeReleased = (ev:any)=>{
+		ev.preventDefault()
+		console.log("NODE RELEASED")
+	}
+	
 </script>
 
 
-<div
-	role="presentation"
-	class="drop_zone"
-	on:dragenter={handleDragEnter}
-	on:dragleave={handleDragLeave}
-	on:dragover={onDragOver}
-	on:drop={handleDrop}
->
-	<Svelvet {...svelvetProps}>
-		{#each defaultNodes as { anchors, edgeProps, ...nodeProps }}
-			{#if anchors}
-				<Node {...nodeProps} drop="cursor">
-					<slot slot="anchorWest">
-						{#each anchors.left as leftAnchorProps}
-							{#if edgeProps}
-								<Anchor {...leftAnchorProps}>
-									<Edge {...edgeProps} slot="edge" />
-								</Anchor>
-							{:else}
-								<Anchor {...leftAnchorProps} />
-							{/if}
-						{/each}
-					</slot>
-					<slot slot="anchorEast">
-						{#each anchors.right as rightAnchorProps}
-							{#if edgeProps}
-								<Anchor {...rightAnchorProps}>
-									<Edge {...edgeProps} slot="edge" />
-								</Anchor>
-							{:else}
-								<Anchor {...rightAnchorProps} />
-							{/if}
-						{/each}
-					</slot>
-					<slot slot="anchorNorth">
-						{#each anchors.top as topAnchorProps}
-							{#if edgeProps}
-								<Anchor {...topAnchorProps}>
-									<Edge {...edgeProps} slot="edge" />
-								</Anchor>
-							{:else}
-								<Anchor {...topAnchorProps} />
-							{/if}
-						{/each}
-					</slot>
-					<slot slot="anchorSouth">
-						{#each anchors.bottom as bottomAnchorProps}
-							{#if edgeProps}
-								<Anchor {...bottomAnchorProps}>
-									<Edge {...edgeProps} slot="edge" />
-								</Anchor>
-							{:else}
-								<Anchor {...bottomAnchorProps} />
-							{/if}
-						{/each}
-					</slot>
-					{#each anchors.self as anchorProps}
-						{#if edgeProps}
-							<Anchor {...anchorProps}>
-								<Edge {...edgeProps} slot="edge" />
-							</Anchor>
-						{:else}
-							<Anchor {...anchorProps} />
+<div role="presentation"
+		class="drop_zone"
+		on:dragenter={handleDragEnter}
+		on:dragleave={handleDragLeave}
+		on:dragover={onDragOver}
+		on:drop={handleDrop}>
+		<Svelvet id='1' {...svelvetProps}>
+			{#each defaultNodes as { anchors, edgeProps, ...nodeProps }}
+					<Node {...nodeProps} drop="cursor" on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
+						{#if anchors}
+							{#each anchors as AnchorProps}
+									<Anchor {...AnchorProps} />
+							{/each}
 						{/if}
-					{/each}
-				{#if nodeProps.customnode}
-					<Icon  icon={nodeProps.customnode} width={iconwidth} viewbox="0 0 2048 2048" fill={fill}/>
-				{/if}
-				</Node>
-			{:else}
-				<Node {...nodeProps} drop="cursor" >
-					{#if nodeProps.customnode}
-						<Icon  icon={nodeProps.customnode} width={iconwidth} viewbox="0 0 2048 2048" fill={fill}/>
-					{/if}
-				</Node>
-			{/if}
-		{/each}
-
-		<slot />
-		<slot name="minimap" slot="minimap" />
-		<slot name="controls" slot="controls" />
-		<!-- <slot name="background" slot='background'></slot>  -->
-		<slot name="toggle" slot="toggle" />
-	</Svelvet>
-	{#if drawer}
-			<svelte:component this={drawerComponent} />
-	{/if}
+						{#if nodeProps.customnode}
+							<Icon  uid={nodeProps.uid} icon={nodeProps.customnode} width={nodeProps.width} viewbox="0 0 2048 2048" fill={nodeProps.fillColor}/>
+						{/if}
+					</Node>
+			{/each}
+			<slot name="minimap" slot="minimap" />
+			<slot name="controls" slot="controls" />
+			<slot name="toggle" slot="toggle" />
+		</Svelvet>
+		{#if drawer}
+				<svelte:component this={drawerComponent} />
+		{/if}
 </div>
 
 
 
 <style>
+.drop_zone {
+	box-shadow: none;
+}
+:root[svelvet-theme='light'] {
+	--anchor-color: #ffff00;
+	--anchor-border-color: #999999;
+	--anchor-connected: #0000ff;
+}
+
 </style>

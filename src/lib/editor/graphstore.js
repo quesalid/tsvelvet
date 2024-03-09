@@ -9,8 +9,11 @@ export function addProps(propNames,propValues,propObject) {
 }
 
 export const nodePropNames = [
+	'uid',
 	'bgColor',
 	'borderColor',
+	'borderWidth',
+	'fillColor',
 	'label',
 	'width',
 	'height',
@@ -19,13 +22,46 @@ export const nodePropNames = [
 	'inputs',
 	'outputs',
 	'rotation',
+	'iconPosition',
 	'zIndex',
 	'TD',
 	'LR',
+	'editable',
 	'customnode',
 	'useDefaults'
 ];
 
+
+export const nodePropDefault = {
+	uid:'',
+	bgColor:'#FFFFFF00',
+	borderColor: '#FFFFFF00',
+	borderWidth: '0',
+	fillColor: 'grey',
+	label:'',
+	width:60,
+	height:60,
+	locked:false,
+	center:false,
+	inputs:1,
+	outputs:1,
+	rotation: 0,
+	iconPosition: {x:0,y:0},
+	zIndex:0,
+	TD:false,
+	LR: false,
+	editable:false,
+	customnode:null,
+	useDefaults:false
+}
+
+export const anchorPropDefault = {
+	input: false,
+	output: false,
+	dynamic: false,
+	bgcolor: 'red',
+	direction: 'west',
+}
 
 // Creates props and adds to customNodePropsStore if an anchor was created, defaultNodePropsStore if not
 export const createNodeProps = (nodePropsArray,edgeProps,anchorProps) => {
@@ -38,3 +74,13 @@ export const createNodeProps = (nodePropsArray,edgeProps,anchorProps) => {
 	if (edgeProps) nodeProps.edgeProps = edgeProps;
 	customDefaultNodes.update((nodes) => [...nodes, nodeProps]);
 };
+
+export const toArrayObjProps = (propObj) => {
+	const propArray = []
+	const keys = Object.keys(propObj)
+	for (let i = 0; i < keys.length; i++)
+		propArray.push(propObj[keys[i]])
+	return propArray
+}
+
+

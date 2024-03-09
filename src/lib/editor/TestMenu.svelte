@@ -5,9 +5,33 @@
 //	   ICONS https://icon-sets.iconify.design/bpmn/
 // DRAG https://www.javascripttutorial.net/web-apis/javascript-drag-and-drop/
 
-import Icon from './icons/Icon.svelte'
+// EXTERNAL
+import { onMount, onDestroy, getContext } from 'svelte';
+import { get } from 'svelte/store';
+import { v4 as uuidv4 } from 'uuid';
+import {type Graph,generateInput,generateOutput} from 'svelvet'
 
-export let exp = (ev:any) =>{console.log("EXPORT")}
+// INTERNAL
+import Icon from './icons/Icon.svelte'
+import {nodePropDefault,
+		anchorPropDefault,
+		createNodeProps,
+		customDefaultNodes,
+		toArrayObjProps} from './graphstore.js'
+
+
+
+onMount(async () => {
+	// CLEAR STORE
+	$customDefaultNodes = []
+})
+
+
+export let exp = (ev:any) =>{
+	
+	console.log("EXPORT",$customDefaultNodes)
+	
+}
 export let imp = (ev:any) =>{console.log("IMPORT")}
 export let load = (ev:any) =>{console.log("LOAD")}
 export let save = (ev:any) =>{console.log("SAVE")}
@@ -51,9 +75,13 @@ const handleDrawer = () => {
 let isOpen = false
 let width = '16px'
 let iconwidth = '40'
-let fill = 'grey'
+let iconwidthbig = '80'
+let fill = 'teal'
+
+
 // START DRAG EVENT
 let iconDragStart = (ev:any)=>{
+	console.log("ICON DRAG START",ev.target)
 	const target = ev.target
 		let id = ev.target.id
 
@@ -61,14 +89,45 @@ let iconDragStart = (ev:any)=>{
 			const split = id.split('-')
 			id = split[1]
 		}
-		// CREATE NEW CUSTOM NODE
-		console.log("ICON START DREAG FROM EXTERNAL",id)
+		// A. CREATE NEW CUSTOM NODE
+		const newNodeProps = JSON.parse(JSON.stringify(nodePropDefault))
+		const found = icons.find((item:any) => item.name==id)
+		console.log("DRAG START",found)
+		newNodeProps.customnode = found.name
+		newNodeProps.width = found.nodewidth
+		newNodeProps.height = found.nodewidth
+		newNodeProps.fillColor = found.fill
+		newNodeProps.uid = uuidv4()
+		const nodeArray = toArrayObjProps(newNodeProps)
+		// B. CREATE NEW INPUT ANCHORS
+		const anchorsArray = []
+		// INPUTS
+		for(let i=0;i<newNodeProps.inputs;i++){
+			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
+			newAnchorProps.input = true
+			newAnchorProps.dynamic = true
+			const anchor = toArrayObjProps(newAnchorProps)
+			anchorsArray.push(newAnchorProps)
+		}
+		// OUTPUTS
+		for(let i=0;i<newNodeProps.outputs;i++){
+			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
+			newAnchorProps.output = true
+			newAnchorProps.dynamic = true
+			newAnchorProps.direction = 'east'
+			const anchor = toArrayObjProps(newAnchorProps)
+			anchorsArray.push(newAnchorProps)
+		}
+		// DROP IN Editor.handleDrop()
+		createNodeProps(nodeArray,null,anchorsArray)
+		console.log("CUSTON NODES",$customDefaultNodes)
 }
 
 let icons:any = [
-	{width:iconwidth,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
-	{width:iconwidth,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
-	{width:iconwidth,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart},
 ]
 </script>
 
