@@ -99,6 +99,12 @@
 		ev.preventDefault()
 		console.log("NODE RELEASED")
 	}
+
+	const anchorConnection = (ev:any)=>{
+		ev.preventDefault()
+		console.log("ANCHOR CONNECTED",ev)
+	}
+	
 	
 </script>
 
@@ -114,7 +120,7 @@
 					<Node {...nodeProps} drop="cursor" on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
 						{#if anchors}
 							{#each anchors as AnchorProps}
-									<Anchor {...AnchorProps} />
+									<Anchor {...AnchorProps} on:connection={anchorConnection}/>
 							{/each}
 						{/if}
 						{#if nodeProps.customnode}
@@ -141,6 +147,7 @@
 	--anchor-color: #ffff00;
 	--anchor-border-color: #999999;
 	--anchor-connected: #0000ff;
+	--node-selection-color: #00FF00;
 }
 
 </style>

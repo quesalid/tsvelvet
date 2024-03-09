@@ -28,10 +28,9 @@ onMount(async () => {
 
 
 export let exp = (ev:any) =>{
-	
 	console.log("EXPORT",$customDefaultNodes)
-	
 }
+
 export let imp = (ev:any) =>{console.log("IMPORT")}
 export let load = (ev:any) =>{console.log("LOAD")}
 export let save = (ev:any) =>{console.log("SAVE")}
@@ -86,8 +85,8 @@ let iconDragStart = (ev:any)=>{
 		let id = ev.target.id
 
 		if(id.includes("div-")){
-			const split = id.split('-')
-			id = split[1]
+			const Z = id.replace("div-", '');
+			id = Z
 		}
 		// A. CREATE NEW CUSTOM NODE
 		const newNodeProps = JSON.parse(JSON.stringify(nodePropDefault))

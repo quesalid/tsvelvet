@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+	import {customDefaultNodes} from '../graphstore'
 
 	onMount(async () => {
 		// CLEAR STORE
@@ -55,10 +56,15 @@
 		let id = ev.target.id
 
 		if(id.includes("path-")){
-			const split = id.split('-')
-			id = split[1]
+			const Z = id.replace("path-", '');
+			id = Z
 		}
-		console.log("ICON CLICKED - START DRAG",id,ev.target)
+		// KEEP TRACK OF NODE MOVE
+		const found = $customDefaultNodes.find((item:any) => (item.customnode+item.uid)==id)
+		if(found){
+			found.iconPosition.x = ev.clientX
+			found.iconPosition.y = ev.clientY
+		}
 	}
 
 	export let iconDragStart = (ev:any) =>{
@@ -96,7 +102,6 @@
 		console.log("ICON CONTEXT",id)
 	}
 
-	
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
