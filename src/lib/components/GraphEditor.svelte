@@ -493,6 +493,8 @@
 			ancs = utilAddAnchor(node,edges)
 			anchors.push(ancs)
 			defaultNodes = [...defaultNodes, { ...nodeProps }]
+			console.log("DEFAULT NODES",defaultNodes)
+			console.log("ANCHORS",anchors)
 			await sleep(30)
 		}
 		if(nodes.length > 0){

@@ -1,12 +1,13 @@
 <script lang="ts">
     // EXTERNAL
 	import { onMount, onDestroy } from 'svelte';
-    import {Svelvet, Node,Anchor,Edge} from 'svelvet';
+    import {Svelvet, Node,Anchor} from 'svelvet';
 	import EditorMenu from './EditorMenu.svelte'
 	import TestMenu from './TestMenu.svelte'
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
-	import {customDefaultNodes} from './graphstore.js'
+	import CustomEdge from './CustomEdge.svelte'
+	import {graphStore,dragNode,uploadFile,downloadJSON} from './graphstore.js'
 	// Props
 	export let width = 0;
 	export let height = 0;
@@ -78,7 +79,7 @@
 	};
 
 	const handleDrop = (e: MouseEvent): void => {
-		e.stopPropagation();
+		//e.stopPropagation();
 		//Issue click event
 		const moveEvent = new MouseEvent('mousemove', {
 			clientX: e.clientX,
@@ -87,9 +88,14 @@
 		});
 		const target = e.target as HTMLElement;
 		target.dispatchEvent(moveEvent);
-		console.log("HANDLE DROP **********",target,$customDefaultNodes)
-
-		defaultNodes = $customDefaultNodes;
+		// KEEP TRACK OF NODE DROP POSITION
+	    const index = $graphStore.nodes.findIndex((item:any) => (item.uid)==$dragNode)
+		if(index > -1){
+			$graphStore.nodes[index].position.x = e.clientX
+			$graphStore.nodes[index].position.y = e.clientY
+		}
+		$dragNode=''
+		defaultNodes = JSON.parse(JSON.stringify($graphStore.nodes));
 	};
 	const nodeClicked = (ev:any)=>{
 		ev.preventDefault()
@@ -102,10 +108,128 @@
 
 	const anchorConnection = (ev:any)=>{
 		ev.preventDefault()
-		console.log("ANCHOR CONNECTED",ev)
+		let nodeid = ev.detail.node.id
+		let anchorid = ev.detail.anchor.id
+		let anchortype = ev.detail.anchor.type
+		let canchorid = ev.detail.connectedAnchor.id
+		let cnodeid = ev.detail.connectedNode.id
+		if(nodeid.includes("N-")){
+			const Z = nodeid.replace("N-", '');
+			nodeid = Z
+		}
+		if(cnodeid.includes("N-")){
+			const Z = cnodeid.replace("N-", '');
+			cnodeid = Z
+		}
+		if(anchorid.includes("A-")){
+			const Z = anchorid.replace("A-", '');
+			anchorid = Z.split('/')[0]
+		}
+		if(canchorid.includes("A-")){
+			const Z = canchorid.replace("A-", '');
+			canchorid = Z.split('/')[0]
+		}
+		const found = $graphStore.nodes.find((item:any) => (item.uid)==nodeid)
+		console.log("FOUND NODE",found,nodeid,$graphStore.nodes)
+		if(found){
+			const anc = found.anchors.find((item:any)=> item.id == anchorid)
+			console.log("FOUND ANCHOR",anc)
+			if(anc){
+				const cnid = cnodeid
+				const caid = canchorid
+				anc.connections.push([cnid,caid])
+			}
+		}
+		console.log("ANCHOR CONNECTED",anchortype,anchorid,nodeid,canchorid,cnodeid)
+		defaultNodes = $graphStore.nodes
+		// KEEP TRACK OF NEW CONNECTION - ADD INPUT AND OUTPUT CONNECTION
+	}
+
+	/**
+	 * Fired when Icon moved - automagically updates 
+	 * @param ev mouse click event
+	 */
+	const iconClick = (ev:any) =>{
+		const target = ev.target
+		let id = ev.target.id
+
+		if(id.includes("path-")){
+			const Z = id.replace("path-", '');
+			id = Z
+		}
+		// GET DIV NODE ELEMENT
+		const divid = 'div-'+id
+		const divElement = document.getElementById(divid)
+		if(divElement){
+			const boundRect = divElement.getBoundingClientRect() 
+			// KEEP TRACK OF NODE MOVE
+			const found = $graphStore.nodes.find((item:any) => (item.customnode+item.uid)==id)
+			if(found){
+				found.position.x = boundRect.left
+				found.position.y = boundRect.top
+			}
+		}
+		console.log("ICON CLICKED")
 	}
 	
-	
+	/**
+	 * Fired when Icon right clicked - show node menu 
+	 * @param ev mouse click event
+	 */
+	let iconContext = (ev:any) =>{
+		ev.preventDefault()
+		ev.stopImmediatePropagation()
+		const target = ev.target
+		let id = ev.target.id
+
+		if(id.includes("path-")){
+			const Z = id.replace("path-", '');
+			id = Z
+		}
+		// GET DIV NODE ELEMENT
+		const divid = 'div-'+id
+		const divElement = document.getElementById(divid)
+		if(divElement){
+			const boundRect = divElement.getBoundingClientRect() 
+			// OPEN NODE EDITOR
+		}
+		
+	}
+
+	/** MENU FUNCTIONS */
+	let clear = (ev:any) =>{
+		$graphStore = {name:'defaultGraph',nodes:[]}
+		defaultNodes = $graphStore.nodes
+		console.log("CLEAR")
+	}
+
+	let exp = (ev:any) =>{
+		console.log("EXPORT",$graphStore)
+		const name = $graphStore.name+'.json'
+		const filestring = JSON.stringify($graphStore)
+		uploadFile(filestring,name)
+	}
+
+	let imp = (e:any)=>{
+		const element = document.getElementById("graph-data-input")
+		if(element)
+			element.click()
+	}
+
+
+	const downloadData = async (e) => {
+		let file = e.target.files[0]
+		const result = await downloadJSON(file)
+		const data = JSON.parse(result)
+		$graphStore = data
+		console.log("IMPORTED",$graphStore)
+		// Redraw graph
+		defaultNodes = $graphStore.nodes
+		console.log("IMPORTED DEFAULT NODES",defaultNodes)
+
+	}
+	const destroyEdge = (ev:any)=>{
+	}
 </script>
 
 
@@ -120,11 +244,19 @@
 					<Node {...nodeProps} drop="cursor" on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
 						{#if anchors}
 							{#each anchors as AnchorProps}
-									<Anchor {...AnchorProps} on:connection={anchorConnection}/>
+									<Anchor {...AnchorProps} on:connection={anchorConnection} multiple>
+										<CustomEdge slot=edge {destroyEdge}/>
+									</Anchor>
 							{/each}
 						{/if}
 						{#if nodeProps.customnode}
-							<Icon  uid={nodeProps.uid} icon={nodeProps.customnode} width={nodeProps.width} viewbox="0 0 2048 2048" fill={nodeProps.fillColor}/>
+							<Icon  uid={nodeProps.uid} 
+									icon={nodeProps.customnode} 
+									width={nodeProps.width} 
+									viewbox="0 0 2048 2048" 
+									fill={nodeProps.fillColor} 
+									{iconClick}
+									{iconContext}/>
 						{/if}
 					</Node>
 			{/each}
@@ -133,8 +265,11 @@
 			<slot name="toggle" slot="toggle" />
 		</Svelvet>
 		{#if drawer}
-				<svelte:component this={drawerComponent} />
+				<svelte:component this={drawerComponent} clear={clear} exp={exp} imp={imp}/>
 		{/if}
+</div>
+ <div>
+		  <input id="graph-data-input"name="file-data-input" type='file' accept=".json" style="visibility:hidden;"  on:change={downloadData}>
 </div>
 
 

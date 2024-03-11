@@ -9,28 +9,26 @@
 import { onMount, onDestroy, getContext } from 'svelte';
 import { get } from 'svelte/store';
 import { v4 as uuidv4 } from 'uuid';
-import {type Graph,generateInput,generateOutput} from 'svelvet'
+
 
 // INTERNAL
 import Icon from './icons/Icon.svelte'
 import {nodePropDefault,
 		anchorPropDefault,
 		createNodeProps,
-		customDefaultNodes,
+		updateDragNode,
+		graphStore,
 		toArrayObjProps} from './graphstore.js'
 
 
 
 onMount(async () => {
-	// CLEAR STORE
-	$customDefaultNodes = []
+	// CLEAR STORE ON OPENS
+	$graphStore = {name:'defaultGraph',nodes:[]}
 })
 
 
-export let exp = (ev:any) =>{
-	console.log("EXPORT",$customDefaultNodes)
-}
-
+export let exp = (ev:any) =>{console.log("EXPORT")}
 export let imp = (ev:any) =>{console.log("IMPORT")}
 export let load = (ev:any) =>{console.log("LOAD")}
 export let save = (ev:any) =>{console.log("SAVE")}
@@ -52,7 +50,6 @@ let drawerMenuHeader: HTMLElement;
 let drawerMenuBody: HTMLElement;
 
 const handleDrawer = () => {
-	console.log("HANDLE DRAWER")
 		if (!isOpen) {
 			isOpen = true;
 			nav.style.height = 'fit-content';
@@ -80,8 +77,6 @@ let fill = 'teal'
 
 // START DRAG EVENT
 let iconDragStart = (ev:any)=>{
-	console.log("ICON DRAG START",ev.target)
-	const target = ev.target
 		let id = ev.target.id
 
 		if(id.includes("div-")){
@@ -91,12 +86,12 @@ let iconDragStart = (ev:any)=>{
 		// A. CREATE NEW CUSTOM NODE
 		const newNodeProps = JSON.parse(JSON.stringify(nodePropDefault))
 		const found = icons.find((item:any) => item.name==id)
-		console.log("DRAG START",found)
 		newNodeProps.customnode = found.name
 		newNodeProps.width = found.nodewidth
 		newNodeProps.height = found.nodewidth
 		newNodeProps.fillColor = found.fill
 		newNodeProps.uid = uuidv4()
+		newNodeProps.id = newNodeProps.uid
 		const nodeArray = toArrayObjProps(newNodeProps)
 		// B. CREATE NEW INPUT ANCHORS
 		const anchorsArray = []
@@ -105,6 +100,7 @@ let iconDragStart = (ev:any)=>{
 			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
 			newAnchorProps.input = true
 			newAnchorProps.dynamic = true
+			newAnchorProps.id = 'IN-'+i+'-'+newNodeProps.uid
 			const anchor = toArrayObjProps(newAnchorProps)
 			anchorsArray.push(newAnchorProps)
 		}
@@ -113,13 +109,14 @@ let iconDragStart = (ev:any)=>{
 			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
 			newAnchorProps.output = true
 			newAnchorProps.dynamic = true
+			newAnchorProps.id = 'OUT-'+i+'-'+newNodeProps.uid
 			newAnchorProps.direction = 'east'
 			const anchor = toArrayObjProps(newAnchorProps)
 			anchorsArray.push(newAnchorProps)
 		}
 		// DROP IN Editor.handleDrop()
 		createNodeProps(nodeArray,null,anchorsArray)
-		console.log("CUSTON NODES",$customDefaultNodes)
+		updateDragNode(newNodeProps.uid)
 }
 
 let icons:any = [
