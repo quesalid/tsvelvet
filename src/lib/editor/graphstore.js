@@ -41,7 +41,7 @@ export const nodePropDefault = {
 	uid: '',
 	anchors:[],
 	bgColor:'#FFFFFF00',
-	borderColor: '#FFFFFF00',
+	borderColor: null,
 	borderWidth: '0',
 	fillColor: 'grey',
 	label:'',
@@ -129,6 +129,10 @@ export const downloadJSON = (file) => {
 		reader.onerror = error => reject(error)
 		reader.readAsText(file)
 	})
+}
+
+export const sleep = (ms) => {
+		return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 

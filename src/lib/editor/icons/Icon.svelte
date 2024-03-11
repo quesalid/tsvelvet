@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-	import {graphStore} from '../graphstore'
+	import IconMenu from './IconMenu.svelte'
 
 	onMount(async () => {
 		// CLEAR STORE
@@ -28,6 +28,7 @@
 	export let fill = 'blue'
 	export let draggable = true
 	export let uid = ''
+	export let menu = false
 
 	export let iconMouseEnter = (ev:any) =>{
 		const target = ev.target
@@ -53,6 +54,10 @@
 
 	export let iconClick = (ev:any) =>{
 		
+	}
+
+	export let iconRelease = (ev:any) =>{
+		console.log("ICON RELEASE")
 	}
 
 	export let iconDragStart = (ev:any) =>{
@@ -91,7 +96,11 @@
 		id={"div-"+icon+uid} 
 		draggable="{draggable}" 
 		on:dragstart={iconDragStart} 
-		on:contextmenu={iconContext}>
+		on:contextmenu={iconContext}
+		on:mouseup={iconRelease}>
+		{#if menu}
+			<IconMenu uid={uid}/>
+		{/if}
 		<svg id={icon+uid} xmlns="http://www.w3.org/2000/svg" 
 			height={width}  
 			viewBox={viewbox} 
@@ -105,7 +114,7 @@
 
 <style>
 	.icon-div-class{
-		cursor:pointer;
+		cursor:gr;
 	}
 	
 </style>

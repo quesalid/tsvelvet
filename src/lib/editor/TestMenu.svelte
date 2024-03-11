@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // INTERNAL
 import Icon from './icons/Icon.svelte'
+import CustomEdge from './CustomEdge.svelte'
 import {nodePropDefault,
 		anchorPropDefault,
 		createNodeProps,
@@ -92,6 +93,8 @@ let iconDragStart = (ev:any)=>{
 		newNodeProps.fillColor = found.fill
 		newNodeProps.uid = uuidv4()
 		newNodeProps.id = newNodeProps.uid
+		if(found.customedge)
+			newNodeProps.edge = found.customedge
 		const nodeArray = toArrayObjProps(newNodeProps)
 		// B. CREATE NEW INPUT ANCHORS
 		const anchorsArray = []
@@ -123,7 +126,7 @@ let icons:any = [
 	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
 ]
 </script>
 

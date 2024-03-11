@@ -1,13 +1,14 @@
 <script lang="ts">
     // EXTERNAL
 	import { onMount, onDestroy } from 'svelte';
-    import {Svelvet, Node,Anchor} from 'svelvet';
+    import {Svelvet, Node,Anchor,Group} from 'svelvet';
 	import EditorMenu from './EditorMenu.svelte'
 	import TestMenu from './TestMenu.svelte'
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
 	import CustomEdge from './CustomEdge.svelte'
-	import {graphStore,dragNode,uploadFile,downloadJSON} from './graphstore.js'
+	import {graphStore,dragNode,uploadFile,downloadJSON,sleep} from './graphstore.js'
+    import { subprocess_expanded } from './icons';
 	// Props
 	export let width = 0;
 	export let height = 0;
@@ -31,6 +32,25 @@
 	export let trackpadPan = false;
 	export let toggle = false;
 
+	let redrawListener:any
+	onMount(async () => {
+		const graphDropZone = document.getElementById('drop-zone-id')
+		if(graphDropZone){
+			// ADD REDRAW LISTENER
+			redrawListener = graphDropZone.addEventListener("redrawgraph",async ()=>{
+				console.log(" NEW STORE ",$graphStore.nodes)
+				// ***** ADDED sleep BETWEEN REDRAWING TICKS *****
+				// SIMULATE CLEAR
+				defaultNodes = []
+				await sleep(40)
+				// SIMULATE RELOAD
+				defaultNodes = $graphStore.nodes
+				await sleep(40)
+				defaultNodes = $graphStore.nodes
+				console.log("REDRAW",defaultNodes)
+			})
+		}
+	})
 
 	// Store props in object to be passed to svelvet
 	const svelvetProps = {
@@ -94,8 +114,10 @@
 			$graphStore.nodes[index].position.x = e.clientX
 			$graphStore.nodes[index].position.y = e.clientY
 		}
+		
+		defaultNodes = $graphStore.nodes
+		console.log("ADDED NODE",defaultNodes,$dragNode)
 		$dragNode=''
-		defaultNodes = JSON.parse(JSON.stringify($graphStore.nodes));
 	};
 	const nodeClicked = (ev:any)=>{
 		ev.preventDefault()
@@ -130,17 +152,14 @@
 			canchorid = Z.split('/')[0]
 		}
 		const found = $graphStore.nodes.find((item:any) => (item.uid)==nodeid)
-		console.log("FOUND NODE",found,nodeid,$graphStore.nodes)
 		if(found){
 			const anc = found.anchors.find((item:any)=> item.id == anchorid)
-			console.log("FOUND ANCHOR",anc)
 			if(anc){
 				const cnid = cnodeid
 				const caid = canchorid
 				anc.connections.push([cnid,caid])
 			}
 		}
-		console.log("ANCHOR CONNECTED",anchortype,anchorid,nodeid,canchorid,cnodeid)
 		defaultNodes = $graphStore.nodes
 		// KEEP TRACK OF NEW CONNECTION - ADD INPUT AND OUTPUT CONNECTION
 	}
@@ -149,7 +168,7 @@
 	 * Fired when Icon moved - automagically updates 
 	 * @param ev mouse click event
 	 */
-	const iconClick = (ev:any) =>{
+	const iconRelease = (ev:any) =>{
 		const target = ev.target
 		let id = ev.target.id
 
@@ -169,7 +188,7 @@
 				found.position.y = boundRect.top
 			}
 		}
-		console.log("ICON CLICKED")
+		console.log("ICON RELEASED")
 	}
 	
 	/**
@@ -235,17 +254,18 @@
 
 <div role="presentation"
 		class="drop_zone"
+		id="drop-zone-id"
 		on:dragenter={handleDragEnter}
 		on:dragleave={handleDragLeave}
 		on:dragover={onDragOver}
 		on:drop={handleDrop}>
-		<Svelvet id='1' {...svelvetProps}>
+		<Svelvet id='1' {...svelvetProps}>	
 			{#each defaultNodes as { anchors, edgeProps, ...nodeProps }}
 					<Node {...nodeProps} drop="cursor" on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
 						{#if anchors}
 							{#each anchors as AnchorProps}
 									<Anchor {...AnchorProps} on:connection={anchorConnection} multiple>
-										<CustomEdge slot=edge {destroyEdge}/>
+										<!--CustomEdge slot=edge {destroyEdge}/-->
 									</Anchor>
 							{/each}
 						{/if}
@@ -255,8 +275,9 @@
 									width={nodeProps.width} 
 									viewbox="0 0 2048 2048" 
 									fill={nodeProps.fillColor} 
-									{iconClick}
-									{iconContext}/>
+									{iconRelease}
+									{iconContext}
+									menu={true}/>
 						{/if}
 					</Node>
 			{/each}
@@ -276,7 +297,7 @@
 
 <style>
 .drop_zone {
-	box-shadow: none;
+	height: 800px;
 }
 :root[svelvet-theme='light'] {
 	--anchor-color: #ffff00;
