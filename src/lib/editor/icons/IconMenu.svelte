@@ -14,6 +14,9 @@ export const editClick = (ev:any) =>{
 		selectNode(divid,true)
 		$selected = divid
 		// B. OPEN EDIT PAN WITH NODE PARAMS (uid + customnode)
+		const divPanelManager = document.getElementById('panel-manager-id')
+		const showPanel = new CustomEvent("iconeditclicked", { detail: {uid:found.id,compname:'panelDefault'} })
+		divPanelManager?.dispatchEvent(showPanel)
 	}
 }
 export const deleteClick = (ev:any) =>{

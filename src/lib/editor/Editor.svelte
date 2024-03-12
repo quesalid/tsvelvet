@@ -9,6 +9,8 @@
 	import CustomEdge from './CustomEdge.svelte'
 	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected} from './graphstore.js'
     import { subprocess_expanded } from './icons';
+	import panelManager from './panels/panelManager.svelte'
+    import PanelManager from './panels/panelManager.svelte';
 	// Props
 	export let width = 0;
 	export let height = 0;
@@ -295,6 +297,7 @@
 		</Svelvet>
 		{#if drawer}
 				<svelte:component this={drawerComponent} clear={clear} exp={exp} imp={imp}/>
+				<PanelManager />
 		{/if}
 </div>
  <div>
