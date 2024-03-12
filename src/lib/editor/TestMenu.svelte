@@ -89,7 +89,7 @@ let iconDragStart = (ev:any)=>{
 		const found = icons.find((item:any) => item.name==id)
 		newNodeProps.customnode = found.name
 		newNodeProps.width = found.nodewidth
-		newNodeProps.height = found.nodewidth
+		newNodeProps.height = found.nodeheight
 		newNodeProps.fillColor = found.fill
 		newNodeProps.uid = uuidv4()
 		newNodeProps.id = newNodeProps.uid
@@ -103,6 +103,7 @@ let iconDragStart = (ev:any)=>{
 			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
 			newAnchorProps.input = true
 			newAnchorProps.dynamic = true
+			newAnchorProps.direction = 'west'
 			newAnchorProps.id = 'IN-'+i+'-'+newNodeProps.uid
 			const anchor = toArrayObjProps(newAnchorProps)
 			anchorsArray.push(newAnchorProps)
@@ -123,10 +124,10 @@ let iconDragStart = (ev:any)=>{
 }
 
 let icons:any = [
-	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:60,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
+	{width:iconwidth,nodewidth:60,nodeheight:70,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:70,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:70,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
 ]
 </script>
 

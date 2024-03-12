@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 export const graphStore = writable({name:'defaultGraph',nodes:[]}) // GRAPH STORE REPRESENTATION
 export const dragNode = writable('') // DRAGGING NODE
+export const selected = writable('') // SELECTED NODE
 
 
 export function addProps(propNames,propValues,propObject) {
@@ -56,8 +57,8 @@ export const nodePropDefault = {
 	zIndex:0,
 	TD:false,
 	LR: false,
-	editable:false,
-	customnode:null,
+	editable: false,
+	customnode: null,
 	useDefaults:false
 }
 
@@ -133,6 +134,16 @@ export const downloadJSON = (file) => {
 
 export const sleep = (ms) => {
 		return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export const selectNode = (el,select=true) => {
+	const element = document.getElementById(el)
+	if (element) {
+		if(select)
+			element.style.border = '2px solid #f00'
+		else
+			element.style.border = 'none'
+	}
 }
 
 

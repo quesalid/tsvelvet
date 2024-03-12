@@ -53,7 +53,7 @@
 	}
 
 	export let iconClick = (ev:any) =>{
-		
+		console.log("ICON CLICK")
 	}
 
 	export let iconRelease = (ev:any) =>{
@@ -95,7 +95,7 @@
 <div class='icon-div-class' 
 		id={"div-"+icon+uid} 
 		draggable="{draggable}" 
-		on:dragstart={iconDragStart} 
+		on:dragstart={iconDragStart}
 		on:contextmenu={iconContext}
 		on:mouseup={iconRelease}>
 		{#if menu}

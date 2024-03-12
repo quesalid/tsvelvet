@@ -1,9 +1,20 @@
 <script lang='ts'>
-import {graphStore} from '../graphstore'
+import {graphStore,selectNode,selected} from '../graphstore'
 export let menuwidth = '18px'
 export let uid = ''
+export let bgcolor = '#FFFFFF'
+
 export const editClick = (ev:any) =>{
-	console.log("EDIT CLICKED",uid)
+	console.log("EDIT CLICKED",uid,ev,$graphStore.nodes)
+	const found = $graphStore.nodes.find((item:any)=>item.id == uid)
+	if(found){
+		// A. SELECT NODE 
+		const divid = 'div-'+found.customnode+found.id 
+		selectNode($selected,false)
+		selectNode(divid,true)
+		$selected = divid
+		// B. OPEN EDIT PAN WITH NODE PARAMS (uid + customnode)
+	}
 }
 export const deleteClick = (ev:any) =>{
 	const id = ev.target.id.split("_")[1]
@@ -25,7 +36,7 @@ export const deleteClick = (ev:any) =>{
 	console.log("AFTER DELETE CLICKED",id,$graphStore.nodes)
 }
 </script>
-	<div class="icon-menu-container">
+	<div class="icon-menu-container" style="--bgcolor:{bgcolor};">
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div class="icon-menu-item" on:click={editClick}>
@@ -43,6 +54,7 @@ export const deleteClick = (ev:any) =>{
 	justify-content: right;
 	width:100%;
 	border: 1px solid #999999;
+	background-color: var(--bgcolor);
 }
 .icon-menu-item{
 	cursor:pointer;

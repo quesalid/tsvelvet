@@ -7,7 +7,7 @@
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
 	import CustomEdge from './CustomEdge.svelte'
-	import {graphStore,dragNode,uploadFile,downloadJSON,sleep} from './graphstore.js'
+	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected} from './graphstore.js'
     import { subprocess_expanded } from './icons';
 	// Props
 	export let width = 0;
@@ -42,10 +42,10 @@
 				// ***** ADDED sleep BETWEEN REDRAWING TICKS *****
 				// SIMULATE CLEAR
 				defaultNodes = []
-				await sleep(40)
+				await sleep(20)
 				// SIMULATE RELOAD
 				defaultNodes = $graphStore.nodes
-				await sleep(40)
+				await sleep(20)
 				defaultNodes = $graphStore.nodes
 				console.log("REDRAW",defaultNodes)
 			})
@@ -122,10 +122,12 @@
 	const nodeClicked = (ev:any)=>{
 		ev.preventDefault()
 		console.log("NODE CLICKED")
+		
 	}
 	const nodeReleased = (ev:any)=>{
 		ev.preventDefault()
 		console.log("NODE RELEASED")
+
 	}
 
 	const anchorConnection = (ev:any)=>{
@@ -180,15 +182,21 @@
 		const divid = 'div-'+id
 		const divElement = document.getElementById(divid)
 		if(divElement){
+			// A. SELECT NODE
+			let id = ev.target.id
+			if(id.includes("path-")){
+				const Z = id.replace("path-", '');
+				id = Z
+			}
+			// B. KEEP TRACK OF NODE POSITION
 			const boundRect = divElement.getBoundingClientRect() 
-			// KEEP TRACK OF NODE MOVE
 			const found = $graphStore.nodes.find((item:any) => (item.customnode+item.uid)==id)
 			if(found){
 				found.position.x = boundRect.left
 				found.position.y = boundRect.top
 			}
+		console.log("ICON RELEASED",id)
 		}
-		console.log("ICON RELEASED")
 	}
 	
 	/**
@@ -299,11 +307,17 @@
 .drop_zone {
 	height: 800px;
 }
+
+
 :root[svelvet-theme='light'] {
 	--anchor-color: #ffff00;
 	--anchor-border-color: #999999;
 	--anchor-connected: #0000ff;
-	--node-selection-color: #00FF00;
 }
+
+.XYZ{
+	box-shadow: none;
+}
+
 
 </style>
