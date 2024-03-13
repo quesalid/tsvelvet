@@ -127,6 +127,12 @@ let icons:any = [
 	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"start_event",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"end_event",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"start_timer",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"user_task",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"rule_task",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"script_task",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
 ]
 </script>
@@ -146,8 +152,8 @@ let icons:any = [
 				{/each}
 		  </div>
 		  <div class="drawerMenuBody" bind:this={drawerMenuBody}>
-			  {#each icons as IC}
-			<Icon  icon={IC.name} width='{IC.width}' viewbox="0 0 2048 2048" fill={IC.fill} iconDragStart={IC.dragStart}/>
+			 {#each icons as IC}
+				<Icon  icon={IC.name} width='{IC.width}' viewbox="0 0 2048 2048" fill={IC.fill} iconDragStart={IC.dragStart}/>
 			{/each}
 		  </div>
 	  </div>
@@ -158,6 +164,7 @@ let icons:any = [
 		--prop-controls-background-color: #f9f9f9;
 		position: absolute;
 		width: 35px;
+		max-width:200px;
 		height: 30px;
 		border-radius: 6px;
 		left: 10px;
@@ -198,12 +205,13 @@ let icons:any = [
 		display: none;
 		padding-top: var(--width);
 		align-items: flex-start;
+		max-width:200px;
 	}
 	.drawerMenuHeader {
 		display: flex;
 		margin-top: 6px;
 		list-style: none;
-		width: 100%;
+		max-width: 100%;
 		text-decoration: none;
 		font-size: 13px;
 		overflow: hidden;
@@ -217,13 +225,16 @@ let icons:any = [
 		padding-bottom: 2px ;
 		margin-right: 1px;
 		padding: 1px;
+		max-width:200px;
 	}
 	.drawerMenuHeader input[type='button']:hover{
 		font-weight: bold ;
 	}
 	.drawerMenuBody {
 		margin-top: 10px;
-		display: flex;
+		display:flex;
+		flex-wrap: wrap;
+		max-width:200px;
 	}
 	
 </style>

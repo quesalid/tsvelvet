@@ -146,6 +146,12 @@ export const selectNode = (el,select=true) => {
 	}
 }
 
+export const hidePanel = (panel = 'panel-manager-id') => {
+	const thisdiv = document.getElementById(panel)
+	if (thisdiv)
+		thisdiv.style['visibility'] = 'hidden'
+}
+
 
 
 

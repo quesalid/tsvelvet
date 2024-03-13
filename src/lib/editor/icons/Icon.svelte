@@ -12,7 +12,14 @@
 			gateway_eventbased,
 			gateway_parallel,
 			gateway_xor,
-			subprocess_expanded} from '.';
+			subprocess_expanded,
+			start_event,
+			end_event,
+			start_timer,
+			user_task,
+			rule_task,
+			script_task,
+			} from '.';
 
 	const icons = {
 		north_west,
@@ -21,6 +28,12 @@
 		gateway_eventbased,
 		gateway_xor,
 		subprocess_expanded,
+		start_event,
+		end_event,
+		start_timer,
+		user_task,
+		rule_task,
+		script_task
 	};
 
 	export let width = '18';
@@ -38,8 +51,9 @@
 		if(!id.includes("path"))
 			id = 'path-'+id
 		const path = document.getElementById(id)
-		if(path)
-			path.style.fill = 'red'
+		if(path){
+			//path.style.fill = 'red'
+		}
 	}
 
 	export let iconMouseLeave = (ev:any) =>{
@@ -50,8 +64,9 @@
 			id = 'path-'+id
 		const path = document.getElementById(id)
 		
-		if(path)
-			path.style.fill = fill
+		if(path){
+			//path.style.fill = fill
+		}
 	}
 
 	export let iconClick = (ev:any) =>{
@@ -94,7 +109,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class='icon-div-class' 
+<div class='icon-div-class' style="--width:{width}"
 		id={"div-"+icon+uid} 
 		draggable="{draggable}" 
 		on:dragstart={iconDragStart}
@@ -120,6 +135,7 @@
 <style>
 	.icon-div-class{
 		cursor:gr;
+		width:var(--width);
 	}
 	
 </style>

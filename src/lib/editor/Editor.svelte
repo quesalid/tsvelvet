@@ -6,7 +6,7 @@
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
 	import CustomEdge from './CustomEdge.svelte'
-	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected,selectNode} from './graphstore.js'
+	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected,selectNode,hidePanel} from './graphstore.js'
     import { subprocess_expanded } from './icons';
 	import panelManager from './panels/panelManager.svelte'
     import PanelManager from './panels/panelManager.svelte';
@@ -43,10 +43,10 @@
 				// ***** ADDED sleep BETWEEN REDRAWING TICKS *****
 				// SIMULATE CLEAR
 				defaultNodes = []
-				await sleep(20)
+				await sleep(40)
 				// SIMULATE RELOAD
 				defaultNodes = $graphStore.nodes
-				await sleep(20)
+				await sleep(40)
 				defaultNodes = $graphStore.nodes
 				console.log("REDRAW",defaultNodes)
 			})
@@ -224,11 +224,7 @@
 		
 	}
 
-	const hidePanel = (panel:string) =>{
-		const thisdiv = document.getElementById(panel)
-		if(thisdiv)
-			thisdiv.style['visibility']='hidden'
-	}
+	
 	const PANELMANAGER = 'panel-manager-id'
 
 	/** MENU FUNCTIONS */

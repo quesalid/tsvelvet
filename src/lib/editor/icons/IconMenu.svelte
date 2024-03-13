@@ -1,5 +1,5 @@
 <script lang='ts'>
-import {graphStore,selectNode,selected} from '../graphstore'
+import {graphStore,selectNode,selected,hidePanel} from '../graphstore'
 export let menuwidth = '18px'
 export let uid = ''
 export let bgcolor = '#FFFFFF'
@@ -31,7 +31,7 @@ export const deleteClick = (ev:any) =>{
 			$graphStore.nodes[i].anchors[j].connections = node.anchors[j].connections.filter((item:any)=>!item.includes(id))
 		}
 	}
-	
+	hidePanel()
 	// FORCE GRAPH REDRAW
 	const graphDropZone = document.getElementById('drop-zone-id')
     const redrawGraph = new CustomEvent("redrawgraph", { detail: id })
