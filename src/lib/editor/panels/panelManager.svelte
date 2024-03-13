@@ -3,6 +3,7 @@
 import { onMount} from 'svelte';
 // INTERNAL
 import panelDefault from './panelDefault.svelte'
+import {selected,selectNode} from '../graphstore.js'
 
 
 
@@ -31,24 +32,30 @@ onMount(async () => {
 const savePanelInfo = (ev:any) =>{
 	console.log("SAVE PANEL INFO")
 	const thisdiv = document.getElementById("panel-manager-id")
-	if(thisdiv)
+	if(thisdiv){
 		thisdiv.style['visibility']='hidden'
+			selectNode($selected,false)
+			$selected=''
+		}
 }
 const exitPanel = (ev:any) =>{
 	console.log("EXIT PANEL")
 	const thisdiv = document.getElementById("panel-manager-id")
-	if(thisdiv)
+	if(thisdiv){
 		thisdiv.style['visibility']='hidden'
+		selectNode($selected,false)
+		$selected=''
+	}
 }
 
 </script>
 
 	<div id="panel-manager-id">
-		<svelte:component this={comp.comp} uid={uid}/>
-		<div id="panel-manager-footer-id">
+		<div id="panel-manager-header-id">
 			<input type='button' value="SAVE" on:click={savePanelInfo}/>
 			<input type='button' value="EXIT" on:click={exitPanel}/>
 		</div>
+		<svelte:component this={comp.comp} uid={uid}/>
 	</div>
 
 <style>
@@ -56,20 +63,30 @@ const exitPanel = (ev:any) =>{
 	display:block;
 	visibility:hidden;
 	position:fixed;
-	top: 300px;
-	left:10px;
-	width:fit-content;
+	top: 10px;
+	left:80%;
+	width:20%;
 	z-index: 10;
 	border: solid 1px;
+	border-radius: 6px;
+	margin-right: 3px;
 }
-#panel-manager-footer-id{
+#panel-manager-header-id{
 	display:flex;
 	justify-content: right;
 	margin: 2px;
+	text-decoration: none;
+	font-size: 13px;
 }
 input[type='button']{
+	background-color: #eeeeee;
 	cursor:pointer;
-	border: 1px solid;
-	margin-right: 2px;
+	border: 1px solid #aaaaaa;
+	padding-bottom: 2px ;
+	margin-right: 1px;
+	padding: 1px;
+}
+input[type='button']:hover{
+	font-weight: bold ;
 }
 </style>
