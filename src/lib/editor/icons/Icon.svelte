@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
 	import IconMenu from './IconMenu.svelte'
+	import IconTitle from './IconTitle.svelte'
 
 	onMount(async () => {
 		// CLEAR STORE
@@ -29,6 +30,7 @@
 	export let draggable = true
 	export let uid = ''
 	export let menu = false
+	export let title = false
 
 	export let iconMouseEnter = (ev:any) =>{
 		const target = ev.target
@@ -110,6 +112,9 @@
 			on:click={iconClick}>
 			<svelte:component this={icons[icon]} fill={fill} id={icon+uid}/>
 		</svg>
+		{#if title}
+			<IconTitle uid={uid}/>
+		{/if}
 </div>
 
 <style>

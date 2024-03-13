@@ -309,7 +309,8 @@
 									fill={nodeProps.fillColor} 
 									{iconRelease}
 									{iconContext}
-									menu={true}/>
+									menu={true}
+									title={true}/>
 						{/if}
 					</Node>
 			{/each}

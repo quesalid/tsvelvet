@@ -3,7 +3,7 @@
 import { onMount} from 'svelte';
 // INTERNAL
 import panelDefault from './panelDefault.svelte'
-import {selected,selectNode} from '../graphstore.js'
+import {selected,selectNode,graphStore} from '../graphstore.js'
 
 
 
@@ -15,6 +15,7 @@ const PANELMANAGER = 'panel-manager-id'
 let compname = 'panelDefault'
 let uid:any = ''
 let comp = comps[0]
+let title = ''
 onMount(async () => {
 	const thisdiv = document.getElementById(PANELMANAGER)
 	if(thisdiv){
@@ -22,6 +23,13 @@ onMount(async () => {
 			console.log("RECEIVED ICON CLICKED",ev.detail,thisdiv)
 			const details = ev.detail
 			uid = details.uid
+			const foundnode = $graphStore.nodes.find((item:any)=>item.id == uid)
+			if(foundnode){
+				if(foundnode.data && foundnode.data.name)
+					title = foundnode.data.name
+				else
+					title = foundnode.customnode
+			}
 			compname = details.compname
 			const found = comps.find((item:any)=>item.name == compname)
 			if(found)
@@ -53,6 +61,7 @@ const exitPanel = (ev:any) =>{
 
 	<div id="{PANELMANAGER}">
 		<div id="panel-manager-header-id">
+			<input type='text' disabled value={title}/>
 			<input type='button' value="SAVE" on:click={savePanelInfo}/>
 			<input type='button' value="EXIT" on:click={exitPanel}/>
 		</div>

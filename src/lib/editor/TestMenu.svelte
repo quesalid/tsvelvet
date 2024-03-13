@@ -124,9 +124,9 @@ let iconDragStart = (ev:any)=>{
 }
 
 let icons:any = [
-	{width:iconwidth,nodewidth:60,nodeheight:70,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:60,nodeheight:70,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:60,nodeheight:70,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
 ]
 </script>
