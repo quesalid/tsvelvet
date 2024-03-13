@@ -7,7 +7,7 @@
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
 	import CustomEdge from './CustomEdge.svelte'
-	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected} from './graphstore.js'
+	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected,selectNode} from './graphstore.js'
     import { subprocess_expanded } from './icons';
 	import panelManager from './panels/panelManager.svelte'
     import PanelManager from './panels/panelManager.svelte';
@@ -225,28 +225,50 @@
 		
 	}
 
+	const hidePanel = (panel:string) =>{
+		const thisdiv = document.getElementById(panel)
+		if(thisdiv)
+			thisdiv.style['visibility']='hidden'
+	}
+	const PANELMANAGER = 'panel-manager-id'
+
 	/** MENU FUNCTIONS */
 	let clear = (ev:any) =>{
+		// A. HIDE PANEL
+		hidePanel(PANELMANAGER)
+		selectNode($selected,false)
+		$selected=''
+		// B. CLEAR GRAPH
 		$graphStore = {name:'defaultGraph',nodes:[]}
 		defaultNodes = $graphStore.nodes
 		console.log("CLEAR")
 	}
 
 	let exp = (ev:any) =>{
-		console.log("EXPORT",$graphStore)
+		// A. HIDE PANEL
+		hidePanel(PANELMANAGER)
+		selectNode($selected,false)
+		$selected=''
+		// B. EXPORT GRAPH
 		const name = $graphStore.name+'.json'
 		const filestring = JSON.stringify($graphStore)
 		uploadFile(filestring,name)
+		console.log("EXPORT",$graphStore)
 	}
 
 	let imp = (e:any)=>{
+		// A. HIDE PANEL
+		hidePanel(PANELMANAGER)
+		selectNode($selected,false)
+		$selected=''
+		// B. EXPORT GRAPH
 		const element = document.getElementById("graph-data-input")
 		if(element)
 			element.click()
 	}
 
 
-	const downloadData = async (e) => {
+	const downloadData = async (e:any) => {
 		let file = e.target.files[0]
 		const result = await downloadJSON(file)
 		const data = JSON.parse(result)

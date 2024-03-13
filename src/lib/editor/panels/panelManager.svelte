@@ -10,12 +10,13 @@ import {selected,selectNode} from '../graphstore.js'
 const comps = [
 	{name:'panelDefault',comp:panelDefault}
 ]
+const PANELMANAGER = 'panel-manager-id'
 
 let compname = 'panelDefault'
 let uid:any = ''
 let comp = comps[0]
 onMount(async () => {
-	const thisdiv = document.getElementById("panel-manager-id")
+	const thisdiv = document.getElementById(PANELMANAGER)
 	if(thisdiv){
 		thisdiv.addEventListener("iconeditclicked", (ev:any)=>{
 			console.log("RECEIVED ICON CLICKED",ev.detail,thisdiv)
@@ -25,22 +26,22 @@ onMount(async () => {
 			const found = comps.find((item:any)=>item.name == compname)
 			if(found)
 				comp = found
-			thisdiv.style['visibility']='visible'
+				thisdiv.style['visibility']='visible'
 			})
 	}
 })
 const savePanelInfo = (ev:any) =>{
 	console.log("SAVE PANEL INFO")
-	const thisdiv = document.getElementById("panel-manager-id")
+	const thisdiv = document.getElementById(PANELMANAGER)
 	if(thisdiv){
 		thisdiv.style['visibility']='hidden'
-			selectNode($selected,false)
-			$selected=''
-		}
+		selectNode($selected,false)
+		$selected=''
+	}
 }
 const exitPanel = (ev:any) =>{
 	console.log("EXIT PANEL")
-	const thisdiv = document.getElementById("panel-manager-id")
+	const thisdiv = document.getElementById(PANELMANAGER)
 	if(thisdiv){
 		thisdiv.style['visibility']='hidden'
 		selectNode($selected,false)
@@ -50,7 +51,7 @@ const exitPanel = (ev:any) =>{
 
 </script>
 
-	<div id="panel-manager-id">
+	<div id="{PANELMANAGER}">
 		<div id="panel-manager-header-id">
 			<input type='button' value="SAVE" on:click={savePanelInfo}/>
 			<input type='button' value="EXIT" on:click={exitPanel}/>
