@@ -3,6 +3,7 @@ import {graphStore} from '../graphstore'
 export let uid = ''
 export let bgcolor = '#FFFFFF'
 
+let maxwidth = '100%'
 const getTitle = ()=>{
 	let rt = ''
 	const found = $graphStore.nodes.find((item:any)=>item.id == uid)
@@ -11,18 +12,19 @@ const getTitle = ()=>{
 			rt = found.data.name
 		else
 			rt = found.customnode
+		maxwidth = found.width+'px'
 	}
 	return(rt)
 }
 </script>
-	<div class="icon-title-container" style="--bgcolor:{bgcolor};">
+	<div class="icon-title-container" style="--bgcolor:{bgcolor};--maxwidth:{maxwidth}">
 		{getTitle()}
 	</div>
 <style>
 .icon-title-container{
 	display:flex;
 	justify-content:center;
-	width:100%;
+	max-width:var(--maxwidth);
 	border: 1px solid #999999;
 	background-color: var(--bgcolor);
 	font-size: 10px;

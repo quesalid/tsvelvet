@@ -70,6 +70,7 @@ const exitPanel = (ev:any) =>{
 
 <style>
 #panel-manager-id{
+	--prop-controls-background-color: #f9f9f9;
 	display:block;
 	visibility:hidden;
 	position:fixed;
@@ -79,6 +80,7 @@ const exitPanel = (ev:any) =>{
 	z-index: 10;
 	border: solid 1px;
 	border-radius: 6px;
+	background-color: var(--prop-controls-background-color);
 }
 #panel-manager-header-id{
 	display:flex;

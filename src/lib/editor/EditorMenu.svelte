@@ -124,9 +124,9 @@ let iconDragStart = (ev:any)=>{
 }
 
 let icons:any = [
-	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
-	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
 ]
 </script>
@@ -155,6 +155,7 @@ let icons:any = [
 
 <style>
 #drawerWrapper {
+		--prop-controls-background-color: #f9f9f9;
 		position: absolute;
 		width: 35px;
 		height: 30px;
