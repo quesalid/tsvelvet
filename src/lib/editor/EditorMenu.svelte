@@ -1,211 +1,160 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	
+// BPM https://www.visual-paradigm.com/guide/
+//     https://camunda.com/bpmn/examples/
+//     https://www.pleus.net/blog/?p=2142
+//	   ICONS https://icon-sets.iconify.design/bpmn/
+// DRAG https://www.javascripttutorial.net/web-apis/javascript-drag-and-drop/
 
-	let isOpen = false;
-	let nodeContainerOpen = false;
-	let edgeContainerOpen = false;
-	let anchorContainerOpen = false;
-	let nav: HTMLElement;
-	let drawerBtn: HTMLElement;
-	let nodeBtn: HTMLElement;
-	let edgeBtn: HTMLElement;
-	let anchorBtn: HTMLElement;
-	let drawerContents: HTMLElement;
-	let nodeContainer: HTMLElement;
-	let anchorContainer: HTMLElement;
-	let edgeContainer: HTMLElement;
+// EXTERNAL
+import { onMount, onDestroy, getContext } from 'svelte';
+import { get } from 'svelte/store';
+import { v4 as uuidv4 } from 'uuid';
 
-	const icons = {
-		north_west:'<path d="M758-160 260-658v294h-60v-396h396v60H302l498 498-42 42Z" />',
-		south_east:'<path d="M364-200v-60h294L160-758l42-42 498 498v-294h60v396H364Z" />',
-	};
 
-	let icon = isOpen ? 'south_east' : 'north_west'
+// INTERNAL
+import Icon from './icons/Icon.svelte'
+import CustomEdge from './CustomEdge.svelte'
+import {nodePropDefault,
+		anchorPropDefault,
+		createNodeProps,
+		updateDragNode,
+		graphStore,
+		toArrayObjProps} from './graphstore.js'
 
-	let width = 16;
 
-	const handleDragStart = (e: DragEvent) => {
-		if (!e.dataTransfer) return;
-		e.dataTransfer.dropEffect = 'move';
-		/*
-		// Create props for anchor or edge if values were given
-		const anchorProps = createAnchorProps(true);
-		const edgeCreated = createEdgeProps();
-		// Create props for node
-		createNodeProps(edgeCreated, anchorProps);*/
-	};
 
-	const handleDrawer = () => {
+onMount(async () => {
+	// CLEAR STORE ON OPENS
+	$graphStore = {name:'defaultGraph',nodes:[]}
+})
+
+
+export let exp = (ev:any) =>{console.log("EXPORT")}
+export let imp = (ev:any) =>{console.log("IMPORT")}
+export let load = (ev:any) =>{console.log("LOAD")}
+export let save = (ev:any) =>{console.log("SAVE")}
+export let del = (ev:any) =>{console.log("DEL")}
+export let clear = (ev:any) =>{console.log("CLEAR")}
+
+export let buttons = [
+	{value:'EXP',function:exp},
+	{value:'IMP',function:imp},
+	{value:'LOAD',function:load},
+	{value:'SAVE',function:save},
+	{value:'DEL',function:del},
+	{value:'CLEAR',function:clear},
+]
+
+let nav:HTMLElement;
+let drawerMenuContent: HTMLElement;
+let drawerMenuHeader: HTMLElement;
+let drawerMenuBody: HTMLElement;
+
+const handleDrawer = () => {
 		if (!isOpen) {
 			isOpen = true;
 			nav.style.height = 'fit-content';
 			nav.style.width = '300px';
+			drawerMenuContent.style.width= '300px'
+			drawerMenuContent.style.height= 'fit-content'
+			drawerMenuContent.style.display= 'block'
 		} else {
 			isOpen = false;
 			nav.style.height = '35px';
 			nav.style.width = '35px';
-			anchorContainerOpen = false;
-			edgeContainerOpen = false;
-			nodeContainerOpen = false;
-			nodeContainer.style.display = 'block';
-			edgeContainer.style.display = 'none';
-			anchorContainer.style.display = 'none';
-			nodeBtn.style.borderBottom =
-				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
-			edgeBtn.style.borderBottom = 'none';
-			anchorBtn.style.borderBottom = 'none';
+			drawerMenuContent.style.width= '35px'
+			drawerMenuContent.style.height= '35px'
+			drawerMenuContent.style.display= 'none'
 		}
 	};
 
-	const handleNodeContainer = () => {
-		if (!nodeContainerOpen) {
-			nodeContainerOpen = true;
-			anchorContainerOpen = false;
-			edgeContainerOpen = false;
-			nodeContainer.style.display = 'block';
-			edgeContainer.style.display = 'none';
-			anchorContainer.style.display = 'none';
-			nodeBtn.style.borderBottom =
-				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
-			edgeBtn.style.borderBottom = 'none';
-			anchorBtn.style.borderBottom = 'none';
-		}
-	};
-	const handleAnchorContainer = () => {
-		if (!anchorContainerOpen) {
-			anchorContainerOpen = true;
-			edgeContainerOpen = false;
-			nodeContainerOpen = false;
-			anchorContainer.style.display = 'block';
-			edgeContainer.style.display = 'none';
-			nodeContainer.style.display = 'none';
-			nodeBtn.style.borderBottom = 'none';
-			edgeBtn.style.borderBottom = 'none';
-			anchorBtn.style.borderBottom =
-				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
-		}
-	};
-	const handleEdgeContainer = () => {
-		if (!edgeContainerOpen) {
-			edgeContainerOpen = true;
-			nodeContainerOpen = false;
-			anchorContainerOpen = false;
-			edgeContainer.style.display = 'block';
-			anchorContainer.style.display = 'none';
-			nodeContainer.style.display = 'none';
-			nodeBtn.style.borderBottom = 'none';
-			edgeBtn.style.borderBottom =
-				'3px solid var(--prop-drawer-button-text-color,var(--drawer-button-text-color, var(--default-drawer-button-text-color)))';
-			anchorBtn.style.borderBottom = 'none';
-		}
-	};
 
-	let currentComponent = 'Node'; // Add this line
+let isOpen = false
+let width = '16px'
+let iconwidth = '40'
+let iconwidthbig = '80'
+let fill = 'teal'
 
-	const handleKeyPress = (e: KeyboardEvent) => {
-		if (e.key === 'D') {
-			handleDrawer();
-		} else if (e.key === 'T' && isOpen) {
-			// Only toggle components if the drawer is open
-			if (currentComponent === 'Node') {
-				handleAnchorContainer();
-				currentComponent = 'Anchor';
-			} else if (currentComponent === 'Anchor') {
-				handleEdgeContainer();
-				currentComponent = 'Edge';
-			} else if (currentComponent === 'Edge') {
-				handleNodeContainer();
-				currentComponent = 'Node';
-			}
+
+// START DRAG EVENT
+let iconDragStart = (ev:any)=>{
+		let id = ev.target.id
+
+		if(id.includes("div-")){
+			const Z = id.replace("div-", '');
+			id = Z
 		}
-	};
+		// A. CREATE NEW CUSTOM NODE
+		const newNodeProps = JSON.parse(JSON.stringify(nodePropDefault))
+		const found = icons.find((item:any) => item.name==id)
+		newNodeProps.customnode = found.name
+		newNodeProps.width = found.nodewidth
+		newNodeProps.height = found.nodeheight
+		newNodeProps.fillColor = found.fill
+		newNodeProps.uid = uuidv4()
+		newNodeProps.id = newNodeProps.uid
+		if(found.customedge)
+			newNodeProps.edge = found.customedge
+		const nodeArray = toArrayObjProps(newNodeProps)
+		// B. CREATE NEW INPUT ANCHORS
+		const anchorsArray = []
+		// INPUTS
+		for(let i=0;i<newNodeProps.inputs;i++){
+			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
+			newAnchorProps.input = true
+			newAnchorProps.dynamic = true
+			newAnchorProps.direction = 'west'
+			newAnchorProps.id = 'IN-'+i+'-'+newNodeProps.uid
+			const anchor = toArrayObjProps(newAnchorProps)
+			anchorsArray.push(newAnchorProps)
+		}
+		// OUTPUTS
+		for(let i=0;i<newNodeProps.outputs;i++){
+			const newAnchorProps = JSON.parse(JSON.stringify(anchorPropDefault))
+			newAnchorProps.output = true
+			newAnchorProps.dynamic = true
+			newAnchorProps.id = 'OUT-'+i+'-'+newNodeProps.uid
+			newAnchorProps.direction = 'east'
+			const anchor = toArrayObjProps(newAnchorProps)
+			anchorsArray.push(newAnchorProps)
+		}
+		// DROP IN Editor.handleDrop()
+		createNodeProps(nodeArray,null,anchorsArray)
+		updateDragNode(newNodeProps.uid)
+}
 
-	// Add the event listener when the component mounts
-	onMount(() => {
-		window.addEventListener('keydown', handleKeyPress);
-	});
-
-	// Remove the event listener when the component unmounts
-	onDestroy(() => {
-		window.removeEventListener('keydown', handleKeyPress);
-	});
+let icons:any = [
+	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:60,nodeheight:75,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
+]
 </script>
 
-<nav id="drawerWrapper" bind:this={nav}>
-	
-		<button
+<nav id="drawerWrapper" bind:this={nav} style="--controls-text-color:#222">
+	<button
 			class="drawerBtn"
-			bind:this={drawerBtn}
 			on:click={handleDrawer}
 			aria-label="Open/Close Drawer"
 		>
-			<svg xmlns="http://www.w3.org/2000/svg" height={width} viewBox="0 -960 960 960" {width}>
-					{icons[icon]}
-			</svg>
+			<Icon icon={isOpen ? 'south_east' : 'north_west'} fill="black" />
 		</button>
-		<ul class="drawerContents" bind:this={drawerContents}>
-			<li class="list-item">
-				<div class="menu">
-					<button
-						class="dropdown"
-						bind:this={nodeBtn}
-						on:click={handleNodeContainer}
-						aria-label="Component"
-					>
-						Node
-					</button>
-					<button
-						class="dropdown"
-						bind:this={anchorBtn}
-						on:click={handleAnchorContainer}
-						aria-label="Component"
-					>
-						Anchor
-					</button>
-					<button
-						class="dropdown"
-						bind:this={edgeBtn}
-						on:click={handleEdgeContainer}
-						aria-label="Component"
-					>
-						Edge
-					</button>
-				</div>
-			</li>
-			<!-- Handle Node Dropdown -->
-			<li class="list-item">
-				<div class="propsContainer nodeContainer" bind:this={nodeContainer}>
-					<!--DrawerNode /-->
-				</div>
-			</li>
-			<!-- Handle Anchor Dropdown -->
-			<li class="list-item">
-				<div class="propsContainer anchorContainer" bind:this={anchorContainer}>
-					<!--DrawerAnchor /-->
-				</div>
-			</li>
-			<!-- Handle Edge Dropdown -->
-			<li class="list-item">
-				<div class="propsContainer edgeContainer" bind:this={edgeContainer}>
-					<!--DrawerEdge /-->
-				</div>
-			</li>
-			<li class="list-item">
-				<div
-					role="presentation"
-					class="defaultNodes"
-					draggable="true"
-					on:dragstart={handleDragStart}
-				>
-					Node
-				</div>
-			</li>
-		</ul>
+	  <div class="drawerMenuContent" bind:this={drawerMenuContent} style="--width:{width};">
+		  <div class="drawerMenuHeader" bind:this={drawerMenuHeader} style="--width:{width};">
+			  {#each buttons as btn}
+					<input type="button" value="{btn.value}" on:click={btn.function} />
+				{/each}
+		  </div>
+		  <div class="drawerMenuBody" bind:this={drawerMenuBody}>
+			  {#each icons as IC}
+			<Icon  icon={IC.name} width='{IC.width}' viewbox="0 0 2048 2048" fill={IC.fill} iconDragStart={IC.dragStart}/>
+			{/each}
+		  </div>
+	  </div>
 </nav>
 
 <style>
-	#drawerWrapper {
+#drawerWrapper {
 		position: absolute;
 		width: 35px;
 		height: 30px;
@@ -216,7 +165,7 @@
 		z-index: 10;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		align-items: left;
 		transition: 1s;
 		padding-top: 10px;
 		cursor: auto;
@@ -229,21 +178,7 @@
 			var(--controls-background-color, var(--default-controls-background-color))
 		);
 	}
-
-	#drawerWrapper ul {
-		display: flex;
-		flex-direction: column;
-		list-style: none;
-		width: 100%;
-		text-decoration: none;
-		font-size: 20px;
-		overflow: hidden;
-		transition: 0.3s;
-		padding: 0;
-		margin-top: 45px;
-	}
-
-	.drawerBtn {
+.drawerBtn {
 		position: fixed;
 		display: flex;
 		align-items: center;
@@ -257,70 +192,37 @@
 		background: none;
 		color: inherit;
 	}
-	.menu {
+
+	.drawerMenuContent {
+		display: none;
+		padding-top: var(--width);
+		align-items: flex-start;
+	}
+	.drawerMenuHeader {
 		display: flex;
-		justify-content: space-between;
-	}
-
-	.menu .dropdown {
-		padding: 10px;
-		font-size: 1rem;
-		flex-grow: 1;
-		cursor: pointer;
-		border: none;
-		margin: 0;
-		color: var(
-			--prop-drawer-button-text-color,
-			var(--drawer-button-text-color, var(--default-drawer-button-text-color))
-		);
-		background-color: var(
-			--prop-drawer-button-color,
-			var(--drawer-button-color, var(--default-drawer-button-color))
-		);
-	}
-
-	.menu .dropdown:first-child {
-		border-bottom: 3px solid
-			var(
-				--prop-drawer-button-text-color,
-				var(--drawer-button-text-color, var(--default-drawer-button-text-color))
-			);
-	}
-
-	.defaultNodes {
-		margin: auto;
-		margin-top: 15px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 60px;
-		width: 120px;
-		cursor: grab;
-		border-radius: 8px;
-		background-color: var(--prop-background-color, var(--node-color, var(--default-node-color)));
-		color: var(--prop-text-color, var(--text-color, var(--default-text-color)));
-		box-shadow: 0 0 0 var(--final-border-width) var(--final-border-color),
-			var(--default-node-shadow);
-	}
-	button:hover {
-		cursor: pointer;
-	}
-
-	.propsContainer {
-		height: fit-content;
-		width: fit-content;
+		margin-top: 6px;
+		list-style: none;
+		width: 100%;
+		text-decoration: none;
+		font-size: 13px;
 		overflow: hidden;
-		padding: 0 18px;
-		margin-top: 20px;
+		transition: 0.3s;
+		padding: 0;
 	}
-
-	.nodeContainer {
-		display: block;
+	.drawerMenuHeader input[type='button']{
+		background-color: #eeeeee;
+		cursor:pointer;
+		border: 1px solid #aaaaaa;
+		padding-bottom: 2px ;
+		margin-right: 1px;
+		padding: 1px;
 	}
-	.edgeContainer {
-		display: none;
+	.drawerMenuHeader input[type='button']:hover{
+		font-weight: bold ;
 	}
-	.anchorContainer {
-		display: none;
+	.drawerMenuBody {
+		margin-top: 10px;
+		display: flex;
 	}
+	
 </style>

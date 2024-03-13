@@ -74,12 +74,11 @@ const exitPanel = (ev:any) =>{
 	visibility:hidden;
 	position:fixed;
 	top: 10px;
-	left:80%;
+	left:79.5%;
 	width:20%;
 	z-index: 10;
 	border: solid 1px;
 	border-radius: 6px;
-	margin-right: 3px;
 }
 #panel-manager-header-id{
 	display:flex;

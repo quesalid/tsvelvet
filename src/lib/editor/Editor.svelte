@@ -3,7 +3,6 @@
 	import { onMount, onDestroy } from 'svelte';
     import {Svelvet, Node,Anchor,Group} from 'svelvet';
 	import EditorMenu from './EditorMenu.svelte'
-	import TestMenu from './TestMenu.svelte'
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
 	import CustomEdge from './CustomEdge.svelte'
@@ -82,7 +81,7 @@
 	let defaultNodes:any = [];
 	let dropped_in: boolean;
 	let drawer = true
-	let drawerComponent = TestMenu
+	let drawerComponent = EditorMenu
 	let iconwidth = '60'
 	let fill = 'grey'
 
