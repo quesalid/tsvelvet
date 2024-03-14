@@ -6,7 +6,15 @@
 	// INTERNAL - HERE CUSTOM NODES
 	import Icon from './icons/Icon.svelte'
 	import CustomEdge from './CustomEdge.svelte'
-	import {graphStore,dragNode,uploadFile,downloadJSON,sleep,selected,selectNode,hidePanel} from './graphstore.js'
+	import {graphStore,
+			dragNode,
+			uploadFile,
+			downloadJSON,
+			sleep,
+			selected,
+			selectNode,
+			hidePanel,
+			updateCoords} from './graphstore.js'
     import { subprocess_expanded } from './icons';
 	import panelManager from './panels/panelManager.svelte'
     import PanelManager from './panels/panelManager.svelte';
@@ -131,7 +139,8 @@
 
 	}
 
-	const anchorConnection = (ev:any)=>{
+	const anchorConnection = async (ev:any)=>{
+		// KEEP TRACK OF NEW CONNECTION - ADD INPUT AND OUTPUT CONNECTION
 		ev.preventDefault()
 		let nodeid = ev.detail.node.id
 		let anchorid = ev.detail.anchor.id
@@ -163,8 +172,8 @@
 				anc.connections.push([cnid,caid])
 			}
 		}
+		await sleep(40)
 		defaultNodes = $graphStore.nodes
-		// KEEP TRACK OF NEW CONNECTION - ADD INPUT AND OUTPUT CONNECTION
 	}
 
 	/**
@@ -172,32 +181,13 @@
 	 * @param ev mouse click event
 	 */
 	const iconRelease = (ev:any) =>{
+		console.log("EDITOR ICON RELEASE MENU",ev.target)
 		const target = ev.target
 		let id = ev.target.id
-
-		if(id.includes("path-")){
-			const Z = id.replace("path-", '');
-			id = Z
-		}
-		// GET DIV NODE ELEMENT
-		const divid = 'div-'+id
-		const divElement = document.getElementById(divid)
-		if(divElement){
-			// A. SELECT NODE
-			let id = ev.target.id
-			if(id.includes("path-")){
-				const Z = id.replace("path-", '');
-				id = Z
-			}
-			// B. KEEP TRACK OF NODE POSITION
-			const boundRect = divElement.getBoundingClientRect() 
-			const found = $graphStore.nodes.find((item:any) => (item.customnode+item.uid)==id)
-			if(found){
-				found.position.x = boundRect.left
-				found.position.y = boundRect.top
-			}
-		console.log("ICON RELEASED",id)
-		}
+		updateCoords(id,$graphStore)
+		sleep(50)
+		defaultNodes = $graphStore.nodes
+		
 	}
 	
 	/**
@@ -205,8 +195,8 @@
 	 * @param ev mouse click event
 	 */
 	let iconContext = (ev:any) =>{
-		ev.preventDefault()
-		ev.stopImmediatePropagation()
+		//ev.preventDefault()
+		//ev.stopImmediatePropagation()
 		const target = ev.target
 		let id = ev.target.id
 
@@ -221,7 +211,7 @@
 			const boundRect = divElement.getBoundingClientRect() 
 			// OPEN NODE EDITOR
 		}
-		
+		console.log("ICON CONTEXT EDITOR",id)
 	}
 
 	
@@ -288,7 +278,7 @@
 		on:drop={handleDrop}>
 		<Svelvet id='1' {...svelvetProps}>	
 			{#each defaultNodes as { anchors, edgeProps, ...nodeProps }}
-					<Node {...nodeProps} drop="cursor" on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
+					<Node {...nodeProps} drop="cursor"  on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
 						{#if anchors}
 							{#each anchors as AnchorProps}
 									<Anchor {...AnchorProps} on:connection={anchorConnection} multiple>
@@ -302,7 +292,7 @@
 									width={nodeProps.width} 
 									viewbox="0 0 2048 2048" 
 									fill={nodeProps.fillColor} 
-									{iconRelease}
+									iconRelease={iconRelease}
 									{iconContext}
 									menu={true}
 									title={true}/>
@@ -314,7 +304,7 @@
 			<slot name="toggle" slot="toggle" />
 		</Svelvet>
 		{#if drawer}
-				<svelte:component this={drawerComponent} clear={clear} exp={exp} imp={imp}/>
+				<svelte:component this={drawerComponent} clear={clear} exp={exp} imp={imp} />
 				<PanelManager />
 		{/if}
 </div>

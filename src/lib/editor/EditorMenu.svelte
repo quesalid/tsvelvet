@@ -78,7 +78,7 @@ let fill = 'teal'
 
 // START DRAG EVENT
 let iconDragStart = (ev:any)=>{
-		let id = ev.target.id
+		let id = ev.target.dataset.name
 
 		if(id.includes("div-")){
 			const Z = id.replace("div-", '');
@@ -86,6 +86,7 @@ let iconDragStart = (ev:any)=>{
 		}
 		// A. CREATE NEW CUSTOM NODE
 		const newNodeProps = JSON.parse(JSON.stringify(nodePropDefault))
+		console.log("ICONS ------------------>>",icons,id,ev.target)
 		const found = icons.find((item:any) => item.name==id)
 		newNodeProps.customnode = found.name
 		newNodeProps.width = found.nodewidth
@@ -123,7 +124,7 @@ let iconDragStart = (ev:any)=>{
 		updateDragNode(newNodeProps.uid)
 }
 
-let icons:any = [
+export let icons:any = [
 	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_parallel",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_eventbased",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:70,nodeheight:75,fill:fill,name:"gateway_xor",dragStart:iconDragStart},
@@ -133,6 +134,7 @@ let icons:any = [
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"user_task",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"rule_task",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"script_task",dragStart:iconDragStart},
+	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"data_input",dragStart:iconDragStart},
 	{width:iconwidth,nodewidth:120,nodeheight:120,fill:fill,name:"subprocess_expanded",dragStart:iconDragStart,customedge:CustomEdge},
 ]
 </script>

@@ -19,6 +19,7 @@
 			user_task,
 			rule_task,
 			script_task,
+			data_input,
 			} from '.';
 
 	const icons = {
@@ -33,7 +34,8 @@
 		start_timer,
 		user_task,
 		rule_task,
-		script_task
+		script_task,
+		data_input
 	};
 
 	export let width = '18';
@@ -74,7 +76,7 @@
 	}
 
 	export let iconRelease = (ev:any) =>{
-		console.log("ICON RELEASE")
+		console.log("ICON RELEASE ICON")
 	}
 
 	export let iconDragStart = (ev:any) =>{
@@ -110,7 +112,8 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class='icon-div-class' style="--width:{width}"
-		id={"div-"+icon+uid} 
+		id={"div-"+uid} 
+		data-name={icon}
 		draggable="{draggable}" 
 		on:dragstart={iconDragStart}
 		on:contextmenu={iconContext}
@@ -118,14 +121,14 @@
 		{#if menu}
 			<IconMenu uid={uid}/>
 		{/if}
-		<svg id={icon+uid} xmlns="http://www.w3.org/2000/svg" 
+		<svg id={"svg-"+uid} xmlns="http://www.w3.org/2000/svg" 
 			height={width}  
 			viewBox={viewbox} 
 			{width}
 			on:mouseenter={iconMouseEnter} 
 			on:mouseleave={iconMouseLeave} 
-			on:click={iconClick}>
-			<svelte:component this={icons[icon]} fill={fill} id={icon+uid}/>
+			on:mouseup={iconClick}>
+			<svelte:component this={icons[icon]} fill={fill} id={uid}/>
 		</svg>
 		{#if title}
 			<IconTitle uid={uid}/>

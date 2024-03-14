@@ -1,5 +1,9 @@
 <script lang='ts'>
-import {graphStore,selectNode,selected,hidePanel} from '../graphstore'
+import {graphStore,
+		selectNode,
+		selected,
+		hidePanel,
+		updateCoords} from '../graphstore'
 export let menuwidth = '18px'
 export let uid = ''
 export let bgcolor = '#FFFFFF'
@@ -9,7 +13,7 @@ export const editClick = (ev:any) =>{
 	const found = $graphStore.nodes.find((item:any)=>item.id == uid)
 	if(found){
 		// A. SELECT NODE 
-		const divid = 'div-'+found.customnode+found.id 
+		const divid = 'div-'+found.id 
 		selectNode($selected,false)
 		selectNode(divid,true)
 		$selected = divid
@@ -38,8 +42,19 @@ export const deleteClick = (ev:any) =>{
     graphDropZone?.dispatchEvent(redrawGraph)
 	console.log("AFTER DELETE CLICKED",id,$graphStore.nodes)
 }
+
+
+let locIconRelease = (ev:any) =>{
+		console.log("LOC ICON RELEASE MENU",ev.target)
+		const target = ev.target
+		let id = ev.target.id
+		updateCoords(id,$graphStore)
+	}
+
 </script>
-	<div class="icon-menu-container" style="--bgcolor:{bgcolor};">
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div class="icon-menu-container" style="--bgcolor:{bgcolor};"  on:mouseup={locIconRelease} id={'div-'+uid}>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div class="icon-menu-item" on:click={editClick}>

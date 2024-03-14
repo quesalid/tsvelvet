@@ -152,6 +152,46 @@ export const hidePanel = (panel = 'panel-manager-id') => {
 		thisdiv.style['visibility'] = 'hidden'
 }
 
+export const updateCoords = (targetid, gs) => {
+	console.log("UPDATE COORDS TARGET", targetid)
+	let id = ''
+	let type = ''
+	let correctBound = false
+	// EXTRACT ID FROM TARGET ID
+	if (targetid.includes("path-")) {
+		id = targetid.replace("path-", '');
+		type = 'path'
+	}
+	if (targetid.includes("div-")) {
+		id = targetid.replace("div-", '');
+		type = 'div'
+	}
+	if (targetid.includes("svg-")) {
+		id = targetid.replace("svg-", '');
+		type = 'svg'
+	}
+	if (targetid.includes("div-div-")) {
+		id = targetid.replace("div-div-", '');
+		type = 'divdiv'
+	}	
+	let elementId = 'path-' + id
+	correctBound = false
+	// GET SVG AND DIV NODE ELEMENT
+	let element = document.getElementById(elementId)
+	if (element) {
+		// B. KEEP TRACK OF NODE POSITION
+		const boundRect = element.getBoundingClientRect()
+		const index = gs.nodes.findIndex((item) => (item.uid) == id)
+		if (index > -1) {
+			console.log("UPDATE COORDS", elementId, boundRect.left, boundRect.top, boundRect.height, boundRect.width)
+			gs.nodes[index].position.x = boundRect.left
+			gs.nodes[index].position.y = boundRect.top
+			console.log("UPDATE COORDS", elementId, gs.nodes[index].position.x, gs.nodes[index].position.y)
+		}
+	}
+	graphStore.update((graph) => { graph = gs; return (graph) })
+}
+
 
 
 

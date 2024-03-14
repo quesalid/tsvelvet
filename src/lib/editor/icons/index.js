@@ -10,5 +10,7 @@ export { default as start_timer } from './start_timer.svelte'
 export { default as user_task } from './user_task.svelte'
 export { default as rule_task } from './rule_task.svelte'
 export { default as script_task } from './script_task.svelte'
+export { default as data_input } from './data_input.svelte'
+
 
 
