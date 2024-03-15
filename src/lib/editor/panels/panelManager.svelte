@@ -16,6 +16,8 @@ let compname = 'panelDefault'
 let uid:any = ''
 let comp = comps[0]
 let title = ''
+let node:any={}
+
 onMount(async () => {
 	const thisdiv = document.getElementById(PANELMANAGER)
 	if(thisdiv){
@@ -29,12 +31,15 @@ onMount(async () => {
 					title = foundnode.data.name
 				else
 					title = foundnode.customnode
+				node = foundnode
 			}
 			compname = details.compname
 			const found = comps.find((item:any)=>item.name == compname)
 			if(found)
 				comp = found
 				thisdiv.style['visibility']='visible'
+				node = node
+				console.log("NODE --->",node)
 			})
 	}
 })
@@ -65,7 +70,7 @@ const exitPanel = (ev:any) =>{
 			<input type='button' value="SAVE" on:click={savePanelInfo}/>
 			<input type='button' value="EXIT" on:click={exitPanel}/>
 		</div>
-		<svelte:component this={comp.comp} uid={uid}/>
+		<svelte:component this={comp.comp} bind:node={node}/>
 	</div>
 
 <style>

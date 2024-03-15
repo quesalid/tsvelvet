@@ -46,6 +46,8 @@
 	export let uid = ''
 	export let menu = false
 	export let title = false
+	export let svgclass = ''
+	
 
 	export let iconMouseEnter = (ev:any) =>{
 		const target = ev.target
@@ -119,7 +121,7 @@
 		on:contextmenu={iconContext}
 		on:mouseup={iconRelease}>
 		{#if menu}
-			<IconMenu uid={uid}/>
+			<IconMenu uid={uid} bgcolor='#fafafa' />
 		{/if}
 		<svg id={"svg-"+uid} xmlns="http://www.w3.org/2000/svg" 
 			height={width}  
@@ -127,7 +129,8 @@
 			{width}
 			on:mouseenter={iconMouseEnter} 
 			on:mouseleave={iconMouseLeave} 
-			on:mouseup={iconClick}>
+			on:mouseup={iconClick}
+			class="{svgclass}">
 			<svelte:component this={icons[icon]} fill={fill} id={uid}/>
 		</svg>
 		{#if title}
@@ -137,8 +140,13 @@
 
 <style>
 	.icon-div-class{
+		display:flexbox;
 		cursor:gr;
 		width:var(--width);
+		justify-items: center;
+	}
+	.bounding-svg-class{
+		border: 1px solid #0000ff;
 	}
 	
 </style>

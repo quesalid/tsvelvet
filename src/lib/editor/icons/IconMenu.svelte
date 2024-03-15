@@ -3,12 +3,18 @@ import {graphStore,
 		selectNode,
 		selected,
 		hidePanel,
-		updateCoords} from '../graphstore'
+		updateCoords,
+		sleep} from '../graphstore'
+
+import {testRules} from '../ruleengine.js'
+
 export let menuwidth = '18px'
 export let uid = ''
 export let bgcolor = '#FFFFFF'
 
-export const editClick = (ev:any) =>{
+
+
+export const editClick = async (ev:any) =>{
 	console.log("EDIT CLICKED",uid,ev,$graphStore.nodes)
 	const found = $graphStore.nodes.find((item:any)=>item.id == uid)
 	if(found){
@@ -21,6 +27,7 @@ export const editClick = (ev:any) =>{
 		const divPanelManager = document.getElementById('panel-manager-id')
 		const showPanel = new CustomEvent("iconeditclicked", { detail: {uid:found.id,compname:'panelDefault'} })
 		divPanelManager?.dispatchEvent(showPanel)
+		testRules()
 	}
 }
 export const deleteClick = (ev:any) =>{
@@ -38,17 +45,19 @@ export const deleteClick = (ev:any) =>{
 	hidePanel()
 	// FORCE GRAPH REDRAW
 	const graphDropZone = document.getElementById('drop-zone-id')
-    const redrawGraph = new CustomEvent("redrawgraph", { detail: id })
+    const redrawGraph = new CustomEvent("redrawgraph", { detail: {id:id,clear:true} })
     graphDropZone?.dispatchEvent(redrawGraph)
 	console.log("AFTER DELETE CLICKED",id,$graphStore.nodes)
 }
 
 
-let locIconRelease = (ev:any) =>{
+let locIconRelease = async (ev:any) =>{
 		console.log("LOC ICON RELEASE MENU",ev.target)
 		const target = ev.target
 		let id = ev.target.id
-		updateCoords(id,$graphStore)
+		//updateCoords(id,$graphStore)
+		//await sleep()
+		//defaultNodes = $graphStore.nodes
 	}
 
 </script>

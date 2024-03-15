@@ -132,7 +132,8 @@ export const downloadJSON = (file) => {
 	})
 }
 
-export const sleep = (ms) => {
+
+export const sleep = (ms=1) => {
 		return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -152,8 +153,7 @@ export const hidePanel = (panel = 'panel-manager-id') => {
 		thisdiv.style['visibility'] = 'hidden'
 }
 
-export const updateCoords = (targetid, gs) => {
-	console.log("UPDATE COORDS TARGET", targetid)
+export const updateCoords = (targetid, gs, dropzone ='drop-zone-id') => {
 	let id = ''
 	let type = ''
 	let correctBound = false
@@ -190,7 +190,24 @@ export const updateCoords = (targetid, gs) => {
 		}
 	}
 	graphStore.update((graph) => { graph = gs; return (graph) })
+	// SEND REDRAW EVENT
+	const graphDropZone = document.getElementById(dropzone)
+	const redrawGraph = new CustomEvent("redrawgraph", { detail: { id: id, clear: false } })
+	graphDropZone?.dispatchEvent(redrawGraph)
 }
+
+/**
+ * SEE NODE-RED FOR MESSAGE PASSING
+ * https://nodered.org/docs/user-guide/
+ * 
+ * Each node in the diagram has three parts
+ * A. NODE: perform the business logic on the message
+ * B. INPUT ANCHOR: receive messages from other nodes AND starts node computation
+ *					 Add event listener on itself (by default)
+ * C. OUTPUT ANCHOR: receive node computation AND send messages to other nodes
+ */
+
+
 
 
 

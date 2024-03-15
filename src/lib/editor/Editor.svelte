@@ -46,15 +46,17 @@
 		const graphDropZone = document.getElementById('drop-zone-id')
 		if(graphDropZone){
 			// ADD REDRAW LISTENER
-			redrawListener = graphDropZone.addEventListener("redrawgraph",async ()=>{
-				console.log(" NEW STORE ",$graphStore.nodes)
+			redrawListener = graphDropZone.addEventListener("redrawgraph",async (ev:any)=>{
+				console.log(" NEW STORE ",$graphStore.nodes,ev.detail)
 				// ***** ADDED sleep BETWEEN REDRAWING TICKS *****
 				// SIMULATE CLEAR
-				defaultNodes = []
-				await sleep(40)
-				// SIMULATE RELOAD
-				defaultNodes = $graphStore.nodes
-				await sleep(40)
+				if(ev.detail.clear){
+					defaultNodes = []
+					await sleep()
+					// SIMULATE RELOAD
+					defaultNodes = $graphStore.nodes
+				}
+				await sleep()
 				defaultNodes = $graphStore.nodes
 				console.log("REDRAW",defaultNodes)
 			})
@@ -172,7 +174,7 @@
 				anc.connections.push([cnid,caid])
 			}
 		}
-		await sleep(40)
+		await sleep()
 		defaultNodes = $graphStore.nodes
 	}
 
@@ -185,9 +187,10 @@
 		const target = ev.target
 		let id = ev.target.id
 		updateCoords(id,$graphStore)
-		sleep(50)
+		/*sleep()
 		defaultNodes = $graphStore.nodes
-		
+		sleep()
+		defaultNodes = $graphStore.nodes*/
 	}
 	
 	/**
@@ -324,11 +327,16 @@
 	--anchor-color: #ffff00;
 	--anchor-border-color: #999999;
 	--anchor-connected: #0000ff;
+	--shadow-elevation-low: 0.3px 0px 0px hsl(var(--shadow-color) / 0.4),
+		0px 0px 0px 0px hsl(var(--shadow-color) / 0.34),
+		0px 0px 0px 0px hsl(var(--shadow-color) / 0.34);
+	--shadow-elevation-medium: 0px 0px 0px hsl(var(--shadow-color) / 0.42),
+		0px 0px 0px 0px hsl(var(--shadow-color) / 0.1),
+		0px 0px 0px 0px hsl(var(--shadow-color) / 0.1),
+		0px 0px 0px 0px hsl(var(--shadow-color) / 0.1);
 }
 
-.XYZ{
-	box-shadow: none;
-}
+
 
 
 </style>
