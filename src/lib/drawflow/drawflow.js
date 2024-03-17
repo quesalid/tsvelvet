@@ -550,12 +550,12 @@ export default class Drawflow {
         if (this.node_selected || this.connection_selected) {
             var deletebox = document.createElement('div');
             deletebox.classList.add("drawflow-delete");
-            deletebox.innerHTML = "x";
+            deletebox.innerHTML = "\u{1F5D9}";
             if (this.node_selected) {
                 // ADDED EDIT BOX
                 var editbox = document.createElement('div');
                 editbox.classList.add("drawflow-edit");
-                editbox.innerHTML = "e";
+                editbox.innerHTML = "\u{1F58B}";
                 this.node_selected.appendChild(editbox);
                 // END ADD EDIT
                 this.node_selected.appendChild(deletebox);

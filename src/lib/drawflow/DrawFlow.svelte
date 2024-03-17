@@ -56,8 +56,8 @@ const panelEditExit = (ev:any)=>{
 		<div class="drawflow-edit-panel-header">
 			<span>Editor Panel</span>
 			<div>
-				<input type='button' value="S" on:click={panelEditSave}/>
-				<input type='button' value="X" on:click={panelEditExit}/>
+				<input type='button' value=&#x1f5ac; on:click={panelEditSave}/>
+				<input type='button' value=&#x1f5d9; on:click={panelEditExit}/>
 			</div>
 		</div>
 		<div class="drawflow-edit-panel-body">
