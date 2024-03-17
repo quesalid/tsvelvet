@@ -1,24 +1,46 @@
-<script>
+<script lang='ts'>
 import DFEDITOR from './grapheditor.js'
 
 //export const drag = (event) =>{}
+const getTitle = (title:any) =>{
+    const ret = '<div class="title-box">'+ title+'</div>'
+    return(ret)
+}
+const getContent = (content:any)=>{
+    const ret = '<div class="box">'+ content+'</div>'
+    return(ret)
+}
 export let nodetypes = [
-        {name:'facebook',
-        inputs:0,
-        outputs:1,
-        x:0,
-        y:0,
-        params:{pippo:'pippo'},
-        title:'<div class="title-box"><i class="fab fa-facebook"></i> Facebook Message</div>',
-        content: '<div class="title-box"><i class="fab fa-facebook"></i> Facebook Message</div>'},
-        {name:'email',
-        inputs:1,
-        outputs:0,
-        x:0,
-        y:0,
-        params:{},
-        title:'<div class="title-box"><i class="fab fa-facebook"></i> Send Email</div>',
-        content: '<div class="title-box"><i class="fab fa-facebook"></i> Send Email</div>'}
+        {
+            name:'facebook',
+            inputs:0,
+            outputs:1,
+            x:0,
+            y:0,
+            params:{type:'facebook'},
+            title:getTitle("Facebook Message"),
+            content: getTitle("Facebook Message")+getContent(""),
+        },
+        {
+            name:'email',
+            inputs:1,
+            outputs:0,
+            x:0,
+            y:0,
+            params:{type:'email'},
+            title:getTitle("Send Email"),
+            content: getTitle("Send Email")+getContent(""),
+        },
+        {
+            name:'middlenode',
+            inputs:1,
+            outputs:1,
+            x:0,
+            y:0,
+            params:{type:'middlenode'},
+            title:getTitle("Middel Node"),
+            content: getTitle("Middel Node")+getContent("Box content"),
+        }
 ]
 </script>
       {#each nodetypes as Node}

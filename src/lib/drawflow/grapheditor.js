@@ -31,6 +31,12 @@ const  drop = (ev,editor) => {
     addNodeToFlow(editor,data, ev.clientX, ev.clientY);
 }
 
+/**
+ * DRAG EVENT
+ * 
+ * Tranfer node data in data-node={JSON.stringify(Node)}
+ * @param {any} ev
+ */
 const drag = (ev) => {
     ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
 }

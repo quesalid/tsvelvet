@@ -85,6 +85,7 @@ const panelEditExit = (ev:any)=>{
 	width: 200px;
 	height:200px;
 	border: 1px solid black;
+	border-radius: 3px;
 }
 :global(.drawflow-edit-panel-header) {
 	--background-edut-panel-header: #e9e9e9;
