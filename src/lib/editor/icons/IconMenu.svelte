@@ -4,7 +4,7 @@ import {graphStore,
 		selected,
 		hidePanel,
 		updateCoords,
-		sleep} from '../graphstore'
+		redrawGraph} from '../graphstore'
 
 import {testRules} from '../ruleengine.js'
 
@@ -30,6 +30,7 @@ export const editClick = async (ev:any) =>{
 		testRules()
 	}
 }
+
 export const deleteClick = (ev:any) =>{
 	const id = ev.target.id.split("_")[1]
 
@@ -43,11 +44,7 @@ export const deleteClick = (ev:any) =>{
 		}
 	}
 	hidePanel()
-	// FORCE GRAPH REDRAW
-	const graphDropZone = document.getElementById('drop-zone-id')
-    const redrawGraph = new CustomEvent("redrawgraph", { detail: {id:id,clear:true} })
-    graphDropZone?.dispatchEvent(redrawGraph)
-	console.log("AFTER DELETE CLICKED",id,$graphStore.nodes)
+	redrawGraph('drop-zone-id',id,true)
 }
 
 
@@ -55,9 +52,6 @@ let locIconRelease = async (ev:any) =>{
 		console.log("LOC ICON RELEASE MENU",ev.target)
 		const target = ev.target
 		let id = ev.target.id
-		//updateCoords(id,$graphStore)
-		//await sleep()
-		//defaultNodes = $graphStore.nodes
 	}
 
 </script>

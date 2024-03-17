@@ -1,6 +1,6 @@
 <script lang="ts">
     // EXTERNAL
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy} from 'svelte';
     import {Svelvet, Node,Anchor,Group} from 'svelvet';
 	import EditorMenu from './EditorMenu.svelte'
 	// INTERNAL - HERE CUSTOM NODES
@@ -14,9 +14,8 @@
 			selected,
 			selectNode,
 			hidePanel,
-			updateCoords} from './graphstore.js'
-    import { subprocess_expanded } from './icons';
-	import panelManager from './panels/panelManager.svelte'
+			updateCoords,
+			redrawGraph} from './graphstore.js'
     import PanelManager from './panels/panelManager.svelte';
 	// Props
 	export let width = 0;
@@ -42,22 +41,23 @@
 	export let toggle = false;
 
 	let redrawListener:any
+	const DROPZONE = 'drop-zone-id'
 	onMount(async () => {
 		const graphDropZone = document.getElementById('drop-zone-id')
 		if(graphDropZone){
 			// ADD REDRAW LISTENER
 			redrawListener = graphDropZone.addEventListener("redrawgraph",async (ev:any)=>{
-				console.log(" NEW STORE ",$graphStore.nodes,ev.detail)
-				// ***** ADDED sleep BETWEEN REDRAWING TICKS *****
-				// SIMULATE CLEAR
+				console.log(" NEW STORE ",$graphStore.nodes,defaultNodes)
+				const temp = JSON.parse(JSON.stringify($graphStore.nodes))
 				if(ev.detail.clear){
 					defaultNodes = []
 					await sleep()
 					// SIMULATE RELOAD
-					defaultNodes = $graphStore.nodes
+					defaultNodes = temp
+				}else{
+					await sleep()
+					defaultNodes = temp
 				}
-				await sleep()
-				defaultNodes = $graphStore.nodes
 				console.log("REDRAW",defaultNodes)
 			})
 		}
@@ -92,16 +92,16 @@
 	let dropped_in: boolean;
 	let drawer = true
 	let drawerComponent = EditorMenu
-	let iconwidth = '60'
-	let fill = 'grey'
 
 	// Drag and drop events
-	const handleDragEnter = (): void => {
+	const handleDragEnter = (e:any): void => {
 		if (!dropped_in) dropped_in = true;
+		console.log("DRAG ENTER EVENT",e)
 	};
 
-	const handleDragLeave = (): void => {
+	const handleDragLeave = (e:any): void => {
 		dropped_in = false;
+		console.log("DRAG LEAVE EVENT",e)
 	};
 
 	const onDragOver = (e: DragEvent): boolean => {
@@ -125,16 +125,20 @@
 			$graphStore.nodes[index].position.x = e.clientX
 			$graphStore.nodes[index].position.y = e.clientY
 		}
-		
-		defaultNodes = $graphStore.nodes
-		console.log("ADDED NODE",defaultNodes,$dragNode)
+		// REDRAW GRAPH
+		redrawGraph(DROPZONE,null,false)
+		console.log("ADDED NODE",$dragNode)
 		$dragNode=''
 	};
+
 	const nodeClicked = (ev:any)=>{
 		ev.preventDefault()
-		console.log("NODE CLICKED")
+		let position = undefined
+		ev.detail.node.position.subscribe((value) => {position=value})
+		console.log("NODE CLICKED",ev.detail.node,position)
 		
 	}
+
 	const nodeReleased = (ev:any)=>{
 		ev.preventDefault()
 		console.log("NODE RELEASED")
@@ -173,9 +177,11 @@
 				const caid = canchorid
 				anc.connections.push([cnid,caid])
 			}
+
 		}
+		// REDRAW GRAPH AFTER ANCHOR CONNECTION
 		await sleep()
-		defaultNodes = $graphStore.nodes
+		redrawGraph(DROPZONE,null,false)
 	}
 
 	/**
@@ -186,11 +192,7 @@
 		console.log("EDITOR ICON RELEASE MENU",ev.target)
 		const target = ev.target
 		let id = ev.target.id
-		updateCoords(id,$graphStore)
-		/*sleep()
-		defaultNodes = $graphStore.nodes
-		sleep()
-		defaultNodes = $graphStore.nodes*/
+		updateCoords(id,$graphStore,ev)
 	}
 	
 	/**
@@ -198,8 +200,6 @@
 	 * @param ev mouse click event
 	 */
 	let iconContext = (ev:any) =>{
-		//ev.preventDefault()
-		//ev.stopImmediatePropagation()
 		const target = ev.target
 		let id = ev.target.id
 
@@ -226,9 +226,10 @@
 		hidePanel(PANELMANAGER)
 		selectNode($selected,false)
 		$selected=''
-		// B. CLEAR GRAPH
+		// B. CLEAR GRAPH 
 		$graphStore = {name:'defaultGraph',nodes:[]}
-		defaultNodes = $graphStore.nodes
+		// REDRAW GRAPH AFTER CLEAR
+		redrawGraph(DROPZONE,null,false)
 		console.log("CLEAR")
 	}
 
@@ -262,9 +263,9 @@
 		const data = JSON.parse(result)
 		$graphStore = data
 		console.log("IMPORTED",$graphStore)
-		// Redraw graph
-		defaultNodes = $graphStore.nodes
-		console.log("IMPORTED DEFAULT NODES",defaultNodes)
+		// REDRAW GRAPH
+		redrawGraph(DROPZONE,null,false)
+		console.log("IMPORTED DEFAULT NODES",$graphStore)
 
 	}
 	const destroyEdge = (ev:any)=>{
@@ -279,7 +280,7 @@
 		on:dragleave={handleDragLeave}
 		on:dragover={onDragOver}
 		on:drop={handleDrop}>
-		<Svelvet id='1' {...svelvetProps}>	
+		<Svelvet id='1' {...svelvetProps} >	
 			{#each defaultNodes as { anchors, edgeProps, ...nodeProps }}
 					<Node {...nodeProps} drop="cursor"  on:nodeClicked={nodeClicked} on:nodeReleased={nodeReleased}>
 						{#if anchors}
@@ -290,7 +291,7 @@
 							{/each}
 						{/if}
 						{#if nodeProps.customnode}
-							<Icon  uid={nodeProps.uid} 
+							<Icon draggable uid={nodeProps.uid} 
 									icon={nodeProps.customnode} 
 									width={nodeProps.width} 
 									viewbox="0 0 2048 2048" 

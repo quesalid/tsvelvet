@@ -56,7 +56,7 @@ export const nodePropDefault = {
 	position: {x:0,y:0},
 	zIndex:0,
 	TD:false,
-	LR: false,
+	LR: true,
 	editable: false,
 	customnode: null,
 	useDefaults:false
@@ -133,7 +133,7 @@ export const downloadJSON = (file) => {
 }
 
 
-export const sleep = (ms=1) => {
+export const sleep = (ms=40) => {
 		return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -153,7 +153,7 @@ export const hidePanel = (panel = 'panel-manager-id') => {
 		thisdiv.style['visibility'] = 'hidden'
 }
 
-export const updateCoords = (targetid, gs, dropzone ='drop-zone-id') => {
+export const updateCoords = (targetid, gs, ev,dropzone ='drop-zone-id') => {
 	let id = ''
 	let type = ''
 	let correctBound = false
@@ -183,16 +183,22 @@ export const updateCoords = (targetid, gs, dropzone ='drop-zone-id') => {
 		const boundRect = element.getBoundingClientRect()
 		const index = gs.nodes.findIndex((item) => (item.uid) == id)
 		if (index > -1) {
-			console.log("UPDATE COORDS", elementId, boundRect.left, boundRect.top, boundRect.height, boundRect.width)
+			console.log("UPDATE COORDS", elementId, boundRect.left, boundRect.top, ev.clientX, ev.clientY)
 			gs.nodes[index].position.x = boundRect.left
 			gs.nodes[index].position.y = boundRect.top
-			console.log("UPDATE COORDS", elementId, gs.nodes[index].position.x, gs.nodes[index].position.y)
+			//gs.nodes[index].position.x = ev.clientX
+			//gs.nodes[index].position.y = ev.clientY
 		}
 	}
 	graphStore.update((graph) => { graph = gs; return (graph) })
 	// SEND REDRAW EVENT
+	redrawGraph(dropzone,id,false)
+}
+
+export const redrawGraph = (dropzone, id, clear = false) => {
 	const graphDropZone = document.getElementById(dropzone)
-	const redrawGraph = new CustomEvent("redrawgraph", { detail: { id: id, clear: false } })
+	const redrawGraph = new CustomEvent("redrawgraph", { detail: { id: id, clear: clear } })
+	console.log("SENT REDRAW EVENT", graphDropZone)
 	graphDropZone?.dispatchEvent(redrawGraph)
 }
 
