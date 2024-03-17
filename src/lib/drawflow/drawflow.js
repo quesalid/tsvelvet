@@ -2,6 +2,8 @@ export default class Drawflow {
     constructor(container, render = null, parent = null) {
         this.events = {};
         this.container = container;
+        // ADDED EDIT
+        this.editpanel = 'drawflow-edit-panel';
         this.precanvas = null;
         this.nodeId = 1;
         this.ele_selected = null;
@@ -316,10 +318,17 @@ export default class Drawflow {
                     this.removeReouteConnectionSelected();
                     this.connection_selected = null;
                 }
-
+                // HIDE EDIT PANEL
+                const ds = document.querySelector('#' + this.editpanel)
+                if (ds)
+                    ds.style.display = 'none'
                 break;
             case 'drawflow-edit':
-                console.log("ADD NODE DATA EDITING", this.node_selected.id)
+                // SHOW EDIT PANEL
+                const df = document.querySelector('#' + this.editpanel)
+                const ev = new CustomEvent("showeditpanel", { detail: { id: this.node_selected.id } })
+                if(df)
+                    df.dispatchEvent(ev)
                 break;
             default:
         }
@@ -1449,7 +1458,6 @@ export default class Drawflow {
         node.style.left = dataNode.pos_x + "px";
         parent.appendChild(node);
         this.precanvas.appendChild(parent);
-        console.log('ADDED NODE',parent)
     }
 
     addRerouteImport(dataNode) {
