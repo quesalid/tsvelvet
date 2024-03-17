@@ -195,6 +195,7 @@ export default class Drawflow {
             this.ele_selected = e.target;
             if (e.button === 0) {
                 this.contextmenuDel();
+                this.contextmenuEdit();
             }
 
             if (e.target.closest(".drawflow_content_node") != null) {
@@ -316,6 +317,9 @@ export default class Drawflow {
                     this.connection_selected = null;
                 }
 
+                break;
+            case 'drawflow-edit':
+                console.log("ADD NODE DATA EDITING", this.node_selected.id)
                 break;
             default:
         }
@@ -529,11 +533,22 @@ export default class Drawflow {
         if (this.precanvas.getElementsByClassName("drawflow-delete").length) {
             this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
         };
+        // ADDED EDIT BOX
+        if (this.precanvas.getElementsByClassName("drawflow-edit").length) {
+            this.precanvas.getElementsByClassName("drawflow-edit")[0].remove()
+        };
+         // END ADD EDIT
         if (this.node_selected || this.connection_selected) {
             var deletebox = document.createElement('div');
             deletebox.classList.add("drawflow-delete");
             deletebox.innerHTML = "x";
             if (this.node_selected) {
+                // ADDED EDIT BOX
+                var editbox = document.createElement('div');
+                editbox.classList.add("drawflow-edit");
+                editbox.innerHTML = "e";
+                this.node_selected.appendChild(editbox);
+                // END ADD EDIT
                 this.node_selected.appendChild(deletebox);
 
             }
@@ -551,6 +566,12 @@ export default class Drawflow {
     contextmenuDel() {
         if (this.precanvas.getElementsByClassName("drawflow-delete").length) {
             this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
+        };
+    }
+    /** ADD EDIT*/
+    contextmenuEdit() {
+        if (this.precanvas.getElementsByClassName("drawflow-edit").length) {
+            this.precanvas.getElementsByClassName("drawflow-edit")[0].remove()
         };
     }
 
