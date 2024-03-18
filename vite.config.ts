@@ -83,7 +83,9 @@ const config: UserConfig = {
             vm: 'rollup-plugin-node-polyfills/polyfills/vm',
             zlib: 'rollup-plugin-node-polyfills/polyfills/zlib',
             tty: 'rollup-plugin-node-polyfills/polyfills/tty',
-            domain: 'rollup-plugin-node-polyfills/polyfills/domain'
+            domain: 'rollup-plugin-node-polyfills/polyfills/domain',
+            buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6', // add buffer
+            process: 'rollup-plugin-node-polyfills/polyfills/process-es6', // add process
         }
     },
     optimizeDeps: {
@@ -107,7 +109,7 @@ const config: UserConfig = {
             plugins: [
                 // Enable rollup polyfills plugin
                 // used during production bundling
-                rollupNodePolyFill()
+                rollupNodePolyFill(),
             ]
         }
     },

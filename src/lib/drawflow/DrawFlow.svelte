@@ -45,6 +45,7 @@ const panelEditExit = (ev:any)=>{
 		ep.style.display='none'
 	}
 }
+
 </script>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class= "parent-drawflow" 
@@ -123,14 +124,14 @@ const panelEditExit = (ev:any)=>{
 
 :global(.drawflow .drawflow-node) {
   --drawflow-node-width:fit-content;
-  --drawflow-node-border-color:black;
-  --drawflow-node-color:black;
+  --drawflow-node-border-color:#666666;
+  --drawflow-node-color:#333333;
   display: flex;
   align-items: center;
   position: absolute;
   background: var(--background-color);
   width: var(--drawflow-node-width);
-  min-width: 160px;
+  min-width: 30px;
   min-height: fit-content;
   border-radius:4px;
   border: 2px solid var(--drawflow-node-border-color);
@@ -191,12 +192,47 @@ const panelEditExit = (ev:any)=>{
   padding-left: 10px;
   font-weight:600 ;
   padding: 3px;
-  min-width: 160px;
+  min-width: 60px;
 }
 :global(.drawflow-node .box) {
 	padding: 12px;
 }
 
+/* CONTENT STYLES*/
+:global(.drawflow-node .box button) {
+	--background-box-button: #e9e9e9;
+	background-color: var(--background-box-button);
+	border: 1px solid;
+	border-radius: 3px;
+}
+:global(.drawflow-node .box a) {
+	--color-box-anchor: #0000e9;
+	color:var(--color-box-anchor);
+	font-style:italic ;
+}
+:global(.drawflow-node .box .svg-box-stroke) {
+	position: absolute;
+	stroke: teal;
+	fill:none;
+	width: 18px;
+	height: 18px;
+	top:18px;
+	left: 9px;
+	padding-bottom: 2px;
+}
+
+:global(.drawflow-node .box .svg-box-fill) {
+	position: absolute;
+	stroke: none;
+	fill:teal;
+	width: 18px;
+	height: 18px;
+	top:18px;
+	left: 9px;
+	padding-bottom: 2px;
+}
+
+/* END CONTENT STYLES*/
 :global(.drawflow-node input, .drawflow-node select, .drawflow-node textarea) {
   border-radius: 4px;
   border: 1px solid var(--border-color);
@@ -256,7 +292,7 @@ const panelEditExit = (ev:any)=>{
 
 :global(.drawflow-delete) {
   --drawflow-node-menu-bcolor:white;
-  --drawflow-node-menu-color:black;
+  --drawflow-node-menu-color:#666666;
   position: absolute;
   display: block;
   width: 30px;
@@ -264,7 +300,7 @@ const panelEditExit = (ev:any)=>{
   background: var(--drawflow-node-menu-bcolor);
   color: var(--drawflow-node-menu-color);
   z-index: 4;
-  border: 2px solid var(--drawflow-node-menu-color);
+  border: 1px solid var(--drawflow-node-menu-color);
   line-height: 30px;
   font-weight: bold;
   text-align: center;
@@ -275,7 +311,7 @@ const panelEditExit = (ev:any)=>{
 
 :global(.drawflow-edit) {
   --drawflow-node-menu-bcolor:white;
-  --drawflow-node-menu-color:black;
+  --drawflow-node-menu-color:#666666;
   position: absolute;
   display: block;
   width: 30px;
@@ -283,7 +319,7 @@ const panelEditExit = (ev:any)=>{
   background: var(--drawflow-node-menu-bcolor);
   color: var(--drawflow-node-menu-color);
   z-index: 4;
-  border: 2px solid var(--drawflow-node-menu-color);
+  border: 1px solid var(--drawflow-node-menu-color);
   line-height: 30px;
   font-weight: bold;
   text-align: center;
