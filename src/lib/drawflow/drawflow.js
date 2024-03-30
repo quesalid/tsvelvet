@@ -326,7 +326,7 @@ export default class Drawflow {
             case 'drawflow-edit':
                 // SHOW EDIT PANEL
                 const df = document.querySelector('#' + this.editpanel)
-                const ev = new CustomEvent("showeditpanel", { detail: { id: this.node_selected.id } })
+                const ev = new CustomEvent("showeditpanel", { detail: { node: this.node_selected } })
                 if(df)
                     df.dispatchEvent(ev)
                 break;

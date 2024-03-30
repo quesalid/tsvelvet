@@ -21,38 +21,40 @@ onMount(async () => {
 	editor.start();
 	editor.import(dataToImport);
 	// ADD EVENT LISTENER TO EDIT PANEL
-	const df = document.querySelector('#'+editPanel)
+	const df:any = document.querySelector('#'+editPanel)
 	if(df){
 		df.removeEventListener('showeditpanel',drawflowEventListener)
 		df.addEventListener('showeditpanel',(ev:any) =>{
 			console.log("SHOW PANEL EVENT RECEIVED",ev.detail)
-			nodeid = ev.detail
+			nodeid = ev.detail.node.id
 			df.style.display='block'
 		})
 	}
 })
 
 const panelEditSave = (ev:any)=>{
-	const ep = document.querySelector('#'+editPanel)
+	const ep:any = document.querySelector('#'+editPanel)
 	if(ep){
 		ep.style.display='none'
 	}
 }
 
 const panelEditExit = (ev:any)=>{
-	const ep = document.querySelector('#'+editPanel)
+	const ep:any = document.querySelector('#'+editPanel)
 	if(ep){
 		ep.style.display='none'
 	}
 }
 
 </script>
+    <!-- DRAWFLOW EDITOR CANVAS-->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class= "parent-drawflow" 
 		id="{drawFlow}" 
 		on:drop={(ev)=>{DFEDITOR.drop(ev,editor)}} 
 		on:dragover={(ev)=>{DFEDITOR.allowDrop(ev)}}>
 	</div>
+	<!-- PANEL EDITOR -->
 	<div class="drawflow-edit-panel-class" id="{editPanel}">
 		<div class="drawflow-edit-panel-header">
 			<span>Editor Panel</span>
@@ -225,6 +227,18 @@ const panelEditExit = (ev:any)=>{
 	position: absolute;
 	stroke: none;
 	fill:teal;
+	width: 18px;
+	height: 18px;
+	top:18px;
+	left: 9px;
+	padding-bottom: 2px;
+}
+
+:global(.drawflow-node .box .svg-box-fill-stroke) {
+	position: absolute;
+	stroke: none;
+	fill:teal;
+	stroke:teal;
 	width: 18px;
 	height: 18px;
 	top:18px;
