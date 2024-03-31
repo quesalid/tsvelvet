@@ -17,6 +17,9 @@ let ductShape:any
 let leftHeater:any
 let rightHeater:any
 let image = null;
+let waterSpray= null;
+let steam=null;
+let h2o2=null;
 let vialsFirstRow:any
 let vialsSecondRow:any
 let vialsFirstTray:any
@@ -26,14 +29,34 @@ let firstTrayHandle:any
 let exhaustGas:any
 let condenser:any
 let condensercip:any
+let leftCip:any
+let rightCip:any
 let condenserTank:any
 let condenserTankShape:any
+let cipGroup:any
+let sipGroup:any
+let h2o2Group:any
     
 onMount(() => {
         const img = document.createElement("img");
         img.src = "Vial.png";
         img.onload = () => {
             image = img;
+        };
+        const ws = document.createElement("img");
+        ws.src = "WaterSpray.png";
+        ws.onload = () => {
+            waterSpray = ws;
+        };
+        const st = document.createElement("img");
+        st.src = "Steam.png";
+        st.onload = () => {
+            steam = st;
+        };
+        const h2 = document.createElement("img");
+        h2.src = "H2o2.png";
+        h2.onload = () => {
+            h2o2 = h2;
         };
     });
 
@@ -199,6 +222,11 @@ const fhCondenserCip = (stroke:any,duration:any) =>{
     condensercip.to({stroke:stroke,duration:duration})
 }
 
+const fhCip = (stroke:any,duration:any) =>{
+    rightCip.to({stroke:stroke,duration:duration})
+    leftCip.to({stroke:stroke,duration:duration})
+}
+
 const fhCondenserTank =(fill:any,duration:any,opacity:any,visible=true)=>{
     condenserTank.to({visible:visible})
     condenserTankShape.to({fill:fill,duration:duration,opacity:opacity})
@@ -271,26 +299,73 @@ const defrost = async ()=>{
     fhCondenserCip("grey",0.7)
     fhCondenserTank("red",0.7,0.0,false)
 }
+
+const cip = async()=>{
+    moveVacuumPiston(delta,0.7)
+    fhCondenserCip("blue",0.7)
+    fhCip("blue",0.7)
+    await sleep(1000)
+    cipGroup.to({visible:true})
+    await sleep(1000)
+    fhCondenserCip("grey",0.7)
+    fhCip("grey",0.7)
+    await sleep(1000)
+    cipGroup.to({visible:false})
+}
+
+const sip = async ()=>{
+      fhCondenserCip("purple",0.7)
+      fhCip("purple",0.7)
+      await sleep(1000)
+      sipGroup.to({visible:true,opacity:0.4,duration:0.7})
+      await sleep(1000)
+      fhCondenserCip("grey",0.7)
+      fhCip("grey",0.7)
+      await sleep(1000)
+      sipGroup.to({visible:false})
+
+}
+
+const steryl = async ()=>{
+    fhCondenserCip("green",0.7)
+      fhCip("green",0.7)
+      await sleep(1000)
+      h2o2Group.to({visible:true,opacity:0.5,duration:0.7})
+      await sleep(1000)
+      fhCondenserCip("grey",0.7)
+      fhCip("grey",0.7)
+      await sleep(1000)
+      h2o2Group.to({visible:false})
+}
 const shapeClick = async (ev:any) =>{
     console.log("SHAPE CLICKED", ev.detail.target)
     const infoDiv = document.getElementById("id-freeze-dryer-info")
     infoDiv.innerHTML="LOAD"
     await load(0.7)
     await sleep(1000)
-     infoDiv.innerHTML="FREEZING"
+    infoDiv.innerHTML="FREEZING"
     await freezing()
     await sleep(1000)
-     infoDiv.innerHTML="PRIMARY DRYING"
+    infoDiv.innerHTML="PRIMARY DRYING"
     await primaryDrying()
     await sleep(1000)
-     infoDiv.innerHTML="SEALING"
+    infoDiv.innerHTML="SEALING"
     await sealing()
     await sleep(1000)
-     infoDiv.innerHTML="UNLOAD"
+    infoDiv.innerHTML="UNLOAD"
     await unload(0.1)
     await sleep(1000)
-     infoDiv.innerHTML="DEFROST"
+    infoDiv.innerHTML="DEFROST"
     await defrost()
+    await sleep(1000)
+    infoDiv.innerHTML="CIP"
+    await cip()
+    await sleep(1000)
+    infoDiv.innerHTML="SIP"
+    await sip()
+    await sleep(1000)
+    infoDiv.innerHTML="H2O2"
+    await steryl()
 }
 const shapeMouseEnter = (ev:any) =>{
     stage.container().style.cursor = 'pointer';
@@ -313,6 +388,7 @@ const shapeMouseLeave = (ev:any) =>{
             }}
         />
         <Line
+           bind:handle={leftCip}
            config={lineLeftSprinklerContext}
         />
         <Line
@@ -320,6 +396,7 @@ const shapeMouseLeave = (ev:any) =>{
            config={lineLeftHeaterContext}
         />
         <Line
+           bind:handle={rightCip}
            config={lineRightSprinklerContext}
         />
         <Line
@@ -502,6 +579,93 @@ const shapeMouseLeave = (ev:any) =>{
             }}
         />
         </Group>
+        <Group bind:handle={cipGroup} config={{visible:false}}>
+             <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:9*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:17*delta,}
+            } />
+             <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:9*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:17*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:18*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:28*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:waterSpray,scaleX: 0.5,scaleY: 0.5,x:34*delta,y:13*delta,}
+            } />
+        </Group>
+         <Group bind:handle={sipGroup} config={{visible:false,opacity:0.0}}>
+             <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:9*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:17*delta,}
+            } />
+             <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:9*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:17*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:18*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:28*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:steam,scaleX: 0.5,scaleY: 0.5,x:34*delta,y:13*delta,}
+            } />
+        </Group>
+         <Group bind:handle={h2o2Group} config={{visible:false,opacity:0.0}}>
+              <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:9*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:5*delta,y:17*delta,}
+            } />
+             <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:9*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:14*delta,y:17*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:18*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:28*delta,y:13*delta,}
+            } />
+            <Image config={
+                { image:h2o2,scaleX: 0.5,scaleY: 0.5,x:34*delta,y:13*delta,}
+            } />
+         </Group>
     </Layer>
 </Stage>
 <div class="freeze-dryer-info" id="id-freeze-dryer-info">
