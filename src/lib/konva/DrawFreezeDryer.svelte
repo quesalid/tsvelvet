@@ -1,8 +1,7 @@
 <script lang='ts'>
 import {onMount} from 'svelte'
 import { Stage, Layer, Shape, Line, Group, Rect, Image } from "svelte-konva"
-    import App from '../../App.svelte';
-   
+import SevenSegment from '../sevensegment/SevenSegment.svelte'
 
 
 const width = 400
@@ -36,7 +35,15 @@ let condenserTankShape:any
 let cipGroup:any
 let sipGroup:any
 let h2o2Group:any
-    
+let chamberTemp = 0.0
+let chamberPress = 1.3
+let svgname = "SVGSSD"
+let svgname1 = "SVGSSD1"
+let chamberTempEvent = new CustomEvent("chamberTemp",{detail:{chamberTemp:0}})
+let chamberPressEvent = new CustomEvent("chamberPress",{detail:{chamberPress:0}})
+
+let svgDiv:any
+let svgDiv1:any
 onMount(() => {
         const img = document.createElement("img");
         img.src = "Vial.png";
@@ -58,6 +65,8 @@ onMount(() => {
         h2.onload = () => {
             h2o2 = h2;
         };
+        svgDiv = document.getElementById(svgname)
+        svgDiv1 = document.getElementById(svgname1)
     });
 
 const sleep = function (ms:any) {
@@ -249,6 +258,10 @@ const unload = async (duration) =>{
 }
 
 const freezing = async () =>{
+    chamberTempEvent.detail.chamberTemp=-25.4
+    svgDiv.dispatchEvent(chamberTempEvent)
+    chamberPressEvent.detail.chamberPress=1.3
+    svgDiv1.dispatchEvent(chamberPressEvent)
     fhHeater('blue',0.4)
     fhTray('blue',0.4)
     await sleep(600)
@@ -259,23 +272,39 @@ const freezing = async () =>{
 }
 
 const primaryDrying = async () =>{
+    chamberTempEvent.detail.chamberTemp= 15.0
+    svgDiv.dispatchEvent(chamberTempEvent)
+    chamberPressEvent.detail.chamberPress=1.3
+    svgDiv1.dispatchEvent(chamberPressEvent)
     moveVacuumPiston(delta,0.7)
     fhHeater('red',0.4)
     fhTray('red',0.4)
     fhCondenser('blue',0.4)
     await sleep(600)
+     chamberPressEvent.detail.chamberPress=1.0
+    svgDiv1.dispatchEvent(chamberPressEvent)
     fhContainer("red",0.3,0.7)
     await sleep(2000)
+     chamberPressEvent.detail.chamberPress=0.5
+    svgDiv1.dispatchEvent(chamberPressEvent)
     fhContainer("red",0.0,0.7)
     await sleep(2000)
+    chamberPressEvent.detail.chamberPress=0.1
+    svgDiv1.dispatchEvent(chamberPressEvent)
     fhHeater('black',0.4)
     fhTray('#555555',0.4)
     fhCondenser('grey',0.4)
     await sleep(2000)
+    chamberPressEvent.detail.chamberPress=0.02
+    svgDiv1.dispatchEvent(chamberPressEvent)
     moveVacuumPiston(0,0.7)
 }
 
 const sealing = async ()=>{
+    chamberTempEvent.detail.chamberTemp= 18.0
+    svgDiv.dispatchEvent(chamberTempEvent)
+     chamberPressEvent.detail.chamberPress=1.3
+    svgDiv1.dispatchEvent(chamberPressEvent)
     movePiston(delta/2,0.7)
     await sleep(1000)
     movePiston(delta,0.7)
@@ -289,6 +318,10 @@ const sealing = async ()=>{
 }
 
 const defrost = async ()=>{
+    chamberTempEvent.detail.chamberTemp= 25.0
+    svgDiv.dispatchEvent(chamberTempEvent)
+    chamberPressEvent.detail.chamberPress=1.3
+    svgDiv1.dispatchEvent(chamberPressEvent)
     fhCondenserCip("red",0.7)
     fhCondenserTank("red",0.7,0.2,true)
     await sleep(1000)
@@ -301,6 +334,10 @@ const defrost = async ()=>{
 }
 
 const cip = async()=>{
+    chamberTempEvent.detail.chamberTemp= 18.5
+    svgDiv.dispatchEvent(chamberTempEvent)
+    chamberPressEvent.detail.chamberPress=1.3
+    svgDiv1.dispatchEvent(chamberPressEvent)
     moveVacuumPiston(delta,0.7)
     fhCondenserCip("blue",0.7)
     fhCip("blue",0.7)
@@ -314,6 +351,10 @@ const cip = async()=>{
 }
 
 const sip = async ()=>{
+      chamberTempEvent.detail.chamberTemp= 30.0
+      svgDiv.dispatchEvent(chamberTempEvent)
+      chamberPressEvent.detail.chamberPress=2.5
+      svgDiv1.dispatchEvent(chamberPressEvent)
       fhCondenserCip("purple",0.7)
       fhCip("purple",0.7)
       await sleep(1000)
@@ -323,11 +364,14 @@ const sip = async ()=>{
       fhCip("grey",0.7)
       await sleep(1000)
       sipGroup.to({visible:false})
-
 }
 
 const steryl = async ()=>{
-    fhCondenserCip("green",0.7)
+      chamberTempEvent.detail.chamberTemp= 20.0
+      svgDiv.dispatchEvent(chamberTempEvent)
+      chamberPressEvent.detail.chamberPress=1.3
+      svgDiv1.dispatchEvent(chamberPressEvent)
+      fhCondenserCip("green",0.7)
       fhCip("green",0.7)
       await sleep(1000)
       h2o2Group.to({visible:true,opacity:0.5,duration:0.7})
@@ -336,36 +380,39 @@ const steryl = async ()=>{
       fhCip("grey",0.7)
       await sleep(1000)
       h2o2Group.to({visible:false})
+      moveVacuumPiston(0,0.7)
 }
+
 const shapeClick = async (ev:any) =>{
     console.log("SHAPE CLICKED", ev.detail.target)
-    const infoDiv = document.getElementById("id-freeze-dryer-info")
-    infoDiv.innerHTML="LOAD"
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: LOAD"
     await load(0.7)
     await sleep(1000)
-    infoDiv.innerHTML="FREEZING"
+    infoDiv.innerHTML="FASE: FREEZING"
     await freezing()
     await sleep(1000)
-    infoDiv.innerHTML="PRIMARY DRYING"
+    infoDiv.innerHTML="FASE: PRIMARY DRYING"
     await primaryDrying()
     await sleep(1000)
-    infoDiv.innerHTML="SEALING"
+    infoDiv.innerHTML="FASE: SEALING"
     await sealing()
     await sleep(1000)
-    infoDiv.innerHTML="UNLOAD"
+    infoDiv.innerHTML="FASE: UNLOAD"
     await unload(0.1)
     await sleep(1000)
-    infoDiv.innerHTML="DEFROST"
+    infoDiv.innerHTML="FASE: DEFROST"
     await defrost()
     await sleep(1000)
-    infoDiv.innerHTML="CIP"
+    infoDiv.innerHTML="FASE: CIP"
     await cip()
     await sleep(1000)
-    infoDiv.innerHTML="SIP"
+    infoDiv.innerHTML="FASE: SIP"
     await sip()
     await sleep(1000)
-    infoDiv.innerHTML="H2O2"
+    infoDiv.innerHTML="FASE: H2O2"
     await steryl()
+    infoDiv.innerHTML="FASE:"
 }
 const shapeMouseEnter = (ev:any) =>{
     stage.container().style.cursor = 'pointer';
@@ -375,7 +422,7 @@ const shapeMouseLeave = (ev:any) =>{
 }
 </script>
 <div class="freeze-dryer-container">
-<Stage config={{ width: window.innerWidth/2, height: window.innerHeight*2/3 }} bind:handle={stage}>
+<Stage config={{ width: window.innerWidth/3, height: window.innerHeight*2/3 }} bind:handle={stage}>
     <Layer>
         <Shape        
             config={{
@@ -668,13 +715,32 @@ const shapeMouseLeave = (ev:any) =>{
          </Group>
     </Layer>
 </Stage>
-<div class="freeze-dryer-info" id="id-freeze-dryer-info">
-second div
-</div>
+    <div class="freeze-dryer-info">
+        <div id="id-freeze-dryer-info-title">FASE:</div>
+        <div class="freeze-dryer-measure">
+            <div>Chamber Temp DEGC: </div>
+            <SevenSegment bind:val={chamberTemp} svgname={svgname} eventName={"chamberTemp"}/>
+        </div>
+         <div class="freeze-dryer-measure">
+            <div>Chamber Press. bar: </div>
+            <SevenSegment bind:val={chamberPress} svgname={svgname1} eventName={"chamberPress"}/>
+        </div>
+    </div>
 </div>
 
 <style>
 .freeze-dryer-container{
     display:flex;
+}
+.freeze-dryer-info{
+    display:block;
+}
+#id-freeze-dryer-info-title{
+    font-weight: 600 ;
+}
+.freeze-dryer-measure{
+    display:flex;
+    justify-content:space-between ;
+    margin-left:auto;
 }
 </style>

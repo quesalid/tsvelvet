@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 /**
  * NODE STRUCTURE
  * 
@@ -17,7 +18,12 @@ const addNodeToFlow = (editor,node,x,y) => {
     }
     x = x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
     y = y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
-    editor.addNode(node.name, node.inputs, node.outputs, x, y, node.name, node.params, node.content);
+    // Here adding inner HTML to node
+    const uuid = uuidv4()
+    // Set uuid for title-box
+    const newTitleBox = '<div class="title-box" id="title-box-' + uuid + '">'
+    node.content = node.content.replace('<div class="title-box">',newTitleBox)
+    editor.addNode(node.name, node.inputs, node.outputs, x, y, node.name, node.params, node.content,uuid);
 }
 
 const  allowDrop = (ev) => {

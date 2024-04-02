@@ -3,10 +3,12 @@
 import { onMount, onDestroy } from 'svelte';
 import DrawFlow from './DrawFlow.svelte'
 import DrawFlowMenu from './DrawFlowMenu.svelte'
+import NODETYPES from './nodetypes.js'
 
 const dataToImportClear = {"drawflow":{"Home":{"data":{}}}}
 let dataToImport = dataToImportClear
 let editor
+let nodetypes = NODETYPES.getAllNodeType('DATAUTLITY')
 
 onMount(async () => {
 	
@@ -42,9 +44,9 @@ export const clear = (ev:any) =>{
 				 <input type="button" value="load" on:click={load}/>
 				 <input type="button" value="clear" on:click={clear}/>
 			 </div>
-			 <DrawFlowMenu />
+			 <DrawFlowMenu {nodetypes}/>
 		 </div>
-		 <DrawFlow bind:editor={editor} dataToImport={dataToImport}/>
+		 <DrawFlow bind:editor={editor} bind:dataToImport={dataToImport}/>
 	</div>
 <style>
 .wrapper {

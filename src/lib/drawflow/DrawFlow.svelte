@@ -2,6 +2,7 @@
 import { onMount, onDestroy } from 'svelte';
 import DrawFlow from './drawflow.js'
 import DFEDITOR from './grapheditor.js'
+import PanelBody from './panels/PanelBody.svelte'
 
 export const drop = (ev) =>{}
 export const allowDrop = (ev) =>{}
@@ -12,6 +13,7 @@ let editPanel = 'drawflow-edit-panel'
 let drawFlow = 'drawflow'
 let drawflowEventListener:any
 let nodeid = ''
+let node
 
 onMount(async () => {
 	var id = document.getElementById("drawflow");
@@ -25,8 +27,9 @@ onMount(async () => {
 	if(df){
 		df.removeEventListener('showeditpanel',drawflowEventListener)
 		df.addEventListener('showeditpanel',(ev:any) =>{
-			console.log("SHOW PANEL EVENT RECEIVED",ev.detail)
-			nodeid = ev.detail.node.id
+			nodeid = ev.detail.node.id.replace('node-','')
+			node = editor.drawflow.drawflow.Home.data[nodeid]
+			console.log("SHOW PANEL EVENT RECEIVED",nodeid,node)
 			df.style.display='block'
 		})
 	}
@@ -64,7 +67,7 @@ const panelEditExit = (ev:any)=>{
 			</div>
 		</div>
 		<div class="drawflow-edit-panel-body">
-			{JSON.stringify(nodeid)}
+			<PanelBody bind:node={node} />
 		</div>
 	</div>
 <style>
@@ -85,8 +88,8 @@ const panelEditExit = (ev:any)=>{
 	position:absolute;
 	top:3px;
 	right: 3px;
-	width: 200px;
-	height:200px;
+	width: 300px;
+	/*height:200px;*/
 	border: 1px solid black;
 	border-radius: 3px;
 }
@@ -108,6 +111,7 @@ const panelEditExit = (ev:any)=>{
 }
 
 :global(.drawflow-edit-panel-body) {
+	display:flexbox;
 	padding: 5px;
 }
 
