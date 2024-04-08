@@ -2,6 +2,7 @@
 import {onMount} from 'svelte'
 import { Stage, Layer, Shape, Line, Group, Rect, Image } from "svelte-konva"
 import SevenSegment from '../sevensegment/SevenSegment.svelte'
+import Timeline from '../timeline/TimeLine.svelte'
 
 
 const width = 400
@@ -242,36 +243,57 @@ const fhCondenserTank =(fill:any,duration:any,opacity:any,visible=true)=>{
     
 }
 
-const load = async (duration) =>{
+const load = async (ev,duration=0.7) =>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: LOAD"
+    chamberTempEvent.detail.chamberTemp = 20
+    svgDiv.dispatchEvent(chamberTempEvent)
     firstTray.to({visible:true,duration:duration})
-    vialsFirstRow.to({visible:true,duration:duration})
-    vialsSecondRow.to({visible:true,duration:duration})
+    vialsFirstRow.to({visible:true,opacity:1.0,duration:duration})
+    vialsSecondRow.to({visible:true,opacity:1.0,duration:duration})
+    await sleep(2000)
+    infoDiv.innerHTML="FASE: END LOAD"
 }
 
-const unload = async (duration) =>{
+const unload = async (ev,duration=0.1) =>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: UNLOAD"
     firstTray.to({visible:false,duration:duration})
-    vialsFirstRow.to({visible:false,duration:duration})
-    vialsSecondRow.to({visible:false,duration:duration})
+    vialsFirstRow.to({visible:true,opacity:0.0,duration:0.7})
+    vialsSecondRow.to({visible:true,opacity:0.0,duration:0.7})
+    //vialsFirstRow.to({visible:false,duration:duration})
+    //vialsSecondRow.to({visible:false,duration:duration})
     // SET VIALS TO START POSITION
     moveFirstTray(0,0.7)
     moveFirstVial(0,0.7)
+    await sleep(1000)
+    infoDiv.innerHTML="FASE: END UNLOAD"
 }
 
-const freezing = async () =>{
-    chamberTempEvent.detail.chamberTemp=-25.4
-    svgDiv.dispatchEvent(chamberTempEvent)
+const freezing = async (ev) =>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: FREEZING"
     chamberPressEvent.detail.chamberPress=1.3
     svgDiv1.dispatchEvent(chamberPressEvent)
     fhHeater('blue',0.4)
     fhTray('blue',0.4)
     await sleep(600)
+    chamberTempEvent.detail.chamberTemp = 20
+    for(let i=0;i<20;i++){
+        chamberTempEvent.detail.chamberTemp += -2
+        svgDiv.dispatchEvent(chamberTempEvent)
+        await sleep(200)
+    }
     fhContainer("blue",0.3,1.5)
     await sleep(2000)
     fhHeater('black',0.4)
     fhTray('#555555',0.4)
+    infoDiv.innerHTML="FASE: END FREEZING"
 }
 
 const primaryDrying = async () =>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: PRIMARY DRYING"
     chamberTempEvent.detail.chamberTemp= 15.0
     svgDiv.dispatchEvent(chamberTempEvent)
     chamberPressEvent.detail.chamberPress=1.3
@@ -298,9 +320,12 @@ const primaryDrying = async () =>{
     chamberPressEvent.detail.chamberPress=0.02
     svgDiv1.dispatchEvent(chamberPressEvent)
     moveVacuumPiston(0,0.7)
+    infoDiv.innerHTML="FASE: END PRIMARY DRYING"
 }
 
 const sealing = async ()=>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: SEALING"
     chamberTempEvent.detail.chamberTemp= 18.0
     svgDiv.dispatchEvent(chamberTempEvent)
      chamberPressEvent.detail.chamberPress=1.3
@@ -315,25 +340,40 @@ const sealing = async ()=>{
     moveFirstVial(delta/2,0.7)
     await sleep(1000)
     movePiston(0,0.7)
+    infoDiv.innerHTML="FASE: END SEALING"
 }
 
 const defrost = async ()=>{
-    chamberTempEvent.detail.chamberTemp= 25.0
-    svgDiv.dispatchEvent(chamberTempEvent)
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: DEFROST"
     chamberPressEvent.detail.chamberPress=1.3
     svgDiv1.dispatchEvent(chamberPressEvent)
     fhCondenserCip("red",0.7)
     fhCondenserTank("red",0.7,0.2,true)
+    chamberTempEvent.detail.chamberTemp = 18
+    for(let i=0;i<20;i++){
+        chamberTempEvent.detail.chamberTemp += 1
+        svgDiv.dispatchEvent(chamberTempEvent)
+        await sleep(200)
+    }
     await sleep(1000)
     fhCondenserTank("red",0.7,0.3,true)
     await sleep(1000)
     fhCondenserTank("red",0.7,0.2,true)
     await sleep(1000)
+    for(let i=0;i<20;i++){
+        chamberTempEvent.detail.chamberTemp += -1
+        svgDiv.dispatchEvent(chamberTempEvent)
+        await sleep(200)
+    }
     fhCondenserCip("grey",0.7)
     fhCondenserTank("red",0.7,0.0,false)
+    infoDiv.innerHTML="FASE: END DEFROST"
 }
 
 const cip = async()=>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: CIP"
     chamberTempEvent.detail.chamberTemp= 18.5
     svgDiv.dispatchEvent(chamberTempEvent)
     chamberPressEvent.detail.chamberPress=1.3
@@ -348,9 +388,12 @@ const cip = async()=>{
     fhCip("grey",0.7)
     await sleep(1000)
     cipGroup.to({visible:false})
+    infoDiv.innerHTML="FASE: END CIP"
 }
 
 const sip = async ()=>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+    infoDiv.innerHTML="FASE: SIP"
       chamberTempEvent.detail.chamberTemp= 30.0
       svgDiv.dispatchEvent(chamberTempEvent)
       chamberPressEvent.detail.chamberPress=2.5
@@ -364,9 +407,12 @@ const sip = async ()=>{
       fhCip("grey",0.7)
       await sleep(1000)
       sipGroup.to({visible:false})
+      infoDiv.innerHTML="FASE: END SIP"
 }
 
-const steryl = async ()=>{
+const steril = async ()=>{
+    const infoDiv = document.getElementById("id-freeze-dryer-info-title")
+      infoDiv.innerHTML="FASE: STERILIZATION"
       chamberTempEvent.detail.chamberTemp= 20.0
       svgDiv.dispatchEvent(chamberTempEvent)
       chamberPressEvent.detail.chamberPress=1.3
@@ -381,7 +427,20 @@ const steryl = async ()=>{
       await sleep(1000)
       h2o2Group.to({visible:false})
       moveVacuumPiston(0,0.7)
+      infoDiv.innerHTML="FASE: END STERILIZATION"
 }
+
+let steps = [
+    {step:'Load',description:'Load vials',funct:load},
+    {step:'Freeze',description:'Freeze vials',funct:freezing},
+    {step:'Dryng',description:'Drying ',funct:primaryDrying},
+    {step:'Sealing',description:'Sealing vials',funct:sealing},
+    {step:'Unload',description:'Unload from freeze-dryer',funct:unload},
+    {step:'Defrost',description:'Defrost vacuum chamber',funct:defrost},
+    {step:'Cip',description:'Clean in place',funct:cip},
+    {step:'Sip',description:'Steam in place',funct:sip},
+    {step:'Steril',description:'Sterilization',funct:steril}
+]
 
 const shapeClick = async (ev:any) =>{
     console.log("SHAPE CLICKED", ev.detail.target)
@@ -411,7 +470,7 @@ const shapeClick = async (ev:any) =>{
     await sip()
     await sleep(1000)
     infoDiv.innerHTML="FASE: H2O2"
-    await steryl()
+    await steril()
     infoDiv.innerHTML="FASE:"
 }
 const shapeMouseEnter = (ev:any) =>{
@@ -579,7 +638,7 @@ const shapeMouseLeave = (ev:any) =>{
                     }
             />
         </Group>
-        <Group bind:handle={vialsFirstRow} config={{visible:false}}>
+        <Group bind:handle={vialsFirstRow} config={{visible:false,opacity:0.3}}>
             <Image config={
                 { image,scaleX: 0.5,scaleY: 0.5,x:8.5*delta,y:12*delta,}
             } />
@@ -596,7 +655,7 @@ const shapeMouseLeave = (ev:any) =>{
                     }
             />
         </Group>
-        <Group bind:handle={vialsSecondRow} config={{visible:false}}>
+        <Group bind:handle={vialsSecondRow} config={{visible:false,opacity:0.3}}>
             <Image config={
                 { image,scaleX: 0.5,scaleY: 0.5,x:8.5*delta,y:15*delta,}
             } />
@@ -716,6 +775,7 @@ const shapeMouseLeave = (ev:any) =>{
     </Layer>
 </Stage>
     <div class="freeze-dryer-info">
+        <Timeline steps={steps}/>
         <div id="id-freeze-dryer-info-title">FASE:</div>
         <div class="freeze-dryer-measure">
             <div>Chamber Temp DEGC: </div>
