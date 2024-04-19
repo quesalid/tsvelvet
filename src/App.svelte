@@ -10,6 +10,8 @@ import EDITOR from "./lib/editor/Editor.svelte"
 import DRAWFLOW from './lib/drawflow/editor.svelte'
 import KONVAFD from './lib/konva/DrawFreezeDryer.svelte'
 import KONVAPRP from './lib/konva/DrawPreparer.svelte'
+import GAUGE from './lib/gaugejs/Gauge.svelte'
+import CHATBOT from './lib/chatbot/ChatBot.svelte'
 //import X6 from "./lib/x6editor/x6editor.svelte"
 
 
@@ -30,6 +32,8 @@ export let url = "/";
     <Route path="/df" component={DRAWFLOW}/>
     <Route path="/fd" component={KONVAFD}/>
     <Route path="/prp" component={KONVAPRP}/>
+    <Route path="/gjs" component={GAUGE}/>
+    <Route path="/ch" component={CHATBOT}/>
   </div>
 </Router>
 
