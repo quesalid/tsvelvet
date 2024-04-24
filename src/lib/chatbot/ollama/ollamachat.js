@@ -1,7 +1,6 @@
-// https://medium.com/@gabrielrodewald/running-models-with-ollama-step-by-step-60b6f6125807
-import { ChatOpenAI } from "@langchain/openai";
+import { Ollama } from "@langchain/community/llms/ollama"
 import { ChatMessageHistory } from "langchain/stores/message/in_memory";
-import { HumanMessage } from "@langchain/core/messages";
+import { HumanMessage, ChatMessage} from "@langchain/core/messages";
 import {
     ChatPromptTemplate,
     MessagesPlaceholder,
@@ -10,12 +9,12 @@ import {
 
 
 class ChatBot {
-    constructor(apikey) {
-        this.chatbot = new ChatOpenAI({
-            model: "gpt-3.5-turbo-16k",
-            temperature: 0.2,
-            apiKey:apikey
-        });
+    constructor() {
+        this.chatbot = new Ollama({
+            baseUrl: "http://localhost:11434",
+            model: "llama2",
+          });
+
         this.history = new ChatMessageHistory();
         const prompt = ChatPromptTemplate.fromMessages([
             [
@@ -30,22 +29,25 @@ class ChatBot {
     }
 
     async chat(message) {
+        console.log("ollama bot ---->",message)
         await this.history.addMessage(
             new HumanMessage(
                 message
             )
         );
-
+        
         const responseMessage = await this.chain.invoke({
             messages: await this.history.getMessages(),
         });
 
-        await this.history.addMessage(responseMessage);
+        console.log("ollama bot ---->",responseMessage)
 
-        return responseMessage.content
+        let cm = new ChatMessage({content:responseMessage,role:'chatbot'})
+        await this.history.addMessage(cm);
+
+        return cm.content
     }
 
 }
 
 export default ChatBot
-

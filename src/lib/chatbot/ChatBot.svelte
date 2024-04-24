@@ -1,5 +1,5 @@
 <script lang="ts">
-import ChatBot from './openai/openaichat.js'
+import ChatBot from './ollama/ollamachat.js'
 
 export let title = 'Process Assistant'
 export let width = '30px'
@@ -108,10 +108,10 @@ async function sendMessage() {
   const inputField:any = document.getElementById("input");
   //let input:any = inputField.value.trim();
   let input:any = inputField.innerHTML.trim();
-  /*let response = await bot.chat(input)
+  let response = await bot.chat(input)
 
-  input != "" && addChat(input, response)*/
-  input != "" && output(input)
+  input != "" && addChat(input, response)
+  //input != "" && output(input)
   inputField.innerHTML = "";
 }
 
