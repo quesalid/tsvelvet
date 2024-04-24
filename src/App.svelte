@@ -27,13 +27,13 @@ export let url = "/";
 
 <Router>
   <div>
+    <Route path="/ed" component={EDITOR}/>
     <Route path="/graph" component={HOME}/>
-    <Route path="/" component={EDITOR}/>
     <Route path="/df" component={DRAWFLOW}/>
     <Route path="/fd" component={KONVAFD}/>
     <Route path="/prp" component={KONVAPRP}/>
     <Route path="/gjs" component={GAUGE}/>
-    <Route path="/ch" component={CHATBOT}/>
+    <Route path="/" component={CHATBOT}/>
   </div>
 </Router>
 

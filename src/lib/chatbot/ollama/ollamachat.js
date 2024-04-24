@@ -13,6 +13,7 @@ class ChatBot {
         this.chatbot = new Ollama({
             baseUrl: "http://192.168.1.106:11434",
             model: "llama2",
+            headers: { "Access-Control-Allow-Origin":'*'}
           });
 
         this.history = new ChatMessageHistory();
