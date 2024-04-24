@@ -11,7 +11,7 @@ import {
 class ChatBot {
     constructor() {
         this.chatbot = new Ollama({
-            baseUrl: "http://localhost:11434",
+            baseUrl: "http://192.168.1.106:11434",
             model: "llama2",
           });
 
