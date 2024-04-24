@@ -13,7 +13,7 @@ class ChatBot {
     constructor() {
         this.chatbot = new ChatOpenAI({
             model: "gpt-3.5-turbo-16k",
-            temperature: 0.2,
+            temperature: 0.2
         });
         this.history = new ChatMessageHistory();
         const prompt = ChatPromptTemplate.fromMessages([
