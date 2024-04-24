@@ -34,7 +34,12 @@ const config: UserConfig = {
         postcss
     },
     server: {
-        cors:true
+        cors: {
+            "origin": "*",
+            "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+            "preflightContinue": false,
+            "optionsSuccessStatus": 204
+        }
     },
 };
 
