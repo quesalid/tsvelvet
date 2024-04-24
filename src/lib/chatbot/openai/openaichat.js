@@ -10,11 +10,10 @@ import {
 
 
 class ChatBot {
-    constructor(apikey) {
+    constructor() {
         this.chatbot = new ChatOpenAI({
             model: "gpt-3.5-turbo-16k",
             temperature: 0.2,
-            apiKey: apikey 
         });
         this.history = new ChatMessageHistory();
         const prompt = ChatPromptTemplate.fromMessages([
