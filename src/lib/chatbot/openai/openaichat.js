@@ -8,14 +8,13 @@ import {
 } from "@langchain/core/prompts";
 
 
-//process.env.OPENAI_API_KEY = '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'
 
 class ChatBot {
     constructor(apikey) {
         this.chatbot = new ChatOpenAI({
             model: "gpt-3.5-turbo-16k",
             temperature: 0.2,
-            apiKey: apikey ? apikey : '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',
+            apiKey: apikey 
         });
         this.history = new ChatMessageHistory();
         const prompt = ChatPromptTemplate.fromMessages([
