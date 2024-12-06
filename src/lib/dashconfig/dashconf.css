@@ -1,0 +1,100 @@
+.dashboard-configurator {
+    display: flex;
+    height: 600px;
+    border: 1px solid #ccc;
+    position: relative;
+    user-select: none;
+}
+
+.widget-menu {
+    width: 150px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    overflow-y: auto;
+    min-height: 300px;
+}
+
+.widget-menu-button{
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .widget-menu-button:hover {
+        background-color: #e0e0e0;
+    }
+
+.dashboard-area {
+    flex-grow: 1;
+    background-color: #ffffff;
+    /*border-left: 1px solid #ccc;*/
+    border: 3px solid #00f;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.grid-cell {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    box-sizing: border-box;
+    /* set backgroud trasparent*/
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.widget-plus-check{
+    display: flex;
+}
+.widget-plus-check input{
+    margin-right: 5px;
+}
+    .widget {
+    cursor: move;
+    border: 1px solid #999;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+    font-size: small;
+    font-weight: bold;
+}
+
+.menu-widget {
+    width: 50px;
+    height: 30px;
+    border-radius: 3px;
+}
+
+.dashboard-widget {
+    position: absolute;
+    transition: box-shadow 0.2s;
+    border-radius:unset;
+}
+
+    .dashboard-widget.selected {
+        outline: 2px solid blue;
+    }
+
+    .dashboard-widget.dragging {
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        opacity: 0.8;
+    }

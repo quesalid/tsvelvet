@@ -1,0 +1,127 @@
+/* ndash class*/
+.nn-dash-class {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    font-size: small;
+    padding: 3px;
+}
+h2 {
+    font-size: larger;
+    font-weight: bold;
+    padding-bottom: 3px;
+    padding-left: 3px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    margin-bottom: 5px;
+}
+
+h3 {
+    font-size:small;
+    font-weight: bold;
+    padding-bottom: 3px;
+    padding-left: 3px;
+}
+
+button {
+    background-color: #eee;
+    border: 1px solid #999;
+    border-radius: 5px;
+    padding: 1px 2px 1px 2px;
+}
+
+select {
+    background-color: #fefefe;
+    border: 1px solid #999;
+    border-radius: 5px;
+    padding: 1px 2px 1px 2px;
+}
+
+input {
+    background-color: #fefefe;
+    border: 1px solid #999;
+    border-radius: 5px;
+    padding: 1px 2px 1px 2px;
+}
+
+/* network builder class*/
+.network-definition-class {
+    margin: 2px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 30vw;
+    background-color: #f9f9f9;
+}
+.network-definition-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.network-definition-layers {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+/* neural training class*/
+.neural-training-class {
+    margin: 2px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 30vw;
+    background-color: #f9f9f9;
+}
+/* data uploader class */
+.neural-data-upload-class {
+    margin: 2px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 30vw;
+    background-color: #f9f9f9;
+}
+.neural-table-container {
+    max-height: 15vw;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background-color: #f9f9f9;
+    z-index: 1;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* network save class*/
+.neural-save-class {
+    margin: 2px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 30vw;
+}
+
+/* chart container*/
+.echart-container {
+    width: 100%;
+    height: 40vh;
+}

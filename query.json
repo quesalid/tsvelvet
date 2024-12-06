@@ -1,0 +1,4 @@
+{
+  "model": "llama3",
+  "prompt": "Ci sono 100 libri nella stanza. Se ne leggo 10, quanti libri ci sono nella stanza?"
+}

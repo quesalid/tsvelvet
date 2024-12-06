@@ -1,0 +1,193 @@
+/* main Editor Div*/
+#MainEditorDiv {
+    height: 85vh;
+    width: 100vw;
+    display: flex;
+    top: 60px;
+    /*flex-direction: column-reverse;*/
+}
+
+/* CONTEXT MENU*/
+.context-menu {
+    background: white;
+    border-style: solid;
+    box-shadow: 10px 19px 20px rgba(0, 0, 0, 10%);
+    position: absolute;
+    z-index: 10;
+}
+
+    .context-menu button {
+        border: none;
+        display: block;
+        padding: 0.5em;
+        text-align: left;
+        width: 100%;
+    }
+
+        .context-menu button:hover {
+            background: white;
+        }
+
+/* SIDEBAR MENU*/
+aside {
+    width: fit-content;
+    background: #f8f8f8;
+    font-size: 12px;
+    display: flexbox;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.aside-label {
+    margin: 1rem 0;
+    padding: 0rem 1.3rem;
+    font-size: 0.9rem;
+}
+
+.aside-nodes-container {
+    display: flexbox;
+    align-items: center;
+    justify-content: center;
+}
+
+.aside-node {
+    margin: 0.5rem;
+    border: 1px solid #111;
+    padding: 0.2rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    cursor: grab;
+    color: #000;
+    opacity: 1.0;
+}
+
+.aside-menuaction {
+    margin: 0.1rem;
+    padding: 0.2rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-size:larger;
+    color: #444;
+    /*width: 50px;*/
+}
+
+    .aside-menuaction:hover {
+        color: blue;
+    }
+
+/* Custom node */
+.custom-entity-node {
+    border: 0.5px solid #555;
+    border-radius: 5px;
+    min-width: 100px;
+    font-size: xx-small;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.custom-entity-node-label {
+    opacity: 1;
+    color: #111;
+    font-size: smaller;
+    font-weight: bold;
+}
+
+
+.custom-entity-node-short {
+    border: 1px solid #111;
+    border-radius: 3px;
+    min-width: 50px;
+    font-size: xx-small;
+    text-align: center;
+}
+.custom-entity-node-short-div {
+    font-size: smaller;
+    color: #111;
+    opacity: 1.0;
+}
+
+.custom-entity-node-group {
+    min-width: 100px;
+    min-height: 100px;
+    text-align: center;
+    opacity:70%;
+}
+
+/* Custom node sysdynamic*/
+.custom-sdyn-node{
+    border: 0.5px solid #555;
+    border-radius: 5px;
+    min-width: 50px;
+    font-size: xx-small;
+    text-align: center;
+    opacity: 0.5;
+}
+    .custom-sdyn-node.stock{
+        min-height: 50px;
+    }
+    .custom-sdyn-node.auxiliary {
+        border:none;
+    }
+    .custom-sdyn-node.flow {
+        min-width: 60px;
+        border: none;
+    }
+    .custom-sdyn-node.flow input[type="image"]{
+        border: none;
+        width: 60px;
+    }
+
+        /* Node panel*/
+.node-panel {
+    width: 300px;
+    height: auto;
+    border: 1px solid #777;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    visibility: hidden;
+}
+.node-panel-header {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 2px;
+    background-color: var(--background-color);
+    cursor: grab;
+    width: max(max-content,400px);
+    height: var(--headerheight);
+    border-bottom: 1px solid #777;
+}
+.node-panel-title {
+    padding:4px;
+    font-weight:bold;
+    color:#999;
+    font-size:small;
+}
+.node-panel-body {
+    display: block;
+    justify-content: left;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    width: 100%;
+    height:auto;
+    font-size: small;
+}
+.node-panel-body-item {
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #999;
+}
+.node-panel-body-item-button {
+    border: 1px solid #999;
+    border-radius: 3px;
+}
+    .node-panel-body-item-button input {
+        border: none;
+        min-width: 20px;
+        cursor: pointer;
+        background-color: #fdfdfd;
+    }
