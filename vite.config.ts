@@ -4,7 +4,8 @@ import { UserConfig } from 'vite'
 import path from 'path'
 import { fileURLToPath,URL } from 'url';
 import postcss from './postcss.config.js';
-import buildCesium from 'vite-plugin-cesium-build';
+//import buildCesium from 'vite-plugin-cesium-build';
+
 
 // configure vite to publish the svelte components as a library
 // https://vitejs.dev/guide/build.html#library-mode
@@ -25,7 +26,7 @@ const config: UserConfig = {
     },
     plugins: [
         svelte(),
-        buildCesium(),
+        //buildCesium(),
     ],
     resolve: {
         alias: {

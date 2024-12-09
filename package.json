@@ -43,10 +43,10 @@
     "autoprefixer": "^10.4.18",
     "bayesjs": "^0.6.5",
     "brain.js": "^2.0.0-beta.24",
-    "cesium": "^1.123.1",
     "chart.js": "^4.4.6",
     "drawflow": "^0.0.59",
     "echarts": "^5.5.1",
+    "fflate": "^0.8.2",
     "insert-css": "^2.0.0",
     "json-rules-engine": "^7.0.0",
     "konva": "^9.3.6",
@@ -63,9 +63,7 @@
     "svelte-konva": "^0.3.1",
     "svelvet": "^10.0.2",
     "tailwindcss": "^3.4.1",
-    "three": "^0.170.0",
-    "three-stdlib": "^2.34.0",
-    "threebox-plugin": "^2.2.7",
+    "three": "^0.171.0",
     "url": "^0.11.3",
     "uuid": "^9.0.1"
   }
