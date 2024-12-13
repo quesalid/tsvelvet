@@ -12,7 +12,7 @@ let rdp_udsud = [
     [13.430552649969458, 45.85374031215768, 0],
     [13.427054412283702, 45.85425048747848, 0],
     [13.42180239528584, 45.85469186472455, 0],
-    [13.421753083471454, 45.85477640549971, 0],
+    //[13.421753083471454, 45.85477640549971, 0],
     [13.42049752877672, 45.856784211169646, 0],
     [13.419075072517051, 45.85909838146707, 0],
     [13.417231569217059, 45.86211775336656, 0],
@@ -51,6 +51,18 @@ let rdp_udsud = [
     [13.310873017679514, 45.93216340236006, 0]
 ]
 
+const setFakeStatus = (i: number, apply=true) => {
+    let fakeStatus = 'NORMAL'
+    if (i % 5 === 0 && apply) {
+        fakeStatus = 'WARNING'
+    }
+    if (i % 7 === 0 && apply) {
+        fakeStatus = 'ALARM'
+    }
+    return fakeStatus
+
+}
+
 export const getAssetsFromCoords = (coordinates: any) => {
     const coords = coordinates ? coordinates : rdp_udsud
     for(let i = 0; i < coords.length; i++) {
@@ -60,24 +72,39 @@ export const getAssetsFromCoords = (coordinates: any) => {
             userData: {
                 name: 'Traliccio CN-LN003-TR-'+i,
                 type: 'Traliccio',
-                id: 'CN-LN003-TR-'+i,
+                id: 'CN-LN003-TR-' + i,
+                center: [coords[i][0], coords[i][1]],
                 sensors: [
-                    { name: 'SensA1', id: 'SensA1', value: 0 },
-                    { name: 'SensA2', id: 'SensA2', value: 0 },
-                    { name: 'SensA3', id: 'SensA3', value: 0 },
-                    { name: 'SensB1', id: 'SensB1', value: 0 },
-                    { name: 'SensB2', id: 'SensB2', value: 0 },
-                    { name: 'SensB3', id: 'SensB3', value: 0 },
-                    { name: 'SensC1', id: 'SensA4', value: 0 },
-                    { name: 'SensC2', id: 'SensC2', value: 0 },
-                    { name: 'SensC3', id: 'SensC3', value: 0 },
-                    { name: 'SensD1', id: 'SensD1', value: 0 },
-                    { name: 'SensD2', id: 'SensD2', value: 0 },
-                    { name: 'SensD3', id: 'SensD3', value: 0 },
+                    { name: 'Sens_A4', id: 'SensA4', status: setFakeStatus(i,true) },
+                    { name: 'Sens_A8', id: 'SensA8', status: setFakeStatus(i, false) },
+                    { name: 'Sens_A12', id: 'SensA12', status: setFakeStatus(i, false) },
+                    { name: 'Sens_B4', id: 'SensB4', status: setFakeStatus(i, false) },
+                    { name: 'Sens_B8', id: 'SensB8', status: setFakeStatus(i, false) },
+                    { name: 'Sens_B12', id: 'SensB12', status: setFakeStatus(i, false) },
+                    { name: 'Sens_C4', id: 'SensC4', status: setFakeStatus(i, false) },
+                    { name: 'Sens_C8', id: 'SensC8', status:setFakeStatus(i, false) },
+                    { name: 'Sens_C12', id: 'SensC12', status: setFakeStatus(i, true) },
+                    { name: 'Sens_D4', id: 'SensD4', status: setFakeStatus(i, false) },
+                    { name: 'Sens_D8', id: 'SensD8', status: setFakeStatus(i, false) },
+                    { name: 'Sens_D12', id: 'SensD12', status: setFakeStatus(i, false) },
                 ]
             }
         }
         assets.push(asset)
     }
     return assets
+}
+
+export const getAssetStatus = (asset) => {
+    const sensors = asset.userData.sensors
+    let status = 'NORMAL'
+    for (let i = 0; i < sensors.length; i++) {
+        if (sensors[i].status === 'WARNING') {
+            status = 'WARNING'
+        }
+        if(sensors[i].status === 'ALARM') {
+            return 'ALARM'
+        }
+    }
+    return status
 }

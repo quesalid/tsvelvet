@@ -307,7 +307,7 @@ function convertArrayBufferToString(buffer, from=undefined, to=undefined) {
 	if (from === undefined) from = 0;
 	if (to === undefined) to = buffer.byteLength;
 	return THREE.LoaderUtils.decodeText(new Uint8Array(buffer, from, to));
-
+	//return THREE.LoaderUtils.TextDecoder(new Uint8Array(buffer, from, to));
 }
 
 function append(a, b) {
@@ -1369,7 +1369,7 @@ function inject(a1, index, a2) {
 
 				}
 
-				let color = 0xffffff;
+				let color:any = 0xffffff;
 
 				if (lightAttribute.Color !== undefined) {
 
@@ -1779,7 +1779,7 @@ function inject(a1, index, a2) {
 
 		genGeometry(geoNode, skeleton, morphTargets, preTransform) {
 
-			const geo = new THREE.BufferGeometry();
+			const geo:any = new THREE.BufferGeometry();
 			if (geoNode.attrName) geo.name = geoNode.attrName;
 			const geoInfo:any = this.parseGeoNode(geoNode, skeleton);
 			const buffers = this.genBuffers(geoInfo);
@@ -2725,9 +2725,9 @@ function inject(a1, index, a2) {
 		generateTracks(rawTracks) {
 
 			const tracks = [];
-			let initialPosition = new THREE.Vector3();
-			let initialRotation = new THREE.Quaternion();
-			let initialScale = new THREE.Vector3();
+			let initialPosition:any = new THREE.Vector3();
+			let initialRotation:any = new THREE.Quaternion();
+			let initialScale:any = new THREE.Vector3();
 			if (rawTracks.transform) rawTracks.transform.decompose(initialPosition, initialRotation, initialScale);
 			initialPosition = initialPosition.toArray();
 			initialRotation = new THREE.Euler().setFromQuaternion(initialRotation, rawTracks.eulerOrder).toArray();
@@ -3864,6 +3864,7 @@ class BinaryReader {
 			const nullByte = a.indexOf(0);
 			if (nullByte >= 0) a = a.slice(0, nullByte);
 			return THREE.LoaderUtils.decodeText(new Uint8Array(a));
+			//return THREE.LoaderUtils.TextDecoder(new Uint8Array(a));
 
 		}
 

@@ -42,7 +42,7 @@ function loadObj(options, cb, map, promise) {
 			break;
 		case "fbx":
 			loader = fbxLoader;
-			console.log("FBX model loader",loader)
+			//console.log("FBX model loader",loader)
 			break;
 		case "dae":
 			loader = daeLoader;
@@ -91,22 +91,22 @@ function loadObj(options, cb, map, promise) {
 			obj.name = "model";
 			let userScaleGroup:any = objects._makeGroup(obj, options);
 			objects._addMethods(userScaleGroup, false);
-			console.log("loadObject userScaleGroup set anchor")
+			//console.log("loadObject userScaleGroup set anchor")
 			//[jscastro] calculate automatically the pivotal center of the object
 			userScaleGroup.setAnchor(options.anchor);
-			console.log("loadObject userScaleGroup set center")
+			//console.log("loadObject userScaleGroup set center")
 			//[jscastro] override the center calculated if the object has adjustments
 			userScaleGroup.setCenter(options.adjustment);
 			//[jscastro] if the object is excluded from raycasting
 			userScaleGroup.raycasted = options.raycasted;
 			//[jscastro] return to cache
-			console.log("loadObject userScaleGroup promise", userScaleGroup)
+			//console.log("loadObject userScaleGroup promise", userScaleGroup)
 			promise(userScaleGroup);
 			//[jscastro] then return to the client-side callback
-			console.log("loadObject userScaleGroup callback")
+			//console.log("loadObject userScaleGroup callback")
 			cb(userScaleGroup);
 			//[jscastro] apply the fixed zoom scale if needed
-			console.log("loadObject userScaleGroup set zoom")
+			//console.log("loadObject userScaleGroup set zoom")
 			userScaleGroup.setFixedZoom(options.mapScale);
 			//[jscastro] initialize the default animation to avoid issues with skeleton position
 			userScaleGroup.idle();

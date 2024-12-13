@@ -1,34 +1,64 @@
 <script lang='ts'>
+   import {onMount} from 'svelte';
+   import {getAssetStatus} from './assetsHelper'
 
-export let asset: any = null
+export let asset: any = {}
 
 let assetFormatted: any = {}
 let assetGraphManagerId = 'defaultAssetGraphManager'
+let bgcol = 'green'
 
 const statoLeft = {
-		mis: ['MIS','4A', '4B', '8A', '8B', '12A', '12B'],
+		mis: ['MIS','A4', 'A8', 'A12', 'B4', 'B8', 'B12'],
 		tm: ['TM','', '', '', '', '', ''],
 		c: ['°C','80', '85', '91', '89', '91', '92'],
 		inc: ['INC','0°', '1°', '-2°', '1°', '2°', '3°']
 	}
 
 const statoRight = {
-		mis: ['MIS','4C', '4D', '8C', '8D', '12C', '12D'],
+		mis: ['MIS','C4', 'C8', 'C12', 'D4', 'D8', 'D12'],
 		tm: ['TM','', '', '', '', '', ''],
 		c: ['°C','80', '85', '91', '89', '91', '92'],
 		inc: ['INC','0°', '1°', '-2°', '1°', '2°', '3°']
 	}
 const formatAsset = (asset:any) => {
+    let assetStatus = 'NORMAL'
+    if(asset)
+        assetStatus = getAssetStatus(asset)
+    switch(assetStatus){
+		case 'NORMAL':
+			bgcol = 'green'
+			break;
+		case 'WARNING':
+			bgcol = 'orange'
+			break;
+		case 'ALARM':
+			bgcol = 'red'
+			break;
+	}
 	assetFormatted.code = asset && asset.userData && asset.userData.id? asset.userData.id:'ASSET-NAME';
-	assetFormatted.sensors = asset && asset.userData && asset.userData.sensors? asset.userData.sensors:['SB8901-1', 'SB8901-2', 'SB8901-3', 'SB8901-4', 'SB8901-5', 'SB8901-6'];
-	assetFormatted.alarmLeft = asset && asset.userData && asset.userData.alarmLeft?asset.userData.alarmLeft:['ALARM', '0', '1', '1', '2', '0', '0'],
-	assetFormatted.alarmRight = asset && asset.userData && asset.userData.alarmRight? asset.userData.alarmRight:['ALARM', '0', '0', '1', '1', '0', '0'],
+    let sensors = asset && asset.userData && asset.userData.sensors?asset.userData.sensors.map((s:any) => s.name):['A4', 'A8', 'A12', 'B4', 'B8', 'B12','C4', 'C8', 'C12', 'D4', 'D8', 'D12']
+	assetFormatted.sensors = sensors;
+    let alarmAsset = asset && asset.userData && asset.userData.sensors?asset.userData.sensors.map((s:any) => s.status):['NORMAL', 'NORMAL', 'NORMAL', 'NORMAL', 'NORMAL', 'NORMAL','NORMAL', 'NORMAL', 'NORMAL', 'NORMAL', 'NORMAL', 'NORMAL']
+    // slip alarmAsset in two array and add ALARM in the first position
+    let alarmLeft = ['ALARM']
+    let alarmRight = ['ALARM']
+    for(let i=0;i<alarmAsset.length;i++){
+		if(i<6){
+			alarmLeft.push(alarmAsset[i])
+		}else{
+			alarmRight.push(alarmAsset[i])
+		}
+	}
+	assetFormatted.alarmLeft = alarmLeft
+    assetFormatted.alarmRight = alarmRight
 	assetFormatted.statoLeft = asset && asset.userData && asset.userData.statoLeft?asset.userData.statoLeft: statoLeft;
 	assetFormatted.statoRight = asset && asset.userData && asset.userData.statoRight?asset.userData.statoRight: statoRight;
 }
 
-
-formatAsset(asset) 
+onMount(() => {
+	formatAsset(asset)
+})
 
 const togglePanel = () => {
     const panel:any = document.querySelector('.map-panel');
@@ -46,7 +76,7 @@ const callAssetGraph = (ev:any,asset:any) => {
 }
 
 $: {
-	if(asset)
+	//if(asset && assetFormatted.code)
 	    formatAsset(asset)
 }
 </script>
@@ -54,7 +84,7 @@ $: {
 <div class="map-panel">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="map-panel-header"  on:click={togglePanel}>
+        <div class="map-panel-header" style="--background-color:{bgcol};" on:click={togglePanel}>
             <h3>ASSET</h3>
             <span>-</span>
         </div>
@@ -65,11 +95,11 @@ $: {
             <table>
             {#each Object.keys(assetFormatted.statoLeft) as key, i}<tr>
 					{#each assetFormatted.statoLeft[key] as value, j}
-                        {#if value == '' && assetFormatted.alarmLeft[j] == '0'}
+                        {#if value == '' && assetFormatted.alarmLeft[j] == 'NORMAL'}
 						    <td><div style="background-color: springgreen;">{value}</div></td>
-                        {:else if value == '' && assetFormatted.alarmLeft[j] == '1'}
+                        {:else if value == '' && assetFormatted.alarmLeft[j] == 'WARNING'}
 							<td><div style="background-color: orange;">{value}</div></td>
-                        {:else if value == '' && assetFormatted.alarmLeft[j] == '2'}
+                        {:else if value == '' && assetFormatted.alarmLeft[j] == 'ALARM'}
                             <td><div style="background-color: red;">{value}</div></td>
                         {:else}
                             <td>{value}</td>
@@ -83,11 +113,11 @@ $: {
             <table>
             {#each Object.keys(assetFormatted.statoRight) as key, i}<tr>
 					{#each assetFormatted.statoRight[key] as value, j}
-                        {#if value == '' && assetFormatted.alarmRight[j] == '0'}
+                        {#if value == '' && assetFormatted.alarmRight[j] == 'NORMAL'}
 						    <td><div style="background-color: springgreen;">{value}</div></td>
-                        {:else if value == '' && assetFormatted.alarmRight[j] == '1'}
+                        {:else if value == '' && assetFormatted.alarmRight[j] == 'WARNING'}
 							<td><div style="background-color: orange;">{value}</div></td>
-                        {:else if value == '' && assetFormatted.alarmRight[j] == '2'}
+                        {:else if value == '' && assetFormatted.alarmRight[j] == 'ALARM'}
                             <td><div style="background-color: red;">{value}</div></td>
                         {:else}
                             <td>{value}</td>
@@ -120,6 +150,7 @@ $: {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #fff;
+    background-color: var(--background-color);
 }
 
 .map-panel-header span{

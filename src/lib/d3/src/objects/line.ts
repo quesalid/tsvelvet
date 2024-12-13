@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import utils from '../utils/utils';
 import Objects from './objects';
 
-let line:any = (obj) => {
 
-	obj = utils._validate(obj, Objects.prototype._defaults.line);
+let line: any = (obj) => {
+
+	obj = utils._validate(obj, Objects._defaults.line);
 
 	// Geometry
 	var straightProject = utils.lnglatsToWorld(obj.geometry);
@@ -16,7 +17,7 @@ let line:any = (obj) => {
 	geometry.setPositions(flattenedArray);
 
 	// Material
-	let matLine:any = new LineMaterial({
+	let matLine: any = new LineMaterial({
 		color: obj.color,
 		linewidth: obj.width, // in pixels
 		dashed: false,

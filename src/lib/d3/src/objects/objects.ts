@@ -700,7 +700,9 @@ class Objects {
 				get() { return _selected; },
 				set(value) {
 					if (value) {
-						if (obj.userData.bbox && !obj.boundingBox) obj.drawBoundingBox();
+						console.log('selected', obj)
+						//if (obj.userData.bbox && !obj.boundingBox) obj.drawBoundingBox();
+						if ( !obj.boundingBox) obj.drawBoundingBox();
 						if (obj.boxGroup) {
 							obj.boundingBox.material = Objects._defaults.materials.boxSelectedMaterial;
 							obj.boundingBox.parent.visible = true;
@@ -978,7 +980,7 @@ class Objects {
 
 		obj.dispose =  () =>{
 
-			obj.unenroll(obj);
+			this.unenroll(obj,false);
 
 			obj.traverse(o => {
 				//don't dispose th object itself as it will be recursive

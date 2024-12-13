@@ -11,13 +11,14 @@ import * as THREE from 'three'
 
 import Threebox from './src/Threebox'
 import './src/threebox.css'
-import { getAssetsFromCoords } from './assetsHelper'
+import { getAssetsFromCoords, getAssetStatus } from './assetsHelper'
+import AssetPanel from './AssetPanel.svelte'
 
 export let assets:any = getAssetsFromCoords(null)
-
 export let containerClass = 'map-container-maplibre'
 export let sceneOrigin:any = [13.471033574202934,  45.85175337043916, 0]
 export let sceneCenter:any = [13.471033574202934,  45.85175337043916]
+export let showPanel = true
 
 const apiKey = 'pk.eyJ1IjoicXVlc2FsaWQiLCJhIjoiY200Y2w3ZmY1MGNsbzJqcGZwN2dhcms5ZiJ9.K_N3ilmf81hizB-vNIc7Kg'; // Sostituisci con la tua chiave API
 let mapcontainer:any
@@ -25,12 +26,14 @@ let map:any
 let tb:any
 let date = new Date()
 let layerAdded = false
+let flyAsset:any = null
 
 let mapConfig:any = {
 			PAR: {
 				origin: sceneOrigin, 
 				center: sceneCenter, 
-				zoom: 16, pitch: 60, 
+				zoom: 16, 
+				pitch: 60, 
 				bearing: 0, 
 				scale: 1, 
 				rotation: { x: 0, y: 0, z: 0 }, 
@@ -71,12 +74,12 @@ onMount(async () => {
 	
 })
 
-afterUpdate(() => {
+/*afterUpdate(() => {
         // Aggiorna il layer ogni volta che `assets` cambia
         if (map && modelLayer.updateLayer) {
             modelLayer.updateLayer(map,options);
         }
- });
+ });*/
 
 onDestroy(() => {
 	if(tb)
@@ -108,7 +111,6 @@ const getSensorModels = (model:any,name:any) => {
 const addmap = async () => {
 	point = mapConfig.PAR;
 	if(!map){
-		console.log('addMap ---------------------->',mapcontainer)
 		map = new Map({
 			style: 'mapbox://styles/mapbox/satellite-streets-v9', //'mapbox://styles/mapbox/outdoors-v11', //'mapbox://styles/mapbox/dark-v10',//'mapbox://styles/mapbox/light-v10',//'mapbox://styles/mapbox/satellite-streets-v9',
 			center: point.center,
@@ -125,11 +127,14 @@ const addmap = async () => {
 
 		let canvas = map.getCanvas()
 		let gl = canvas.getContext('webgl')
-		tb = (window.tb = new Threebox(
+		
+		map.on('style.load', () => {
+			console.log('Map loaded ---------------------->')
+			tb = (window.tb = new Threebox(
 				map,
 				gl,
 				{
-					//realSunlight: true,
+					realSunlight: true,
 					defaultLights: true,
 					sky: false,
 					terrain: true,
@@ -138,8 +143,6 @@ const addmap = async () => {
 					enableRotatingObjects: false,
 				})
 			)
-		map.on('style.load', () => {
-			console.log('Map loaded ---------------------->')
 			if(!layerAdded){
 				map.addLayer(modelLayer)
 				layerAdded = true
@@ -156,30 +159,50 @@ const modelLayer = {
 		renderingMode: '3d',
 
 		onAdd(map:any, mbxContext:any){
-					//this.updateLayer(map,options)
-				},
+			this.updateLayer(map,options)
+		},
 
         updateLayer(map:any, options:any){
 			map.tb.loadObj(options, (model:any) => {
 				for(let i=0;i<assets.length;i++){
 						let asset = assets[i]
+						let assetColor = '0xffff00'
+						let assetStatus = getAssetStatus(asset)
 						let newmodel = model.duplicate()
 						newmodel.setCoords(asset.modelLocation);
 						newmodel.addTooltip(asset.userData.name, true);
-						newmodel.color = '0xffff00'
-						if(i==0)
-							newmodel.selected = true;
-						else
-							newmodel.selected = false;
+						newmodel.selected = false;
 						newmodel.userData = asset.userData
+						switch(assetStatus){
+							case 'NORMAL':
+								assetColor = '0x00ff00'
+								break;
+							case 'WARNING':
+								assetColor = '0xffa500'
+								break;
+							case 'ALARM':
+								assetColor = '0xff7777'
+								break;
+						}
+						newmodel.color = assetColor
 						const children = getSensorModels(newmodel,'Sens')
 						for(let i=0;i<children.length;i++){
-							if(children[i].name .includes('A4'))
-								children[i].material = new THREE.MeshStandardMaterial({color: 0xff0000});
-							else
-								children[i].material = new THREE.MeshStandardMaterial({color: 0x00ff00});
+							const sensor = asset.userData.sensors.find((s:any) => s.name == children[i].name)
+							const status = sensor?sensor.status:'NORMAL'
+							switch(status){
+								case 'NORMAL':
+									children[i].material = new THREE.MeshStandardMaterial({color: 0x00ff00});
+									break;
+								case 'WARNING':
+									children[i].material = new THREE.MeshStandardMaterial({color: 0xffff00});
+									break;
+								case 'ALARM':
+									children[i].material = new THREE.MeshStandardMaterial({color: 0xff0000});
+									break;
+							}
 						}
-						//newmodel.addEventListener('SelectedChange', onSelectedChange, true);
+						
+						newmodel.addEventListener('SelectedChange', onSelectedChange, true);
 						//newmodel.addEventListener('ObjectDragged', onDraggedObject, false);
 						//newmodel.addEventListener('ObjectMouseOver', onObjectMouseOver, false);
 						//newmodel.addEventListener('ObjectMouseOut', onObjectMouseOut, false);
@@ -203,8 +226,19 @@ const loadObject =  (options:any) => {
 		})
 	}))
 }
-/*const onSelectedChange = (event:any) => {
-	console.log('SelectedChange',event)
+const onSelectedChange = (event:any) => {
+	const model = event.target
+	console.log('SelectedChange',model)
+	// get asset from model
+	const asset = assets.find((a:any) => a.userData.name == model.userData.name)
+	if(asset)
+		flyAsset = asset
+	map.flyTo({
+		center: model.userData.center,
+		zoom: point.zoom, 
+		pitch: point.pitch, 
+		bearing: point.bearing,
+	})
 }
 
 const onObjectMouseOver = (event:any) => {
@@ -213,13 +247,16 @@ const onObjectMouseOver = (event:any) => {
 
 const onObjectMouseOut = (event:any) => {
 	console.log('ObjectMouseOut',event)
-}*/
+}
 
 </script>
 
  
     <div id="map-container" class="{containerClass}">
          <div class="class-mapbox" bind:this="{mapcontainer}"></div>
+		 {#if showPanel}
+            <AssetPanel bind:asset={flyAsset}/>
+         {/if}
     </div>
 
 <style>

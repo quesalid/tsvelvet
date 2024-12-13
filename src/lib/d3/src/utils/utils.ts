@@ -13,7 +13,7 @@ const prettyPrintMatrix = (uglymatrix) => {
 }
 
 const makePerspectiveMatrix = (fovy, aspect, near, far) => {
-	var out = new THREE.Matrix4();
+	var out:any = new THREE.Matrix4();
     var f = 1.0 / Math.tan(fovy / 2),
         nf = 1 / (near - far);
 
@@ -29,7 +29,7 @@ const makePerspectiveMatrix = (fovy, aspect, near, far) => {
 }
 
 const makeOrthographicMatrix = (left, right, top, bottom, near, far) => {
-	var out = new THREE.Matrix4();
+	var out:any = new THREE.Matrix4();
 
     const w = 1.0 / (right - left);
     const h = 1.0 / (top - bottom);

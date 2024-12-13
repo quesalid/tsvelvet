@@ -12,11 +12,11 @@ import Objects from './objects/objects';
 import material from './utils/material';
 import sphere from './objects/sphere';
 import extrusion from './objects/extrusion';
-import label from './objects/label';
-import tooltip from './objects/tooltip';
+import Label from './objects/label';
+import Tooltip from './objects/tooltip';
 import loader from './objects/loadObj';
 import Object3D from './objects/Object3D';
-import line from './objects/line';
+import Line from './objects/line';
 import tube from './objects/tube';
 import LabelRenderer from './objects/LabelRenderer';
 import BuildingShadows from './objects/effects/BuildingShadows';
@@ -94,6 +94,13 @@ class Threebox {
 	SunCalc: any
 	Constants: any
 	version = '2.2.7'
+	selectedObject: any
+	selectedFeature: any
+	draggedObject: any
+	overedObject: any
+	overedFeature: any
+	draggedAction: any
+	
 
 
 	constructor(map: any, glContext:any, options:any = {}) {
@@ -159,9 +166,12 @@ class Threebox {
 		this.multiLayer = this.options.multiLayer || false;
 		this.enableHelpTooltips = this.options.enableHelpTooltips || false;
 
-		this.line = line;
-		this.label = label;
-		this.tooltip = tooltip;
+		this.line = Line;
+		//this.label = this.label()
+		this.label = this._label;
+		//this.tooltip = tooltip
+		this.tooltip = this._tooltip;
+		//this.tooltip = tooltip(undefined, this.objects);
 		this.utils = utils;
 		this.SunCalc = SunCalc;
 		this.Constants = ThreeboxConstants;
@@ -188,8 +198,7 @@ class Threebox {
 		})
 
 		let root = this;
-		this.map.on('load', function() {
-
+		this.map.on('load', function () {
 			//[jscastro] new fields to manage events on map
 			this.selectedObject; //selected object through click
 			this.selectedFeature;//selected state id for extrusion layer features
@@ -308,9 +317,8 @@ class Threebox {
 				intersectionExists = typeof intersects[0] == 'object';
 				// if intersect exists, highlight it
 				if (intersectionExists) {
-
-					let nearestObject = this.findParent3DObject(intersects[0]);
-
+					let nearestObject = this.tb.findParent3DObject(intersects[0]);
+					
 					if (nearestObject) {
 						//if extrusion object selected, unselect
 						if (this.selectedFeature) {
@@ -337,7 +345,8 @@ class Threebox {
 						this.selectedObject.dispatchEvent({ type: 'Wireframed', detail: this.selectedObject });
 						this.selectedObject.dispatchEvent({ type: 'IsPlayingChanged', detail: this.selectedObject });
 
-						this.repaint = true;
+						//this.repaint = true;
+						this.tb.repaint()
 						e.preventDefault();
 					}
 				}
@@ -442,7 +451,7 @@ class Threebox {
 
 				// if intersect exists, highlight it, if not check the extrusion layer
 				if (intersectionExists) {
-					let nearestObject = root.findParent3DObject(intersects[0]);
+					let nearestObject = this.tb.findParent3DObject(intersects[0]);
 					if (nearestObject) {
 						this.outFeature(this.overedFeature);
 						this.getCanvasContainer().style.cursor = 'pointer';
@@ -456,7 +465,8 @@ class Threebox {
 							nearestObject.over = true;
 							this.overedObject = nearestObject;
 						}
-						this.repaint = true;
+						//this.repaint = true;
+						this.tb.repaint()
 						e.preventDefault();
 					}
 				}
@@ -577,7 +587,8 @@ class Threebox {
 						}
 
 						if (map.tb.enableHelpTooltips) obj.addHelp("size(m): " + dc((s.x / sf), 3) + " W, " + dc((s.y / sf), 3) + " L, " + dc((s.z / sf), 3) + " H");
-						this.repaint = true;
+						//this.repaint = true;
+						this.tb.repaint()
 					}
 					else {
 						obj.removeHelp();
@@ -605,7 +616,6 @@ class Threebox {
 			document.addEventListener('keyup', onKeyUp.bind(this));
 
 		})
-
         
 	}
 
@@ -700,6 +710,7 @@ class Threebox {
 		});
 
 		this.map.once('idle', () => {
+			console.log("*************** THREE BOX LOADED  set sunlight **********************")
 			this.setSunlight();
 			this.repaint();
 		});
@@ -828,13 +839,15 @@ class Threebox {
 		this.updateLightHelper();
 		if (this.map.loaded()) {
 			this.updateSunGround(this.sunPosition);
-			this.map.setLight({
+			this.map.setLights([{
+				id: 'sun',
+				type:'flat',
 				anchor: 'map',
 				position: [3, 180 + this.sunPosition.azimuth * 180 / Math.PI, 90 - this.sunPosition.altitude * 180 / Math.PI],
 				intensity: Math.cos(this.sunPosition.altitude), //0.4,
 				color: `hsl(40, ${50 * Math.cos(this.sunPosition.altitude)}%, ${Math.max(20, 20 + (96 * Math.sin(this.sunPosition.altitude)))}%)`
 
-			}, { duration: 0 });
+			}], { duration: 0 });
 			if (this.sky) { this.updateSunSky(this.getSunSky(date, this.sunPosition)); }
 		}
 	}
@@ -857,7 +870,7 @@ class Threebox {
 
 	extrusion(options) {
 		this.setDefaultView(options, this.options);
-		return extrusion(options);
+		return extrusion(options,this.objects);
 	}
 
 	Object3D(options) {
@@ -907,7 +920,7 @@ class Threebox {
 
 	sphere(options) {
 		this.setDefaultView(options, this.options);
-		return sphere(options, this.world)
+		return sphere(options, this.objects,this.world)
 	}
 
 	unprojectFromWorld(v3) {
@@ -955,10 +968,12 @@ class Threebox {
 		//find the Parent Object3D of the mesh captured by Raytracer
 		var result;
 		mesh.object.traverseAncestors(function (m) {
-			if (m.parent)
-				if (m.parent.type == "Group" && m.userData.obj) {
+			if (m.parent) {
+				if (m.parent.type == "Group" && m.userData) {
+				//if (m.parent.type == "Group" && m.userData.obj) {
 					result = m;
 				}
+			}
 		});
 		return result;
 	}
@@ -1195,6 +1210,15 @@ class Threebox {
 	memory() { return this.renderer.info.memory }
 
 	programs() { return this.renderer.info.programs.length }
+
+	// ADDEDD TO OVERCOME STATIC METHODS
+	_label(obj) {
+		return Label(obj,this.objects)
+	}
+
+	_tooltip(obj) {
+		return Tooltip(obj,this.objects)
+    }
 
 }
 export default Threebox;

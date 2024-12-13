@@ -33,7 +33,6 @@ class AnimationManager {
 
 	enroll(obj) {
 
-		console.log("enroll object", obj, this.map);
 		//[jscastro] add the object default animations
 		obj.clock = new THREE.Clock();
 		obj.hasDefaultAnimation = false;
